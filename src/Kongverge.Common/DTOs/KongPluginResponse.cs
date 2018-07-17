@@ -1,5 +1,3 @@
-using System;
-
 namespace Kongverge.Common.DTOs
 {
     public class KongPluginResponse
