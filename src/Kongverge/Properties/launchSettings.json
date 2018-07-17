@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Kongverge": {
+      "commandName": "Project",
+      "commandLineArgs": "-t"
+    }
+  }
+}
