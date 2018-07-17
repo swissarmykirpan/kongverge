@@ -1,5 +1,3 @@
-using System;
-
 namespace Kongverge.Extension
 {
     public interface IKongPluginConfig {

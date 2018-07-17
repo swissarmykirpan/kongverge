@@ -1,4 +1,3 @@
-using System;
 using Kongverge.Extension;
 
 namespace KongVerge.Tests.Serialization
