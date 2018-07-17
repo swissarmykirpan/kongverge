@@ -31,7 +31,10 @@ namespace Kongverge.Common.Services
 
         public async Task<KongAction<KongService>> AddService(KongService service)
         {
+            var routes = service.Routes;
+            service.Routes = null;
             var content = ToJsonContent(service);
+            service.Routes = routes;
 
             try
             {
@@ -68,7 +71,11 @@ namespace Kongverge.Common.Services
             var requestUri = new Uri($"/services/{service.Name}", UriKind.Relative);
             var method = new HttpMethod("PATCH");
 
+            var routes = service.Routes;
+            service.Routes = null;
             var content = ToJsonContent(service);
+            service.Routes = routes;
+
             var request = new HttpRequestMessage(method, requestUri) { Content = content };
 
             try
@@ -94,7 +101,7 @@ namespace Kongverge.Common.Services
 
         public async Task<KongAction<KongService>> DeleteService(KongService service)
         {
-            var requestUri = $"/services/{service}";
+            var requestUri = $"/services/{service.Id}";
 
             var method = new HttpMethod("DELETE");
 
