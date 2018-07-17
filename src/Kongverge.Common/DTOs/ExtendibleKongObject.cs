@@ -22,6 +22,11 @@ namespace Kongverge.Common.DTOs
 
         public IList<IKongPluginConfig> Extensions { get; set; }
 
+        public override string ToString()
+        {
+            return Id;
+        }
+
         private class EmptyExtendibleKongObject : ExtendibleKongObject
         {
             internal EmptyExtendibleKongObject()
