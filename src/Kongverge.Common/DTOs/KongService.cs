@@ -95,6 +95,11 @@ namespace Kongverge.Common.DTOs
             }
         }
 
+        public override string ToString()
+        {
+            return $"Id: {Id}, Name: {Name}";
+        }
+
         protected override PluginBody DoDecoratePluginBody(PluginBody body)
         {
             body.service_id = Id;
