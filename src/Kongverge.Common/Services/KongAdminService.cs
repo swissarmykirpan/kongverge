@@ -69,14 +69,13 @@ namespace Kongverge.Common.Services
         {
             Log.Information("Updating service {name} to config {data}", service.Name, service);
             var requestUri = new Uri($"/services/{service.Name}", UriKind.Relative);
-            var method = new HttpMethod("PATCH");
 
             var routes = service.Routes;
             service.Routes = null;
             var content = ToJsonContent(service);
             service.Routes = routes;
+            var request = new HttpRequestMessage(HttpMethod.Patch, requestUri) { Content = content };
 
-            var request = new HttpRequestMessage(method, requestUri) { Content = content };
 
             try
             {
@@ -103,9 +102,7 @@ namespace Kongverge.Common.Services
         {
             var requestUri = $"/services/{service.Id}";
 
-            var method = new HttpMethod("DELETE");
-
-            var request = new HttpRequestMessage(method, requestUri);
+            var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
             try
             {
                 var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
@@ -173,9 +170,7 @@ namespace Kongverge.Common.Services
         {
             var requestUri = $"/routes/{route.Id}";
 
-            var method = new HttpMethod("DELETE");
-
-            var request = new HttpRequestMessage(method, requestUri);
+            var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
             try
             {
                 var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
@@ -226,9 +221,7 @@ Error was:
         {
             var requestUri = $"/plugins/{pluginId}";
 
-            var method = new HttpMethod("DELETE");
-
-            var request = new HttpRequestMessage(method, requestUri);
+            var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
             try
             {
                 var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
