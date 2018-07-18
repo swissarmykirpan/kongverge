@@ -55,7 +55,7 @@ If I run Kongverge a second time, Kongverge finds nothing to do, as the server i
 
 ## Healthcheck
 
-A health check that is reminated using a plugin.
+A health check that is terminated at kong, using a plugin.
 
 ````json
 {
