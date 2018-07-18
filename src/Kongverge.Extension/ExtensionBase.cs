@@ -12,7 +12,7 @@ namespace Kongverge.Extension
 
         public string SectionName { get; }
 
-        public Type KongObjectType { get { return typeof(TConfig); } }
+        public Type KongObjectType => typeof(TConfig);
 
         public abstract string PluginName { get; }
 
