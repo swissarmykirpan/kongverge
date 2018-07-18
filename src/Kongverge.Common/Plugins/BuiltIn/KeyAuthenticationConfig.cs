@@ -6,7 +6,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
 {
     public class KeyAuthenticationConfig : IKongPluginConfig
     {
-        [JsonProperty("key_names")]
+        [JsonProperty("key_names", ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public HashSet<string> KeyNames { get; set; } = new HashSet<string> { "apikey" };
 
         [JsonProperty("key_in_body")]
