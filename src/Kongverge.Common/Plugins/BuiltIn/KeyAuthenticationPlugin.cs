@@ -5,7 +5,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
 {
     public class KeyAuthenticationPlugin : ExtensionBase<KeyAuthenticationConfig>
     {
-        public KeyAuthenticationPlugin(string section) : base(section)
+        public KeyAuthenticationPlugin() : base("key-auth")
         {
         }
 
