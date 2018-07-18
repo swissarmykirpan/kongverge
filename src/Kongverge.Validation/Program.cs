@@ -27,7 +27,7 @@ namespace Kongverge.Validation
         private static ITestHelper _testHelper;
         private static string _pluginId;
         
-        public static async Task<int> Main(string[] args)
+        public static int Main(string[] args)
         {
             //Ensure we definitely remove that plugin, even if we crash
             AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
@@ -95,10 +95,10 @@ namespace Kongverge.Validation
                 Console.ReadKey();
 #endif
 
-                return await Task.FromResult(0);
+                return 0;
             });
 
-            return await Task.FromResult(app.Execute(args));
+            return app.Execute(args);
         }
 
         private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
