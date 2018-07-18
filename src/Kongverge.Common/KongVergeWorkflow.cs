@@ -11,7 +11,8 @@ using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace Kongverge
-{    public class KongvergeWorkflow : Workflow
+{
+    public class KongvergeWorkflow : Workflow
     {
         new protected IKongAdminService _adminService;
         private readonly IDataFileHelper _fileHelper;
