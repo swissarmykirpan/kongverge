@@ -166,7 +166,7 @@ namespace Kongverge
 
                     await _adminService.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
                 }
-                else if(!change.Target.IsExactmatch(change.Existing))
+                else if(!change.Target.IsExactMatch(change.Existing))
                 {
                     var content = _extensionCollection.CreatePluginBody(change.Target);
 

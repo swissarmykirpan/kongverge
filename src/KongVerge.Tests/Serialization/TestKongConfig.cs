@@ -7,7 +7,7 @@ namespace KongVerge.Tests.Serialization
         public string Value { get; set; }
         public string id { get; set; }
 
-        public bool IsExactmatch(IKongPluginConfig other)
+        public bool IsExactMatch(IKongPluginConfig other)
         {
             return false;
         }
@@ -18,7 +18,7 @@ namespace KongVerge.Tests.Serialization
         public int Value { get; set; }
         public string id { get; set; }
 
-        public bool IsExactmatch(IKongPluginConfig other)
+        public bool IsExactMatch(IKongPluginConfig other)
         {
             return false;
         }
@@ -32,7 +32,7 @@ namespace KongVerge.Tests.Serialization
 
         public string id { get; set; }
 
-        public bool IsExactmatch(IKongPluginConfig other)
+        public bool IsExactMatch(IKongPluginConfig other)
         {
             return false;
         }
