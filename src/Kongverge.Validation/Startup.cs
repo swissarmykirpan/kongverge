@@ -5,7 +5,6 @@ using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
 using Kongverge.Common.Plugins;
 using Kongverge.Extension;
-using Kongverge.Validation.DTOs;
 using Kongverge.Validation.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

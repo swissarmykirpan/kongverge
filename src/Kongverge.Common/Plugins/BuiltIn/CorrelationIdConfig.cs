@@ -1,6 +1,4 @@
 using Kongverge.Extension;
-using System;
-using System.Collections.Generic;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {
