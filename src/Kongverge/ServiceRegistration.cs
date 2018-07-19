@@ -16,26 +16,30 @@ using Serilog;
 
 namespace Kongverge
 {
-    public class Startup
+    public static class ServiceRegistration
     {
-        public void ConfigureServices(IServiceCollection services)
+        public static void CreateConsoleLogger()
         {
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
                 .CreateLogger();
-
             Log.Information("Starting up");
+        }
 
+        public static void AddServices(IServiceCollection services)
+        {
             services.AddSingleton<KongAdminDryRun>();
             services.AddSingleton<KongAdminService>();
             services.AddSingleton<KongvergeWorkflow>();
             services.AddSingleton<ExportWorkflow>();
 
-            var assemblies = this.GetType()
-                                 .Assembly
-                                 .GetReferencedAssemblies()
-                                 .Select(r => Assembly.Load(r))
-                                 .Concat(new[] { this.GetType().Assembly });
+            var thisAssembly = typeof(ServiceRegistration).Assembly;
+
+            var assemblies = thisAssembly
+                .GetReferencedAssemblies()
+                .Select(Assembly.Load)
+                .Concat(new[] { thisAssembly })
+                .Distinct();
 
             AddPlugins(services, assemblies);
 
@@ -54,11 +58,9 @@ namespace Kongverge
                     Log.Information("Performing Dry Run.\n\tNo Writes to Kong will occur");
                     return s.GetService<KongAdminDryRun>();
                 }
-                else
-                {
-                    Log.Information("Performing live integration.\n\tChanges will be made to {host}", config.Value.Admin.Host);
-                    return s.GetService<KongAdminService>();
-                }
+
+                Log.Information("Performing live integration.\n\tChanges will be made to {host}", config.Value.Admin.Host);
+                return s.GetService<KongAdminService>();
             });
 
             services.AddSingleton<Workflow>(s =>
@@ -70,11 +72,9 @@ namespace Kongverge
                     Log.Information("Performing full diff and merge.");
                     return s.GetService<KongvergeWorkflow>();
                 }
-                else
-                {
-                    Log.Information("Exporting information from Kong");
-                    return s.GetService<ExportWorkflow>();
-                }
+
+                Log.Information("Exporting information from Kong");
+                return s.GetService<ExportWorkflow>();
             });
 
             services.AddSingleton<IDataFileHelper, DataFileHelper>();
@@ -88,17 +88,16 @@ namespace Kongverge
             services.Configure<Settings>(set => configuration.Bind(set));
         }
 
-        private void AddPlugins(IServiceCollection services, IEnumerable<Assembly> assembliesToScan)
+        private static void AddPlugins(IServiceCollection services, IEnumerable<Assembly> assembliesToScan)
         {
-            assembliesToScan = (assembliesToScan as Assembly[] ?? assembliesToScan).Distinct().ToArray();
-
             var myInterface = typeof(IExtension);
 
             var types =
                 assembliesToScan
                 .SelectMany(s => s.GetTypes())
                 .Where(t => !t.IsAbstract && !t.IsInterface)
-                .Where(p => myInterface.IsAssignableFrom(p));
+                .Where(p => myInterface.IsAssignableFrom(p))
+                .Distinct();
 
             foreach (var t in types)
             {
