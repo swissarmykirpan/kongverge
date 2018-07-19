@@ -108,12 +108,18 @@ namespace Kongverge
             }
             else
             {
+                // TODO: Clean this up, its messy, but where else can we do this?
+                data.Service.Id = existingService.Id;
+
+                await ConvergePlugins(data.Service, existingService).ConfigureAwait(false);
+
                 await ConvergeRoutes(data.Service, existingService.Routes).ConfigureAwait(false);
 
                 if (!ServiceHasChanged(existingService, data.Service))
                 {
                     return;
                 }
+
                 Log.Information("Updating service: \"{name}\"", data.Service.Name);
 
                 await _adminService.UpdateService(data.Service).ConfigureAwait(false);
@@ -138,6 +144,9 @@ namespace Kongverge
 
             foreach (var routepair in matchingRoutePairs)
             {
+                // TODO: Clean up same as before - the targets when loaded from file don't have IDs?
+                //routepair.Target.Id = routepair.Existing.Id;
+
                 await ConvergePlugins(routepair.Target, routepair.Existing).ConfigureAwait(false);
             }
         }
@@ -172,6 +181,9 @@ namespace Kongverge
                     var content = _extensionCollection.CreatePluginBody(change.Target);
 
                     content.id = change.Existing.id;
+
+                    // TODO: Same problem here - target has come from a file, and it doesn't have the Created info to feed into created_at
+                    target.Created = existing.Created;
 
                     await _adminService.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
                 }
