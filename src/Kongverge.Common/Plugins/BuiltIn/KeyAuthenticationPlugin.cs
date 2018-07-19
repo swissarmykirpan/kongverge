@@ -13,7 +13,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         public override KeyAuthenticationConfig DoCreateConfigObject(PluginBody pluginBody)
         {
-            return new KeyAuthenticationConfig()
+            return new KeyAuthenticationConfig
             {
                 KeyNames = new HashSet<string>(((string)pluginBody.config["key_names"]).Split(',')),
                 KeyInBody = (bool)pluginBody.config["key_in_body"],
