@@ -5,26 +5,26 @@ namespace Kongverge.Common.Plugins.BuiltIn
 {
     public class RequestTransformerAdvancedConfig : IKongPluginConfig
     {
-        [JsonProperty("consumer_id")]
-        public string ConsumerId { get; set; }
+        //[JsonProperty("consumer_id")]
+        //public string ConsumerId { get; set; }
 
         [JsonProperty("http_method")]
         public string HttpMethod { get; set; }
 
         [JsonProperty("remove")]
-        public RequestTransformerAdvancedTransformBase Remove { get; set; }
+        public RequestTransformerAdvancedTransformBase Remove { get; set; } = new RequestTransformerAdvancedTransformBase();
 
         [JsonProperty("replace")]
-        public RequestTransformerAdvancedTransformReplace Replace { get; set; }
+        public RequestTransformerAdvancedTransformReplace Replace { get; set; } = new RequestTransformerAdvancedTransformReplace();
 
         [JsonProperty("rename")]
-        public RequestTransformerAdvancedTransformBase Rename { get; set; }
+        public RequestTransformerAdvancedTransformBase Rename { get; set; } = new RequestTransformerAdvancedTransformBase();
 
         [JsonProperty("add")]
-        public RequestTransformerAdvancedTransformBase Add { get; set; }
+        public RequestTransformerAdvancedTransformBase Add { get; set; } = new RequestTransformerAdvancedTransformBase();
 
         [JsonProperty("append")]
-        public RequestTransformerAdvancedTransformBase Append { get; set; }
+        public RequestTransformerAdvancedTransformBase Append { get; set; } = new RequestTransformerAdvancedTransformBase();
 
         public string id { get; set; }
 
@@ -32,8 +32,8 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             if (other is RequestTransformerAdvancedConfig otherConfig)
             {
-                return otherConfig.ConsumerId == ConsumerId
-                       && otherConfig.HttpMethod == HttpMethod
+                return /*otherConfig.ConsumerId == ConsumerId
+                       &&*/ otherConfig.HttpMethod == HttpMethod
                        && IsNestedConfigMatch(Remove, otherConfig.Remove)
                        && IsNestedConfigMatch(Replace, otherConfig.Replace)
                        && IsNestedConfigMatch(Rename, otherConfig.Rename)

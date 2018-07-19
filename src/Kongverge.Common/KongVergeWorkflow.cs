@@ -108,12 +108,15 @@ namespace Kongverge
             }
             else
             {
+                await ConvergePlugins(data.Service, existingService).ConfigureAwait(false);
+
                 await ConvergeRoutes(data.Service, existingService.Routes).ConfigureAwait(false);
 
                 if (!ServiceHasChanged(existingService, data.Service))
                 {
                     return;
                 }
+
                 Log.Information("Updating service: \"{name}\"", data.Service.Name);
 
                 await _adminService.UpdateService(data.Service).ConfigureAwait(false);
