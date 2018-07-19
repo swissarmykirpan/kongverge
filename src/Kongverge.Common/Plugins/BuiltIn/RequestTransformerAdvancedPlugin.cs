@@ -16,12 +16,11 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             return new RequestTransformerAdvancedConfig
             {
-                // TODO: How do we access consumerId in this case? We only get the config dictionary?
-                //ConsumerId = (string)pluginBody.config["consumer_id"],
                 HttpMethod = (string) pluginBody.config["http_method"],
 
                 Remove = new RequestTransformerAdvancedTransformBase
                 {
+                    // TODO: Need to fix this - seems to be a JObject, so need to cast accordingly
                     Headers = new HashSet<string>(((string) pluginBody.config["remove.headers"]).Split(',')),
                     QueryString = new HashSet<string>(((string) pluginBody.config["remove.querystring"]).Split(',')),
                     Body = new HashSet<string>(((string) pluginBody.config["remove.body"]).Split(','))
@@ -62,7 +61,6 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             return new PluginBody(PluginName, new Dictionary<string, object>
             {
-                //{ "consumer_id", target.ConsumerId },
                 { "http_method", target.HttpMethod },
 
                 { "remove.headers", string.Join(',', target.Remove.Headers) },

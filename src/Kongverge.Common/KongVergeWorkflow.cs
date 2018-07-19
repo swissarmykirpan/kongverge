@@ -108,6 +108,9 @@ namespace Kongverge
             }
             else
             {
+                // TODO: Clean this up, its messy, but where else can we do this?
+                data.Service.Id = existingService.Id;
+
                 await ConvergePlugins(data.Service, existingService).ConfigureAwait(false);
 
                 await ConvergeRoutes(data.Service, existingService.Routes).ConfigureAwait(false);
@@ -141,6 +144,9 @@ namespace Kongverge
 
             foreach (var routepair in matchingRoutePairs)
             {
+                // TODO: Clean up same as before - the targets when loaded from file don't have IDs?
+                routepair.Target.Id = routepair.Existing.Id;
+
                 await ConvergePlugins(routepair.Target, routepair.Existing).ConfigureAwait(false);
             }
         }

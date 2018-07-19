@@ -5,9 +5,6 @@ namespace Kongverge.Common.Plugins.BuiltIn
 {
     public class RequestTransformerAdvancedConfig : IKongPluginConfig
     {
-        //[JsonProperty("consumer_id")]
-        //public string ConsumerId { get; set; }
-
         [JsonProperty("http_method")]
         public string HttpMethod { get; set; }
 
@@ -32,8 +29,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             if (other is RequestTransformerAdvancedConfig otherConfig)
             {
-                return /*otherConfig.ConsumerId == ConsumerId
-                       &&*/ otherConfig.HttpMethod == HttpMethod
+                return otherConfig.HttpMethod == HttpMethod
                        && IsNestedConfigMatch(Remove, otherConfig.Remove)
                        && IsNestedConfigMatch(Replace, otherConfig.Replace)
                        && IsNestedConfigMatch(Rename, otherConfig.Rename)
