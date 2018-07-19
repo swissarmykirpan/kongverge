@@ -43,9 +43,10 @@ namespace Kongverge
 
             app.OnExecute(async () =>
             {
+                ServiceRegistration.CreateConsoleLogger();
                 var services = new ServiceCollection();
-                var startup = new Startup();
-                startup.ConfigureServices(services);
+                ServiceRegistration.AddServices(services);
+
                 var serviceProvider = services.BuildServiceProvider();
 
                 #region Configuration Options
