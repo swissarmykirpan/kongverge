@@ -130,9 +130,10 @@ namespace Kongverge.Common.Services
         public async Task<KongAction<KongRoute>> AddRoute(KongService service, KongRoute route)
         {
             Log.Information(@"Adding Route
-    Route Paths: {path}
+    Route Paths: {paths}
     Methods    : {methods}
-    Protocols  : {Protocols}", route.Hosts, route.Paths);
+    Protocols  : {protocols}",
+                route.Paths, route.Methods, route.Protocols);
 
             var content = ToJsonContent(route);
 
