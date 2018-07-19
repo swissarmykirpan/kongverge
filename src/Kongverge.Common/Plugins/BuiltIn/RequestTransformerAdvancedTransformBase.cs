@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {
-    public class RequestTransformerAdvancedTransformRemove : IRequestTransformerAdvancedNestedConfig
+    public class RequestTransformerAdvancedTransformBase : IRequestTransformerAdvancedNestedConfig
     {
         [JsonProperty("headers")]
         public HashSet<string> Headers { get; set; } = new HashSet<string>();
@@ -15,9 +15,9 @@ namespace Kongverge.Common.Plugins.BuiltIn
         [JsonProperty("body")]
         public HashSet<string> Body { get; set; } = new HashSet<string>();
 
-        public bool IsExactMatch(IRequestTransformerAdvancedNestedConfig other)
+        public virtual bool IsExactMatch(IRequestTransformerAdvancedNestedConfig other)
         {
-            if (other is RequestTransformerAdvancedTransformRemove otherConfig)
+            if (other is RequestTransformerAdvancedTransformBase otherConfig)
             {
                 return !Headers.Except(otherConfig.Headers)
                            .Concat(otherConfig.Headers.Except(Headers)).Any()

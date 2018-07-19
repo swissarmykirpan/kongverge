@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {
-    public class RequestTransformerAdvancedTransformReplace : RequestTransformerAdvancedTransformKpBase
+    public class RequestTransformerAdvancedTransformReplace : RequestTransformerAdvancedTransformBase
     {
         [JsonProperty("uri")]
         public string Uri { get; set; }

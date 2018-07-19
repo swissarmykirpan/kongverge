@@ -12,19 +12,19 @@ namespace Kongverge.Common.Plugins.BuiltIn
         public string HttpMethod { get; set; }
 
         [JsonProperty("remove")]
-        public RequestTransformerAdvancedTransformRemove Remove { get; set; }
+        public RequestTransformerAdvancedTransformBase Remove { get; set; }
 
         [JsonProperty("replace")]
         public RequestTransformerAdvancedTransformReplace Replace { get; set; }
 
         [JsonProperty("rename")]
-        public RequestTransformerAdvancedTransformKpBase Rename { get; set; }
+        public RequestTransformerAdvancedTransformBase Rename { get; set; }
 
         [JsonProperty("add")]
-        public RequestTransformerAdvancedTransformKpBase Add { get; set; }
+        public RequestTransformerAdvancedTransformBase Add { get; set; }
 
         [JsonProperty("append")]
-        public RequestTransformerAdvancedTransformKpBase Append { get; set; }
+        public RequestTransformerAdvancedTransformBase Append { get; set; }
 
         public string id { get; set; }
 

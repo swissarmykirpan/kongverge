@@ -20,7 +20,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
                 //ConsumerId = (string)pluginBody.config["consumer_id"],
                 HttpMethod = (string) pluginBody.config["http_method"],
 
-                Remove = new RequestTransformerAdvancedTransformRemove
+                Remove = new RequestTransformerAdvancedTransformBase
                 {
                     Headers = new HashSet<string>(((string) pluginBody.config["remove.headers"]).Split(',')),
                     QueryString = new HashSet<string>(((string) pluginBody.config["remove.querystring"]).Split(',')),
@@ -29,95 +29,31 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
                 Replace = new RequestTransformerAdvancedTransformReplace
                 {
-                    Headers = new Dictionary<string, string>(((string) pluginBody.config["replace.headers"]).Split(',')
-                        .Select(x =>
-                        {
-                            var kp = x.Split(':');
-                            return new KeyValuePair<string, string>(kp[0], kp[1]);
-                        })),
-                    QueryString = new Dictionary<string, string>(((string) pluginBody.config["replace.querystring"])
-                        .Split(',')
-                        .Select(x =>
-                        {
-                            var kp = x.Split(':');
-                            return new KeyValuePair<string, string>(kp[0], kp[1]);
-                        })),
-                    Body = new Dictionary<string, string>(((string) pluginBody.config["replace.body"]).Split(',')
-                        .Select(x =>
-                        {
-                            var kp = x.Split(':');
-                            return new KeyValuePair<string, string>(kp[0], kp[1]);
-                        })),
-                    Uri = (string) pluginBody.config["replace.uri"]
+                    Headers = new HashSet<string>(((string)pluginBody.config["replace.headers"]).Split(',')),
+                    QueryString = new HashSet<string>(((string)pluginBody.config["replace.querystring"]).Split(',')),
+                    Body = new HashSet<string>(((string)pluginBody.config["replace.body"]).Split(',')),
+                    Uri = (string)pluginBody.config["replace.uri"]
                 },
 
-                Rename = new RequestTransformerAdvancedTransformKpBase
+                Rename = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new Dictionary<string, string>(((string) pluginBody.config["rename.headers"]).Split(',')
-                        .Select(x =>
-                        {
-                            var kp = x.Split(':');
-                            return new KeyValuePair<string, string>(kp[0], kp[1]);
-                        })),
-                    QueryString = new Dictionary<string, string>(((string) pluginBody.config["rename.querystring"])
-                        .Split(',')
-                        .Select(x =>
-                        {
-                            var kp = x.Split(':');
-                            return new KeyValuePair<string, string>(kp[0], kp[1]);
-                        })),
-                    Body = new Dictionary<string, string>(((string) pluginBody.config["rename.body"]).Split(',')
-                        .Select(x =>
-                        {
-                            var kp = x.Split(':');
-                            return new KeyValuePair<string, string>(kp[0], kp[1]);
-                        }))
+                    Headers = new HashSet<string>(((string)pluginBody.config["rename.headers"]).Split(',')),
+                    QueryString = new HashSet<string>(((string)pluginBody.config["rename.querystring"]).Split(',')),
+                    Body = new HashSet<string>(((string)pluginBody.config["rename.body"]).Split(','))
                 },
 
-                Add = new RequestTransformerAdvancedTransformKpBase
+                Add = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new Dictionary<string, string>(((string) pluginBody.config["add.headers"]).Split(',')
-                        .Select(x =>
-                        {
-                            var kp = x.Split(':');
-                            return new KeyValuePair<string, string>(kp[0], kp[1]);
-                        })),
-                    QueryString = new Dictionary<string, string>(((string) pluginBody.config["add.querystring"])
-                        .Split(',')
-                        .Select(x =>
-                        {
-                            var kp = x.Split(':');
-                            return new KeyValuePair<string, string>(kp[0], kp[1]);
-                        })),
-                    Body = new Dictionary<string, string>(((string) pluginBody.config["add.body"]).Split(',')
-                        .Select(x =>
-                        {
-                            var kp = x.Split(':');
-                            return new KeyValuePair<string, string>(kp[0], kp[1]);
-                        }))
+                    Headers = new HashSet<string>(((string)pluginBody.config["add.headers"]).Split(',')),
+                    QueryString = new HashSet<string>(((string)pluginBody.config["add.querystring"]).Split(',')),
+                    Body = new HashSet<string>(((string)pluginBody.config["add.body"]).Split(','))
                 },
 
-                Append = new RequestTransformerAdvancedTransformKpBase
+                Append = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new Dictionary<string, string>(((string) pluginBody.config["append.headers"]).Split(',')
-                        .Select(x =>
-                        {
-                            var kp = x.Split(':');
-                            return new KeyValuePair<string, string>(kp[0], kp[1]);
-                        })),
-                    QueryString = new Dictionary<string, string>(((string) pluginBody.config["append.querystring"])
-                        .Split(',')
-                        .Select(x =>
-                        {
-                            var kp = x.Split(':');
-                            return new KeyValuePair<string, string>(kp[0], kp[1]);
-                        })),
-                    Body = new Dictionary<string, string>(((string) pluginBody.config["append.body"]).Split(',')
-                        .Select(x =>
-                        {
-                            var kp = x.Split(':');
-                            return new KeyValuePair<string, string>(kp[0], kp[1]);
-                        }))
+                    Headers = new HashSet<string>(((string)pluginBody.config["append.headers"]).Split(',')),
+                    QueryString = new HashSet<string>(((string)pluginBody.config["append.querystring"]).Split(',')),
+                    Body = new HashSet<string>(((string)pluginBody.config["append.body"]).Split(','))
                 },
             };
         }
@@ -133,22 +69,22 @@ namespace Kongverge.Common.Plugins.BuiltIn
                 { "remove.querystring", string.Join(',', target.Remove.QueryString) },
                 { "remove.body", string.Join(',', target.Remove.Body) },
 
-                { "replace.headers", string.Join(',', target.Replace.Headers.Select(kp => $"{kp.Key}:{kp.Value}")) },
-                { "replace.querystring", string.Join(',', target.Replace.QueryString.Select(kp => $"{kp.Key}:{kp.Value}")) },
-                { "replace.body", string.Join(',', target.Replace.Body.Select(kp => $"{kp.Key}:{kp.Value}")) },
+                { "replace.headers", string.Join(',', target.Replace.Headers) },
+                { "replace.querystring", string.Join(',', target.Replace.QueryString) },
+                { "replace.body", string.Join(',', target.Replace.Body) },
                 { "replace.uri", target.Replace.Uri },
 
-                { "rename.headers", string.Join(',', target.Rename.Headers.Select(kp => $"{kp.Key}:{kp.Value}")) },
-                { "rename.querystring", string.Join(',', target.Rename.QueryString.Select(kp => $"{kp.Key}:{kp.Value}")) },
-                { "rename.body", string.Join(',', target.Rename.Body.Select(kp => $"{kp.Key}:{kp.Value}")) },
+                { "rename.headers", string.Join(',', target.Rename.Headers) },
+                { "rename.querystring", string.Join(',', target.Rename.QueryString) },
+                { "rename.body", string.Join(',', target.Rename.Body) },
 
-                { "add.headers", string.Join(',', target.Add.Headers.Select(kp => $"{kp.Key}:{kp.Value}")) },
-                { "add.querystring", string.Join(',', target.Add.QueryString.Select(kp => $"{kp.Key}:{kp.Value}")) },
-                { "add.body", string.Join(',', target.Add.Body.Select(kp => $"{kp.Key}:{kp.Value}")) },
+                { "add.headers", string.Join(',', target.Add.Headers) },
+                { "add.querystring", string.Join(',', target.Add.QueryString) },
+                { "add.body", string.Join(',', target.Add.Body) },
 
-                { "append.headers", string.Join(',', target.Append.Headers.Select(kp => $"{kp.Key}:{kp.Value}")) },
-                { "append.querystring", string.Join(',', target.Append.QueryString.Select(kp => $"{kp.Key}:{kp.Value}")) },
-                { "append.body", string.Join(',', target.Append.Body.Select(kp => $"{kp.Key}:{kp.Value}")) },
+                { "append.headers", string.Join(',', target.Append.Headers) },
+                { "append.querystring", string.Join(',', target.Append.QueryString) },
+                { "append.body", string.Join(',', target.Append.Body) },
             });
         }
     }
