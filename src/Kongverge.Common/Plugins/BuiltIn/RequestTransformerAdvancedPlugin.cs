@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using Kongverge.Common.Helpers;
 using Kongverge.Extension;
+using Newtonsoft.Json.Linq;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {
@@ -20,39 +22,38 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
                 Remove = new RequestTransformerAdvancedTransformBase
                 {
-                    // TODO: Need to fix this - seems to be a JObject, so need to cast accordingly
-                    Headers = new HashSet<string>(((string) pluginBody.config["remove.headers"]).Split(',')),
-                    QueryString = new HashSet<string>(((string) pluginBody.config["remove.querystring"]).Split(',')),
-                    Body = new HashSet<string>(((string) pluginBody.config["remove.body"]).Split(','))
+                    Headers = new HashSet<string>(((JObject) pluginBody.config["remove"]).SafeCastJObjectProperty<string[]>("headers") ?? new string[]{}),
+                    QueryString = new HashSet<string>(((JObject)pluginBody.config["remove"]).SafeCastJObjectProperty<string[]>("querystring") ?? new string[] { }),
+                    Body = new HashSet<string>(((JObject)pluginBody.config["remove"]).SafeCastJObjectProperty<string[]>("body") ?? new string[] { })
                 },
 
                 Replace = new RequestTransformerAdvancedTransformReplace
                 {
-                    Headers = new HashSet<string>(((string)pluginBody.config["replace.headers"]).Split(',')),
-                    QueryString = new HashSet<string>(((string)pluginBody.config["replace.querystring"]).Split(',')),
-                    Body = new HashSet<string>(((string)pluginBody.config["replace.body"]).Split(',')),
-                    Uri = (string)pluginBody.config["replace.uri"]
+                    Headers = new HashSet<string>(((JObject)pluginBody.config["replace"]).SafeCastJObjectProperty<string[]>("headers") ?? new string[] { }),
+                    QueryString = new HashSet<string>(((JObject)pluginBody.config["replace"]).SafeCastJObjectProperty<string[]>("querystring") ?? new string[] { }),
+                    Body = new HashSet<string>(((JObject)pluginBody.config["replace"]).SafeCastJObjectProperty<string[]>("body") ?? new string[] { }),
+                    Uri = ((JObject)pluginBody.config["replace"]).SafeCastJObjectProperty<string>("uri")
                 },
 
                 Rename = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new HashSet<string>(((string)pluginBody.config["rename.headers"]).Split(',')),
-                    QueryString = new HashSet<string>(((string)pluginBody.config["rename.querystring"]).Split(',')),
-                    Body = new HashSet<string>(((string)pluginBody.config["rename.body"]).Split(','))
+                    Headers = new HashSet<string>(((JObject)pluginBody.config["rename"]).SafeCastJObjectProperty<string[]>("headers") ?? new string[] { }),
+                    QueryString = new HashSet<string>(((JObject)pluginBody.config["rename"]).SafeCastJObjectProperty<string[]>("querystring") ?? new string[] { }),
+                    Body = new HashSet<string>(((JObject)pluginBody.config["rename"]).SafeCastJObjectProperty<string[]>("body") ?? new string[] { })
                 },
 
                 Add = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new HashSet<string>(((string)pluginBody.config["add.headers"]).Split(',')),
-                    QueryString = new HashSet<string>(((string)pluginBody.config["add.querystring"]).Split(',')),
-                    Body = new HashSet<string>(((string)pluginBody.config["add.body"]).Split(','))
+                    Headers = new HashSet<string>(((JObject)pluginBody.config["add"]).SafeCastJObjectProperty<string[]>("headers") ?? new string[] { }),
+                    QueryString = new HashSet<string>(((JObject)pluginBody.config["add"]).SafeCastJObjectProperty<string[]>("querystring") ?? new string[] { }),
+                    Body = new HashSet<string>(((JObject)pluginBody.config["add"]).SafeCastJObjectProperty<string[]>("body") ?? new string[] { })
                 },
 
                 Append = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new HashSet<string>(((string)pluginBody.config["append.headers"]).Split(',')),
-                    QueryString = new HashSet<string>(((string)pluginBody.config["append.querystring"]).Split(',')),
-                    Body = new HashSet<string>(((string)pluginBody.config["append.body"]).Split(','))
+                    Headers = new HashSet<string>(((JObject)pluginBody.config["append"]).SafeCastJObjectProperty<string[]>("headers") ?? new string[] { }),
+                    QueryString = new HashSet<string>(((JObject)pluginBody.config["append"]).SafeCastJObjectProperty<string[]>("querystring") ?? new string[] { }),
+                    Body = new HashSet<string>(((JObject)pluginBody.config["append"]).SafeCastJObjectProperty<string[]>("body") ?? new string[] { })
                 },
             };
         }

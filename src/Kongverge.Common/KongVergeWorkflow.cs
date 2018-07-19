@@ -145,7 +145,7 @@ namespace Kongverge
             foreach (var routepair in matchingRoutePairs)
             {
                 // TODO: Clean up same as before - the targets when loaded from file don't have IDs?
-                routepair.Target.Id = routepair.Existing.Id;
+                //routepair.Target.Id = routepair.Existing.Id;
 
                 await ConvergePlugins(routepair.Target, routepair.Existing).ConfigureAwait(false);
             }
@@ -181,6 +181,9 @@ namespace Kongverge
                     var content = _extensionCollection.CreatePluginBody(change.Target);
 
                     content.id = change.Existing.id;
+
+                    // TODO: Same problem here - target has come from a file, and it doesn't have the Created info to feed into created_at
+                    target.Created = existing.Created;
 
                     await _adminService.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
                 }

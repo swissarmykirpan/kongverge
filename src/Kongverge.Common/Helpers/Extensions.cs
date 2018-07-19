@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Kongverge.Extension;
+using Newtonsoft.Json.Linq;
 
 namespace Kongverge.Common.Helpers
 {
@@ -60,6 +62,19 @@ namespace Kongverge.Common.Helpers
         public static IEnumerable<T> SafeIfNull<T>(this IEnumerable<T> sequence)
         {
             return sequence ?? Enumerable.Empty<T>();
+        }
+
+        public static T SafeCastJObjectProperty<T>(this JObject jObject, string property)
+        {
+            try
+            {
+                return jObject["headers"].ToObject<T>();
+            }
+            catch (Exception)
+            {
+            }
+
+            return default;
         }
     }
 }

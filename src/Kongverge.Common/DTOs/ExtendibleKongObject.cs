@@ -10,7 +10,7 @@ namespace Kongverge.Common.DTOs
         public string Id { get; set; }
 
         [JsonProperty("created_at")]
-        public long? Created{ get; set; }
+        public long? Created { get; set; }
 
         public bool ShouldSerializeId()
         {
