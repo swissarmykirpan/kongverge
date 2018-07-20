@@ -17,8 +17,8 @@ namespace Kongverge.Services
         public KongAdminDryRun(
             IOptions<Settings> configuration,
             HttpClient httpClient,
-            IExtensionCollection extensionCollection,
-            PluginConverter converter) : base(configuration, httpClient, extensionCollection, converter)
+            IKongPluginCollection kongPluginCollection,
+            PluginConverter converter) : base(configuration, httpClient, kongPluginCollection, converter)
         {
         }
 

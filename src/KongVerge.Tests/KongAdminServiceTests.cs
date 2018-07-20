@@ -34,7 +34,7 @@ namespace KongVerge.Tests
                         StatusCode = HttpStatusCode.OK
                     });
 
-            var extensionCollection = new Mock<IExtensionCollection>();
+            var extensionCollection = new Mock<IKongPluginCollection>();
             var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
             var sut = new KongAdminService(_configuration, httpClient, extensionCollection.Object, null);
 
@@ -55,7 +55,7 @@ namespace KongVerge.Tests
                     StatusCode = HttpStatusCode.BadGateway
                 });
 
-            var extensionCollection = new Mock<IExtensionCollection>();
+            var extensionCollection = new Mock<IKongPluginCollection>();
             var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
             var sut = new KongAdminService(_configuration, httpClient, extensionCollection.Object, null);
 
@@ -72,7 +72,7 @@ namespace KongVerge.Tests
             //Arrange
             _fakeHttpMessageHandler.Setup(f => f.Send(It.IsAny<HttpRequestMessage>())).Throws<HttpRequestException>();
 
-            var extensionCollection = new Mock<IExtensionCollection>();
+            var extensionCollection = new Mock<IKongPluginCollection>();
             var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
             var sut = new KongAdminService(_configuration, httpClient, extensionCollection.Object, null);
 
@@ -110,7 +110,7 @@ namespace KongVerge.Tests
                 }
             };
 
-            var extensionCollection = new Mock<IExtensionCollection>();
+            var extensionCollection = new Mock<IKongPluginCollection>();
             var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
             var sut = new KongAdminService(_configuration, httpClient, extensionCollection.Object, null);
 

@@ -25,7 +25,7 @@ namespace KongVerge.Tests.Workflow
 
             public Mock<IDataFileHelper> DataFiles = new Mock<IDataFileHelper>();
             public Mock<IKongAdminService> KongService = new Mock<IKongAdminService>();
-            public Mock<IExtensionCollection> ExtensionCollection = new Mock<IExtensionCollection>();
+            public Mock<IKongPluginCollection> ExtensionCollection = new Mock<IKongPluginCollection>();
 
             public Settings Settings { get; }
             public KongvergeWorkflow Sut { get; }

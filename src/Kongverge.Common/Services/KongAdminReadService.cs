@@ -21,9 +21,9 @@ namespace Kongverge.Common.Services
         private readonly Settings _configuration;
         protected readonly HttpClient _httpClient;
         private readonly JsonSerializerSettings _settings;
-        private readonly IExtensionCollection _extensionCollection;
+        private readonly IKongPluginCollection _kongPluginCollection;
 
-        public KongAdminReadService(IOptions<Settings> configuration, HttpClient httpClient, IExtensionCollection extensionCollection, PluginConverter converter)
+        public KongAdminReadService(IOptions<Settings> configuration, HttpClient httpClient, IKongPluginCollection kongPluginCollection, PluginConverter converter)
         {
             _configuration = configuration.Value;
             _httpClient = httpClient;
@@ -34,7 +34,7 @@ namespace Kongverge.Common.Services
                 DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
                 Converters = converter != null ? new[] { converter } : null
             };
-            _extensionCollection = extensionCollection;
+            _kongPluginCollection = kongPluginCollection;
         }
 
         public async Task<bool> KongIsReachable()
@@ -129,14 +129,14 @@ namespace Kongverge.Common.Services
             {
                 if (serviceGroups.ContainsKey(service.Id))
                 {
-                    service.Extensions = serviceGroups[service.Id].Select(_extensionCollection.TranslateToConfig).ToList();
+                    service.Extensions = serviceGroups[service.Id].Select(_kongPluginCollection.TranslateToConfig).ToList();
                 }
 
                 foreach (var route in service.Routes ?? Enumerable.Empty<KongRoute>())
                 {
                     if (routeGroups.ContainsKey(route.Id))
                     {
-                        route.Extensions = routeGroups[route.Id].Select(_extensionCollection.TranslateToConfig).ToList();
+                        route.Extensions = routeGroups[route.Id].Select(_kongPluginCollection.TranslateToConfig).ToList();
                     }
                 }
             }

@@ -45,7 +45,7 @@ namespace Kongverge
 
             services.AddSingleton<PluginConverter>();
 
-            services.AddSingleton<IExtensionCollection>(s => new ExtensionCollection(s.GetServices<IKongPlugin>()));
+            services.AddSingleton<IKongPluginCollection>(s => new KongPluginCollection(s.GetServices<IKongPlugin>()));
 
             services.AddSingleton<IKongAdminReadService, KongAdminReadService>();
 

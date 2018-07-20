@@ -16,14 +16,14 @@ namespace Kongverge
     {
         new protected IKongAdminService _adminService;
         private readonly IDataFileHelper _fileHelper;
-        private readonly IExtensionCollection _extensionCollection;
+        private readonly IKongPluginCollection _kongPluginCollection;
 
-        public KongvergeWorkflow(IKongAdminService adminService, IDataFileHelper fileHelper, IOptions<Settings> configuration, IExtensionCollection extensionCollection)
+        public KongvergeWorkflow(IKongAdminService adminService, IDataFileHelper fileHelper, IOptions<Settings> configuration, IKongPluginCollection kongPluginCollection)
             : base(adminService, configuration)
         {
             _fileHelper = fileHelper;
             _adminService = adminService;
-            _extensionCollection = extensionCollection;
+            _kongPluginCollection = kongPluginCollection;
         }
 
         public override async Task<int> DoExecute()
@@ -172,13 +172,13 @@ namespace Kongverge
                 }
                 else if (change.Existing == null)
                 {
-                    var content = _extensionCollection.CreatePluginBody(change.Target);
+                    var content = _kongPluginCollection.CreatePluginBody(change.Target);
 
                     await _adminService.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
                 }
                 else if(!change.Target.IsExactMatch(change.Existing))
                 {
-                    var content = _extensionCollection.CreatePluginBody(change.Target);
+                    var content = _kongPluginCollection.CreatePluginBody(change.Target);
 
                     content.id = change.Existing.id;
 
