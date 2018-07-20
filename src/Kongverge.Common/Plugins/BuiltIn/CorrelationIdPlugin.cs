@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {
-    public class CorrelationIdPlugin : ExtensionBase<CorrelationIdConfig>
+    public class CorrelationIdPlugin : KongPluginBase<CorrelationIdConfig>
     {
         public CorrelationIdPlugin() : base("correlation")
         {

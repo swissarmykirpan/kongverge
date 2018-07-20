@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {
-    public class RequestTransformerAdvancedPlugin : ExtensionBase<RequestTransformerAdvancedConfig>
+    public class RequestTransformerAdvancedPlugin : KongPluginBase<RequestTransformerAdvancedConfig>
     {
         public RequestTransformerAdvancedPlugin() : base("request-transformer-advanced")
         {

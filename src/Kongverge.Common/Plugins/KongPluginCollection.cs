@@ -6,12 +6,12 @@ using Serilog;
 
 namespace Kongverge.Common.Plugins
 {
-    public class ExtensionCollection : IExtensionCollection
+    public class KongPluginCollection : IKongPluginCollection
     {
-        private readonly Dictionary<string, IExtension> _nameLookup;
-        private readonly Dictionary<Type, IExtension> _typeLookup;
+        private readonly Dictionary<string, IKongPlugin> _nameLookup;
+        private readonly Dictionary<Type, IKongPlugin> _typeLookup;
 
-        public ExtensionCollection(IEnumerable<IExtension> plugins)
+        public KongPluginCollection(IEnumerable<IKongPlugin> plugins)
         {
             _nameLookup = plugins.ToDictionary(p => p.PluginName, p => p);
             _typeLookup = plugins.ToDictionary(p => p.KongObjectType, p => p);

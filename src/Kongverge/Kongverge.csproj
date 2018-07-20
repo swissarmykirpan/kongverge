@@ -27,7 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kongverge.Common\Kongverge.Common.csproj" />
-    <ProjectReference Include="..\Kongverge.Extension\Kongverge.Extension.csproj" />
+    <ProjectReference Include="..\Kongverge.Extension\Kongverge.KongPlugin.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
