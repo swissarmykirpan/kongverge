@@ -3,7 +3,7 @@ using Kongverge.Extension;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {
-    public class KeyAuthenticationPlugin : ExtensionBase<KeyAuthenticationConfig>
+    public class KeyAuthenticationPlugin : KongPluginBase<KeyAuthenticationConfig>
     {
         public KeyAuthenticationPlugin() : base("key-auth")
         {

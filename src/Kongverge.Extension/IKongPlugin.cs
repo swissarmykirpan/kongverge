@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
 namespace Kongverge.Extension
 {
-    public interface IExtension
+    public interface IKongPlugin
     {
         string SectionName { get; }
 

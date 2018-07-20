@@ -10,12 +10,12 @@ namespace Kongverge.Common.Helpers
 {
     public class PluginConverter : JsonConverter
     {
-        public PluginConverter(IEnumerable<IExtension> parsers)
+        public PluginConverter(IEnumerable<IKongPlugin> parsers)
         {
             _parsers = parsers;
         }
 
-        private readonly IEnumerable<IExtension> _parsers;
+        private readonly IEnumerable<IKongPlugin> _parsers;
 
         public override bool CanConvert(Type objectType)
         {

@@ -38,7 +38,7 @@ namespace Kongverge.Validation
 
 
             services.AddSingleton<PluginConverter>();
-            services.AddSingleton<IExtensionCollection>(s => new ExtensionCollection(s.GetServices<IExtension>()));
+            services.AddSingleton<IKongPluginCollection>(s => new KongPluginCollection(s.GetServices<IKongPlugin>()));
 
 
             services.AddSingleton<HttpClient>();

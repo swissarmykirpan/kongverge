@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {
-    public class RateLimitingPlugin : ExtensionBase<RateLimitingConfig>
+    public class RateLimitingPlugin : KongPluginBase<RateLimitingConfig>
     {
         public RateLimitingPlugin() : base("rate-limit")
         {
