@@ -8,10 +8,10 @@ namespace Kongverge.Common.Plugins
 {
     public class ExtensionCollection : IExtensionCollection
     {
-        private readonly Dictionary<string, IExtension> _nameLookup;
-        private readonly Dictionary<Type, IExtension> _typeLookup;
+        private readonly Dictionary<string, IKongPlugin> _nameLookup;
+        private readonly Dictionary<Type, IKongPlugin> _typeLookup;
 
-        public ExtensionCollection(IEnumerable<IExtension> plugins)
+        public ExtensionCollection(IEnumerable<IKongPlugin> plugins)
         {
             _nameLookup = plugins.ToDictionary(p => p.PluginName, p => p);
             _typeLookup = plugins.ToDictionary(p => p.KongObjectType, p => p);

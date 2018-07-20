@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Kongverge.Common.Plugins.BuiltIn
 {
 
-    public class RequestTerminationPlugin : ExtensionBase<RequestTerminationConfig>
+    public class RequestTerminationPlugin : KongPluginBase<RequestTerminationConfig>
     {
         public RequestTerminationPlugin() : base("terminate")
         {

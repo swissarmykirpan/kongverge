@@ -24,7 +24,7 @@ namespace KongVerge.Tests.Serialization
 
         private readonly PluginConverter _converter =
             new PluginConverter(
-                new IExtension[] {
+                new IKongPlugin[] {
                     new TestParsingPlugin("test"),
                     new OtherTestParsingPlugin("other"),
                     new NestedTestParsingPlugin("nested")

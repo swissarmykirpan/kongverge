@@ -45,7 +45,7 @@ namespace Kongverge
 
             services.AddSingleton<PluginConverter>();
 
-            services.AddSingleton<IExtensionCollection>(s => new ExtensionCollection(s.GetServices<IExtension>()));
+            services.AddSingleton<IExtensionCollection>(s => new ExtensionCollection(s.GetServices<IKongPlugin>()));
 
             services.AddSingleton<IKongAdminReadService, KongAdminReadService>();
 
@@ -90,7 +90,7 @@ namespace Kongverge
 
         private static void AddPlugins(IServiceCollection services, IEnumerable<Assembly> assembliesToScan)
         {
-            var myInterface = typeof(IExtension);
+            var myInterface = typeof(IKongPlugin);
 
             var types =
                 assembliesToScan

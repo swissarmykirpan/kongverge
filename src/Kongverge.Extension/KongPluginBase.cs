@@ -2,10 +2,10 @@ using System;
 
 namespace Kongverge.Extension
 {
-    public abstract class ExtensionBase<TConfig> : IExtension
+    public abstract class KongPluginBase<TConfig> : IKongPlugin
         where TConfig : IKongPluginConfig
     {
-        protected ExtensionBase(string section)
+        protected KongPluginBase(string section)
         {
             SectionName = section;
         }

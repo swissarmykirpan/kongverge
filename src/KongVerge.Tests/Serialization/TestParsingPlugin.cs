@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace KongVerge.Tests.Serialization
 {
-    internal class TestParsingPlugin : ExtensionBase<TestKongConfig>
+    internal class TestParsingPlugin : KongPluginBase<TestKongConfig>
     {
         public TestParsingPlugin(string sectionName) : base(sectionName)
         {
@@ -28,7 +28,7 @@ namespace KongVerge.Tests.Serialization
         }
     }
 
-    internal class OtherTestParsingPlugin : ExtensionBase<OtherTestKongConfig>
+    internal class OtherTestParsingPlugin : KongPluginBase<OtherTestKongConfig>
     {
         public OtherTestParsingPlugin(string sectionName) : base(sectionName)
         {
@@ -53,7 +53,7 @@ namespace KongVerge.Tests.Serialization
         }
     }
 
-    internal class NestedTestParsingPlugin : ExtensionBase<NestedTestKongConfig>
+    internal class NestedTestParsingPlugin : KongPluginBase<NestedTestKongConfig>
     {
         public NestedTestParsingPlugin(string sectionName) : base(sectionName)
         {
