@@ -40,9 +40,7 @@ namespace Kongverge.Common.Helpers
                 Log.Error(ex, "Invalid Syntax in {filename}", filename);
                 throw;
             }
-
-            data.Service.Name = Path.GetFileNameWithoutExtension(filename);
-
+            
             return data;
         }
 
