@@ -25,7 +25,7 @@ namespace KongVerge.Tests.Workflow
 
             public Mock<IDataFileHelper> DataFiles = new Mock<IDataFileHelper>();
             public Mock<IKongAdminService> KongService = new Mock<IKongAdminService>();
-            public Mock<IKongPluginCollection> ExtensionCollection = new Mock<IKongPluginCollection>();
+            public Mock<IKongPluginCollection> KongPluginCollection = new Mock<IKongPluginCollection>();
 
             public Settings Settings { get; }
             public KongvergeWorkflow Sut { get; }
@@ -46,7 +46,7 @@ namespace KongVerge.Tests.Workflow
                     KongService.Object,
                     DataFiles.
                     Object, configuration.Object,
-                    ExtensionCollection.Object);
+                    KongPluginCollection.Object);
             }
         }
 
@@ -132,8 +132,8 @@ namespace KongVerge.Tests.Workflow
 
             var system = new KongvergeWorkflowSut();
 
-            system.ExtensionCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
-            system.ExtensionCollection.Setup(e => e.CreatePluginBody(plugin2)).Returns(body2);
+            system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
+            system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin2)).Returns(body2);
 
             await system.Sut.ConvergePlugins(targetService, service);
 
@@ -160,7 +160,7 @@ namespace KongVerge.Tests.Workflow
 
             var system = new KongvergeWorkflowSut();
 
-            system.ExtensionCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
+            system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
 
             await system.Sut.ConvergePlugins(targetService, service);
 

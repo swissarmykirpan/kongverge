@@ -34,9 +34,9 @@ namespace KongVerge.Tests
                         StatusCode = HttpStatusCode.OK
                     });
 
-            var extensionCollection = new Mock<IKongPluginCollection>();
+            var kongPluginCollection = new Mock<IKongPluginCollection>();
             var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
-            var sut = new KongAdminService(_configuration, httpClient, extensionCollection.Object, null);
+            var sut = new KongAdminService(_configuration, httpClient, kongPluginCollection.Object, null);
 
             //Act
             var result = await sut.KongIsReachable().ConfigureAwait(false);
@@ -55,9 +55,9 @@ namespace KongVerge.Tests
                     StatusCode = HttpStatusCode.BadGateway
                 });
 
-            var extensionCollection = new Mock<IKongPluginCollection>();
+            var kongPluginCollection = new Mock<IKongPluginCollection>();
             var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
-            var sut = new KongAdminService(_configuration, httpClient, extensionCollection.Object, null);
+            var sut = new KongAdminService(_configuration, httpClient, kongPluginCollection.Object, null);
 
             //Act
             var result = await sut.KongIsReachable().ConfigureAwait(false);
@@ -72,9 +72,9 @@ namespace KongVerge.Tests
             //Arrange
             _fakeHttpMessageHandler.Setup(f => f.Send(It.IsAny<HttpRequestMessage>())).Throws<HttpRequestException>();
 
-            var extensionCollection = new Mock<IKongPluginCollection>();
+            var kongPluginCollection = new Mock<IKongPluginCollection>();
             var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
-            var sut = new KongAdminService(_configuration, httpClient, extensionCollection.Object, null);
+            var sut = new KongAdminService(_configuration, httpClient, kongPluginCollection.Object, null);
 
             //Act
             var result = await sut.KongIsReachable().ConfigureAwait(false);
@@ -110,9 +110,9 @@ namespace KongVerge.Tests
                 }
             };
 
-            var extensionCollection = new Mock<IKongPluginCollection>();
+            var kongPluginCollection = new Mock<IKongPluginCollection>();
             var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
-            var sut = new KongAdminService(_configuration, httpClient, extensionCollection.Object, null);
+            var sut = new KongAdminService(_configuration, httpClient, kongPluginCollection.Object, null);
 
             //Act
             var result = await sut
