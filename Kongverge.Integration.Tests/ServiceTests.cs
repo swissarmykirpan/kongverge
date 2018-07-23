@@ -21,7 +21,6 @@ namespace Kongverge.Integration.Tests
         public ServiceTests(KongvergeTestFixture kongvergeTestFixture)
         {
             _fixture = kongvergeTestFixture;
-            _serviceToAdd.Name = $"testservice_{Guid.NewGuid().ToString()}";
         }
 
         [Fact]
