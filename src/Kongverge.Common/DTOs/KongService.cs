@@ -38,7 +38,7 @@ namespace Kongverge.Common.DTOs
         [JsonProperty("path")]
         public string Path { get; set; }
 
-        public IEnumerable<KongRoute> Routes { get; set; }
+        public IEnumerable<KongRoute> Routes { get; set; } = new List<KongRoute>();
 
         public bool Equals(KongService other)
         {
