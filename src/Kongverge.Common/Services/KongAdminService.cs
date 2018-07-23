@@ -17,8 +17,6 @@ namespace Kongverge.Common.Services
 {
     public class KongAdminService : KongAdminReadService, IKongAdminService
     {
-        private readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore };
-
         public KongAdminService(
             IOptions<Settings> configuration,
             HttpClient httpClient,
@@ -61,7 +59,8 @@ namespace Kongverge.Common.Services
 
         private StringContent ToJsonContent<T>(T service)
         {
-            var json = JsonConvert.SerializeObject(service, _jsonSettings);
+            var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+            var json = JsonConvert.SerializeObject(service, settings);
             return new StringContent(json, Encoding.UTF8, "application/json");
         }
 
