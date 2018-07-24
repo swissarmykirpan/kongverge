@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
@@ -17,8 +16,6 @@ namespace Kongverge.Common.Services
 {
     public class KongAdminService : KongAdminReadService, IKongAdminService
     {
-        private readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore };
-
         public KongAdminService(
             IOptions<Settings> configuration,
             HttpClient httpClient,
@@ -33,13 +30,13 @@ namespace Kongverge.Common.Services
         {
             var routes = service.Routes;
             service.Routes = null;
-            var content = ToJsonContent(service);
+            var content = KongJsonConvert.Serialize(service);
             service.Routes = routes;
 
             try
             {
                 var response = await _httpClient.PostAsync("/services/", content).ConfigureAwait(false);
-                bool success = response.StatusCode == HttpStatusCode.Created;
+                var success = response.StatusCode == HttpStatusCode.Created;
                 if (success)
                 {
                     var apiservice = JsonConvert.DeserializeObject<KongService>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
@@ -59,12 +56,6 @@ namespace Kongverge.Common.Services
             return KongAction.Failure<KongService>();
         }
 
-        private StringContent ToJsonContent<T>(T service)
-        {
-            var json = JsonConvert.SerializeObject(service, _jsonSettings);
-            return new StringContent(json, Encoding.UTF8, "application/json");
-        }
-
         public async Task<KongAction<KongService>> UpdateService(KongService service)
         {
             Log.Information("Updating service {name} to config {data}", service.Name, service);
@@ -72,7 +63,7 @@ namespace Kongverge.Common.Services
 
             var routes = service.Routes;
             service.Routes = null;
-            var content = ToJsonContent(service);
+            var content = KongJsonConvert.Serialize(service);
             service.Routes = routes;
             var request = new HttpRequestMessage(HttpMethod.Patch, requestUri) { Content = content };
 
@@ -108,13 +99,9 @@ namespace Kongverge.Common.Services
                 var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
 
                 if (response.StatusCode == HttpStatusCode.NoContent)
-                {
                     return KongAction.Success(service);
-                }
                 else
-                {
                     return KongAction.Failure<KongService>();
-                }
             }
             catch (Exception e)
             {
@@ -135,7 +122,7 @@ namespace Kongverge.Common.Services
     Protocols  : {protocols}",
                 route.Paths, route.Methods, route.Protocols);
 
-            var content = ToJsonContent(route);
+            var content = KongJsonConvert.Serialize(route);
 
             try
             {
@@ -190,7 +177,7 @@ namespace Kongverge.Common.Services
 
         public async Task<KongPluginResponse> UpsertPlugin(PluginBody plugin)
         {
-            var content = ToJsonContent(plugin);
+            var content = KongJsonConvert.Serialize(plugin);
 
             try
             {
