@@ -14,11 +14,6 @@ In order to define a route, e.g. forward requests to `/order/location` to the `o
 {
   "Service": {
     "name": "orderlocation",
-    "retries": 5,
-    "connect_timeout": 60000,
-    "write_timeout": 60000,
-    "read_timeout": 60000,
-    "validate-host": false,
     "host": "orderlocationapi.mycompany.com",
     "Routes": [
       {
