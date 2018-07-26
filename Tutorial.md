@@ -8,7 +8,7 @@ Kongverge is a tool to configure a kong server by moving its state into sync wit
 
 If I have e.g. a new Kong server at http://kong.mycompany.com with no routes. It is a default setup with the admin port `8001` open to me.
 
-I then make the following configuration file in a folder e.g. `c:\code\kongvergefiles\orderlocation.json`
+In order to define a route, e.g. forward requests to `/order/location` to the `orderlocationapi` I then make the following configuration file in a folder e.g. `c:\code\kongvergefiles\orderlocation.json`
 
 ````json
 {
@@ -29,7 +29,7 @@ I then make the following configuration file in a folder e.g. `c:\code\kongverge
     ]
   }
 }
-`````
+````
 
 And I run Kongverge: `dotnet run --host kong.mycompany.com --input "c:\code\kongvergefiles"`
 it will put the server into the state that the file specifies
