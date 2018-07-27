@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Kongverge.Extension;
+using Kongverge.KongPlugin;
 using Newtonsoft.Json;
 
 namespace Kongverge.Common.DTOs

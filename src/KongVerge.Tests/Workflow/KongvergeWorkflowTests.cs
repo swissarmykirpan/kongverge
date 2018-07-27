@@ -10,7 +10,7 @@ using Xunit;
 using AutoFixture;
 using Kongverge.Common.Plugins;
 using System.Linq;
-using Kongverge.Extension;
+using Kongverge.KongPlugin;
 using KongVerge.Tests.Serialization;
 
 namespace KongVerge.Tests.Workflow

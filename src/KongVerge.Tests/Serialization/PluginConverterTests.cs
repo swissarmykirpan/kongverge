@@ -2,10 +2,10 @@ using AutoFixture;
 using FluentAssertions;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
-using Kongverge.Extension;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using Kongverge.KongPlugin;
 using Xunit;
 
 namespace KongVerge.Tests.Serialization

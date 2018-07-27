@@ -1,4 +1,4 @@
-namespace Kongverge.Extension
+namespace Kongverge.KongPlugin
 {
     public interface IKongPluginConfig
     {

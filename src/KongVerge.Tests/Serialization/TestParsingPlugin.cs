@@ -1,5 +1,5 @@
-using Kongverge.Extension;
 using System.Linq;
+using Kongverge.KongPlugin;
 
 namespace KongVerge.Tests.Serialization
 {

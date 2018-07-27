@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
-using Kongverge.Extension;
+using Kongverge.KongPlugin;
 
 namespace Kongverge.Common.Services
 {
