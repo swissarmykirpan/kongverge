@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Kongverge.Extension;
+using Kongverge.KongPlugin;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {

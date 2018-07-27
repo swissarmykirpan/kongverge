@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Services;
-using Kongverge.Extension;
+using Kongverge.KongPlugin;
 using Kongverge.Validation.Helpers;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.AspNetCore;

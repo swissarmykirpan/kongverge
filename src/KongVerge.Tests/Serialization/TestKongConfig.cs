@@ -1,4 +1,4 @@
-using Kongverge.Extension;
+using Kongverge.KongPlugin;
 
 namespace KongVerge.Tests.Serialization
 {

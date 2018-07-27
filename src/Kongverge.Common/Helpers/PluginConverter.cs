@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kongverge.Common.DTOs;
-using Kongverge.Extension;
+using Kongverge.KongPlugin;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

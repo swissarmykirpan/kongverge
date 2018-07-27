@@ -1,4 +1,4 @@
-using Kongverge.Extension;
+using Kongverge.KongPlugin;
 using Newtonsoft.Json;
 
 namespace Kongverge.Common.Plugins.BuiltIn
