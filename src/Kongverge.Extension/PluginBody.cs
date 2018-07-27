@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Kongverge.Extension
+namespace Kongverge.KongPlugin
 {
     public class PluginBody
     {

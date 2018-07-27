@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Kongverge.Extension;
+using Kongverge.KongPlugin;
 using Newtonsoft.Json;
 
 namespace Kongverge.Common.DTOs

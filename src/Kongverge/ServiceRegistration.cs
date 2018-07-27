@@ -7,7 +7,7 @@ using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
 using Kongverge.Common.Plugins;
 using Kongverge.Common.Services;
-using Kongverge.Extension;
+using Kongverge.KongPlugin;
 using Kongverge.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

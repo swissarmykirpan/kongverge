@@ -1,6 +1,6 @@
 using System;
 
-namespace Kongverge.Extension
+namespace Kongverge.KongPlugin
 {
     public interface IKongPlugin
     {
