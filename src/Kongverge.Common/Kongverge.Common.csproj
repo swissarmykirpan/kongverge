@@ -8,6 +8,6 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Kongverge.Extension\Kongverge.KongPlugin.csproj" />
+    <ProjectReference Include="..\Kongverge.KongPlugin\Kongverge.KongPlugin.csproj" />
   </ItemGroup>
 </Project>
