@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Validation", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Common", "src\Kongverge.Common\Kongverge.Common.csproj", "{8DD88358-C5EF-4BA6-8A33-0E1EC3146197}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.KongPlugin", "src\Kongverge.Extension\Kongverge.KongPlugin.csproj", "{232B487B-A870-4541-B346-5B90F1B9E015}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{677082D4-0DEE-4A66-AE56-6FCB704D2B2C}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
@@ -22,7 +20,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Validation.Tests"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7781A389-5975-4D1D-B53D-D121ED676A07}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kongverge.Integration.Tests", "Kongverge.Integration.Tests\Kongverge.Integration.Tests.csproj", "{8C79895A-713A-485B-94A8-5D689A3453E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Integration.Tests", "Kongverge.Integration.Tests\Kongverge.Integration.Tests.csproj", "{8C79895A-713A-485B-94A8-5D689A3453E5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.KongPlugin", "src\Kongverge.KongPlugin\Kongverge.KongPlugin.csproj", "{F4DE63D3-9361-4648-8B9F-7E3ADEF20764}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,10 +46,6 @@ Global
 		{8DD88358-C5EF-4BA6-8A33-0E1EC3146197}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DD88358-C5EF-4BA6-8A33-0E1EC3146197}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DD88358-C5EF-4BA6-8A33-0E1EC3146197}.Release|Any CPU.Build.0 = Release|Any CPU
-		{232B487B-A870-4541-B346-5B90F1B9E015}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{232B487B-A870-4541-B346-5B90F1B9E015}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{232B487B-A870-4541-B346-5B90F1B9E015}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{232B487B-A870-4541-B346-5B90F1B9E015}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B1BBBAA9-08FC-4F00-9E06-2970801A719A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B1BBBAA9-08FC-4F00-9E06-2970801A719A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1BBBAA9-08FC-4F00-9E06-2970801A719A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -58,6 +54,10 @@ Global
 		{8C79895A-713A-485B-94A8-5D689A3453E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C79895A-713A-485B-94A8-5D689A3453E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C79895A-713A-485B-94A8-5D689A3453E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4DE63D3-9361-4648-8B9F-7E3ADEF20764}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4DE63D3-9361-4648-8B9F-7E3ADEF20764}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4DE63D3-9361-4648-8B9F-7E3ADEF20764}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4DE63D3-9361-4648-8B9F-7E3ADEF20764}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
