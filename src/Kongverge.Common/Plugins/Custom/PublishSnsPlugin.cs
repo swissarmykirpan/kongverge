@@ -15,15 +15,15 @@ namespace Kongverge.Common.Plugins.Custom
         {
             return new PublishSnsConfig
             {
-                Timeout = (int)pluginBody.config["timeout"],
-                KeepAlive = (int)pluginBody.config["keepalive"],
-                AwsKey = pluginBody.config["aws_key"].ToString(),
-                AwsSecret = pluginBody.config["aws_secret"].ToString(),
-                AwsRegion = pluginBody.config["aws_region"].ToString(),
-                AccountId = (int)pluginBody.config["account_id"],
-                ConsulUrl = pluginBody.config["consul_url"].ToString(),
-                TopicName = pluginBody.config["topic_name"].ToString(),
-                Environment = pluginBody.config["environment"].ToString()
+                Timeout = pluginBody.ReadConfigInt("timeout"),
+                KeepAlive = pluginBody.ReadConfigInt("keepalive"),
+                AwsKey = pluginBody.ReadConfigString("aws_key"),
+                AwsSecret = pluginBody.ReadConfigString("aws_secret"),
+                AwsRegion = pluginBody.ReadConfigString("aws_region"),
+                AccountId = pluginBody.ReadConfigInt("account_id"),
+                ConsulUrl = pluginBody.ReadConfigString("consul_url"),
+                TopicName = pluginBody.ReadConfigString("topic_name"),
+                Environment = pluginBody.ReadConfigString("environment")
             };
         }
 
