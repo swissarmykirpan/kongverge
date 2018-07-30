@@ -1,0 +1,22 @@
+
+{
+  "Service": {
+    "name": "kongupstreammocker",
+    "host": "kongupstreammocker-qa8.jalfrezi.je-labs.com",
+    "port": 80,
+    "protocol": "http",
+    "retries": 5,
+    "connect_timeout": 60000,
+    "write_timeout": 60000,
+    "read_timeout": 60000,
+    "validate-host": false,
+    "Routes": [
+      {
+        "protocols": [ "http", "https" ],
+        "paths": [ "/delay-0-200", "/delay-5-200", "/delay-5-201"],
+        "regex_priority": 0,
+        "strip_path": false
+      }
+    ]
+  }
+}
