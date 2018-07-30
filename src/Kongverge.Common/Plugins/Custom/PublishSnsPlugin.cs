@@ -15,16 +15,36 @@ namespace Kongverge.Common.Plugins.Custom
         {
             return new PublishSnsConfig
             {
-                Timeout = (int)pluginBody.config["timeout"],
-                KeepAlive = (int)pluginBody.config["keepalive"],
-                AwsKey = pluginBody.config["aws_key"].ToString(),
-                AwsSecret = pluginBody.config["aws_secret"].ToString(),
-                AwsRegion = pluginBody.config["aws_region"].ToString(),
-                AccountId = (int)pluginBody.config["account_id"],
-                ConsulUrl = pluginBody.config["consul_url"].ToString(),
-                TopicName = pluginBody.config["topic_name"].ToString(),
-                Environment = pluginBody.config["environment"].ToString()
+                Timeout = ReadConfigInt(pluginBody.config,"timeout"),
+                KeepAlive = ReadConfigInt(pluginBody.config, "keepalive"),
+                AwsKey = ReadConfigString(pluginBody.config, "aws_key"),
+                AwsSecret = ReadConfigString(pluginBody.config, "aws_secret"),
+                AwsRegion = ReadConfigString(pluginBody.config, "aws_region"),
+                AccountId = ReadConfigInt(pluginBody.config,"account_id"),
+                ConsulUrl = ReadConfigString(pluginBody.config, "consul_url"),
+                TopicName = ReadConfigString(pluginBody.config,"topic_name"),
+                Environment = ReadConfigString(pluginBody.config,"environment")
             };
+        }
+
+        private string ReadConfigString(IDictionary<string, object> config, string key)
+        {
+            if (config.ContainsKey(key))
+            {
+                return config[key]?.ToString();
+            }
+
+            return string.Empty;
+        }
+
+        private int ReadConfigInt(IDictionary<string, object> config, string key)
+        {
+            if (config.ContainsKey(key))
+            {
+                return (int)config[key];
+            }
+
+            return 0;
         }
 
         protected override PluginBody DoCreatePluginBody(PublishSnsConfig target)
