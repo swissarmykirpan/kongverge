@@ -1,4 +1,4 @@
-using Newtonsoft.Json.Linq;
+using System;
 
 namespace Kongverge.KongPlugin
 {
@@ -24,9 +24,14 @@ namespace Kongverge.KongPlugin
             return 0;
         }
 
-        public static string[] ExtractArrayFromBody(this PluginBody pluginBody, string configKey, string childKey)
+        public static string[] ReadConfigStringArray(this PluginBody pluginBody, string key)
         {
-            return ((JObject)pluginBody.config[configKey]).SafeCastJObjectProperty<string[]>(childKey) ?? new string[] { };
+            if (pluginBody.config.ContainsKey(key))
+            {
+                return ((string) pluginBody.config[key])?.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries) ?? new string[] { };
+            }
+
+            return new string[] { };
         }
     }
 }
