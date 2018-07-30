@@ -41,6 +41,16 @@ namespace Kongverge
             //Process Input Files
             var processedFiles = await ProcessFiles(existingServices, dataFiles).ConfigureAwait(false);
 
+            // Ensure global config has converged
+            if (existingGlobalConfig.Succeeded)
+            {
+                await ConvergePlugins(newGlobalConfig, existingGlobalConfig.Result);
+            }
+            else
+            {
+                Log.Error("Unable to get current global config");
+            }
+
             //Remove Missing Services
             var missingServices = existingServices
                 .Except(processedFiles)
@@ -49,15 +59,6 @@ namespace Kongverge
             if (missingServices.Count == 0)
             {
                 return ExitWithCode.Return(ExitCodes.Success);
-            }
-
-            if (existingGlobalConfig.Succeeded)
-            {
-                await ConvergePlugins(newGlobalConfig, existingGlobalConfig.Result);
-            }
-            else
-            {
-                Log.Error("Unable to get current global config");
             }
 
             await DeleteServicesMissingFromConfig(missingServices).ConfigureAwait(false);

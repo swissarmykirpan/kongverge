@@ -1,6 +1,6 @@
 {
   "correlation": {
-    "header_name": "Request-Id",
-    "generator":  "UUID"
+    "header": "Request-Id",
+    "template":  "UUID"
   }
 }

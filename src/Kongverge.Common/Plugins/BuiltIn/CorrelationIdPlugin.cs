@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Kongverge.KongPlugin;
+using Serilog;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {
@@ -11,12 +13,44 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         public override string PluginName => "correlation-id";
 
+        public Template ParseTemplate(object text)
+        {
+            switch (text.ToString())
+            {
+                case "uuid":
+                    return Template.UUID;
+                case "tracker":
+                    return Template.Tracker;
+                case "uuid#counter": //Cursed #
+                    return Template.Counter;
+                default:
+                    Log.Error("Invalid value for template: {text}", text);
+                    throw new InvalidOperationException("Invalid value for template");
+            }
+        }
+
+        public string SerializeTemplate(Template templ)
+        {
+            switch (templ)
+            {
+                case Template.UUID:
+                    return "uuid";
+                case Template.Tracker:
+                    return "tracker";
+                case Template.Counter:
+                    return "uuid#counter"; //Cursed #
+                default:
+                    Log.Error("Unable to write json for template value: {value}", templ);
+                    throw new InvalidOperationException("Invalid value for template");
+            }
+        }
+
         public override CorrelationIdConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new CorrelationIdConfig
             {
                 EchoDownstream = (bool)pluginBody.config["echo_downstream"],
-                Template = pluginBody.config["generator"].ToString(),
+                Template = ParseTemplate(pluginBody.config["generator"]),
                 Header = pluginBody.config["header_name"].ToString()
             };
         }
@@ -25,8 +59,8 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             return new PluginBody(PluginName, new Dictionary<string, object>
             {
-                {"echo_downstream", target.EchoDownstream },
-                { "generator", target.Template },
+                { "echo_downstream", target.EchoDownstream },
+                { "generator", SerializeTemplate(target.Template) },
                 { "header_name", target.Header }
             });
         }
