@@ -12,7 +12,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         public override string PluginName => "request-termination";
 
-        public override RequestTerminationConfig DoCreateConfigObject(PluginBody pluginBody)
+        protected override RequestTerminationConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new RequestTerminationConfig
             {
@@ -21,7 +21,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
             };
         }
 
-        public override PluginBody DoCreatePluginBody(RequestTerminationConfig target)
+        protected override PluginBody DoCreatePluginBody(RequestTerminationConfig target)
         {
             return new PluginBody(PluginName, new Dictionary<string, object>
             {
