@@ -1,9 +1,9 @@
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace Kongverge.Common.DTOs
 {
-
     public class KongConfiguration
     {
         [JsonProperty("plugins")]
@@ -40,18 +40,18 @@ namespace Kongverge.Common.DTOs
         public string Customer { get; set; }
 
         [JsonProperty("license_creation_date")]
-        public string Created { get; set; }
+        public DateTime Created { get; set; }
 
         [JsonProperty("product_subscription")]
         public string Product { get; set; }
 
         [JsonProperty("admin_seats")]
-        public string AdminSeats { get; set; }
+        public int AdminSeats { get; set; }
 
         [JsonProperty("support_plan")]
         public string SupportPlan { get; set; }
 
         [JsonProperty("license_expiration_date")]
-        public string Expires { get; set; }
+        public DateTime Expires { get; set; }
     }
 }
