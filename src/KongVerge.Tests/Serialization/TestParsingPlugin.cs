@@ -11,7 +11,7 @@ namespace KongVerge.Tests.Serialization
 
         public override string PluginName => throw new System.NotImplementedException();
 
-        public override TestKongConfig DoCreateConfigObject(PluginBody pluginBody)
+        protected override TestKongConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new TestKongConfig()
             {
@@ -19,7 +19,7 @@ namespace KongVerge.Tests.Serialization
             };
         }
 
-        public override PluginBody DoCreatePluginBody(TestKongConfig target)
+        protected override PluginBody DoCreatePluginBody(TestKongConfig target)
         {
             return new PluginBody(this.PluginName, new System.Collections.Generic.Dictionary<string, object>
             {
@@ -36,7 +36,7 @@ namespace KongVerge.Tests.Serialization
 
         public override string PluginName => throw new System.NotImplementedException();
 
-        public override OtherTestKongConfig DoCreateConfigObject(PluginBody pluginBody)
+        protected override OtherTestKongConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new OtherTestKongConfig()
             {
@@ -44,7 +44,7 @@ namespace KongVerge.Tests.Serialization
             };
         }
 
-        public override PluginBody DoCreatePluginBody(OtherTestKongConfig target)
+        protected override PluginBody DoCreatePluginBody(OtherTestKongConfig target)
         {
             return new PluginBody(this.PluginName, new System.Collections.Generic.Dictionary<string, object>
             {
@@ -61,7 +61,7 @@ namespace KongVerge.Tests.Serialization
 
         public override string PluginName => throw new System.NotImplementedException();
 
-        public override NestedTestKongConfig DoCreateConfigObject(PluginBody pluginBody)
+        protected override NestedTestKongConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new NestedTestKongConfig()
             {
@@ -70,7 +70,7 @@ namespace KongVerge.Tests.Serialization
             };
         }
 
-        public override PluginBody DoCreatePluginBody(NestedTestKongConfig target)
+        protected override PluginBody DoCreatePluginBody(NestedTestKongConfig target)
         {
             return new PluginBody(this.PluginName, new System.Collections.Generic.Dictionary<string, object>
             {

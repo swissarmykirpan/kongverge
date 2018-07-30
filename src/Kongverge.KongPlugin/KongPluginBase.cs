@@ -31,8 +31,8 @@ namespace Kongverge.KongPlugin
             return result;
         }
 
-        public abstract TConfig DoCreateConfigObject(PluginBody pluginBody);
+        protected abstract TConfig DoCreateConfigObject(PluginBody pluginBody);
 
-        public abstract PluginBody DoCreatePluginBody(TConfig target);
+        protected abstract PluginBody DoCreatePluginBody(TConfig target);
     }
 }

@@ -16,18 +16,19 @@ namespace Kongverge.Common.Services
 {
     public class KongAdminReadService : IKongAdminReadService
     {
-        private const string servicesRoute = "/services/";
-        private const string routesRoute = "/routes";
+        private const string ServicesRoute = "/services/";
+        private const string RoutesRoute = "/routes";
+        private const string ConfigurationRoute = "/";
         private readonly Settings _configuration;
-        protected readonly HttpClient _httpClient;
+        protected readonly HttpClient HttpClient;
         private readonly JsonSerializerSettings _settings;
         private readonly IKongPluginCollection _kongPluginCollection;
 
         public KongAdminReadService(IOptions<Settings> configuration, HttpClient httpClient, IKongPluginCollection kongPluginCollection, PluginConverter converter)
         {
             _configuration = configuration.Value;
-            _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri($"http://{_configuration.Admin.Host}:{_configuration.Admin.Port}");
+            HttpClient = httpClient;
+            HttpClient.BaseAddress = new Uri($"http://{_configuration.Admin.Host}:{_configuration.Admin.Port}");
 
             _settings = new JsonSerializerSettings
             {
@@ -41,7 +42,7 @@ namespace Kongverge.Common.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync("/").ConfigureAwait(false);
+                var response = await HttpClient.GetAsync("/").ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     Log.Error("ERROR: Unable to contact Kong: {host}:{port}", _configuration.Admin.Host, _configuration.Admin.Port);
@@ -57,15 +58,26 @@ namespace Kongverge.Common.Services
             return true;
         }
 
+        public async Task<KongConfiguration> GetConfiguration()
+        {
+            var response = await HttpClient.GetAsync(ConfigurationRoute).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+
+            var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var configurationResult = JsonConvert.DeserializeObject<KongConfiguration>(value);
+
+            return configurationResult;
+        }
+
         public async Task<List<KongService>> GetServices()
         {
             var services = new List<KongService>();
 
             var lastPage = false;
-            var requestUri = servicesRoute;
+            var requestUri = ServicesRoute;
             do
             {
-                var response = await _httpClient.GetAsync(requestUri).ConfigureAwait(false);
+                var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
 
                 var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -101,7 +113,7 @@ namespace Kongverge.Common.Services
             var requestUri = "/plugins";
             do
             {
-                var response = await _httpClient.GetAsync(requestUri).ConfigureAwait(false);
+                var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
 
                 response.EnsureSuccessStatusCode();
 
@@ -162,10 +174,10 @@ namespace Kongverge.Common.Services
         {
             var routes = new List<KongRoute>();
             var lastPage = false;
-            var requestUri = routesRoute;
+            var requestUri = RoutesRoute;
             do
             {
-                var response = await _httpClient.GetAsync(requestUri).ConfigureAwait(false);
+                var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
 
                 response.EnsureSuccessStatusCode();
 
@@ -193,7 +205,7 @@ namespace Kongverge.Common.Services
             var requestUri = $"/services/{serviceName}/routes";
             do
             {
-                var response = await _httpClient.GetAsync(requestUri).ConfigureAwait(false);
+                var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
 
                 response.EnsureSuccessStatusCode();
 

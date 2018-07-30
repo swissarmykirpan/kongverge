@@ -63,18 +63,5 @@ namespace Kongverge.Common.Helpers
         {
             return sequence ?? Enumerable.Empty<T>();
         }
-
-        public static T SafeCastJObjectProperty<T>(this JObject jObject, string property)
-        {
-            try
-            {
-                return jObject["headers"].ToObject<T>();
-            }
-            catch (Exception)
-            {
-            }
-
-            return default;
-        }
     }
 }

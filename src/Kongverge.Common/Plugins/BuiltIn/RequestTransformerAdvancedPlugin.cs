@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using Kongverge.Common.Helpers;
 using Kongverge.KongPlugin;
 using Newtonsoft.Json.Linq;
 
@@ -14,7 +12,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         public override string PluginName => "request-transformer-advanced";
 
-        public override RequestTransformerAdvancedConfig DoCreateConfigObject(PluginBody pluginBody)
+        protected override RequestTransformerAdvancedConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new RequestTransformerAdvancedConfig
             {
@@ -22,48 +20,43 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
                 Remove = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new HashSet<string>(ExtractArrayFromBody(pluginBody, "remove", "headers")),
-                    QueryString = new HashSet<string>(ExtractArrayFromBody(pluginBody, "remove", "querystring")),
-                    Body = new HashSet<string>(ExtractArrayFromBody(pluginBody, "remove", "body"))
+                    Headers = new HashSet<string>(pluginBody.ReadConfigStringArray("remove.headers")),
+                    QueryString = new HashSet<string>(pluginBody.ReadConfigStringArray("remove.querystring")),
+                    Body = new HashSet<string>(pluginBody.ReadConfigStringArray("remove.body"))
                 },
 
                 Replace = new RequestTransformerAdvancedTransformReplace
                 {
-                    Headers = new HashSet<string>(ExtractArrayFromBody(pluginBody, "replace", "headers")),
-                    QueryString = new HashSet<string>(ExtractArrayFromBody(pluginBody, "replace", "querystring")),
-                    Body = new HashSet<string>(ExtractArrayFromBody(pluginBody, "replace", "body")),
-                    Uri = ((JObject)pluginBody.config["replace"]).SafeCastJObjectProperty<string>("uri")
+                    Headers = new HashSet<string>(pluginBody.ReadConfigStringArray("replace.headers")),
+                    QueryString = new HashSet<string>(pluginBody.ReadConfigStringArray("replace.querystring")),
+                    Body = new HashSet<string>(pluginBody.ReadConfigStringArray("replace.body")),
+                    Uri = pluginBody.ReadConfigString("replace.uri")
                 },
 
                 Rename = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new HashSet<string>(ExtractArrayFromBody(pluginBody, "rename", "headers")),
-                    QueryString = new HashSet<string>(ExtractArrayFromBody(pluginBody, "rename", "querystring")),
-                    Body = new HashSet<string>(ExtractArrayFromBody(pluginBody, "rename", "body"))
+                    Headers = new HashSet<string>(pluginBody.ReadConfigStringArray("rename.headers")),
+                    QueryString = new HashSet<string>(pluginBody.ReadConfigStringArray("rename.querystring")),
+                    Body = new HashSet<string>(pluginBody.ReadConfigStringArray("rename.body"))
                 },
 
                 Add = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new HashSet<string>(ExtractArrayFromBody(pluginBody, "add", "headers")),
-                    QueryString = new HashSet<string>(ExtractArrayFromBody(pluginBody, "add", "querystring")),
-                    Body = new HashSet<string>(ExtractArrayFromBody(pluginBody, "add", "body"))
+                    Headers = new HashSet<string>(pluginBody.ReadConfigStringArray("add.headers")),
+                    QueryString = new HashSet<string>(pluginBody.ReadConfigStringArray("add.querystring")),
+                    Body = new HashSet<string>(pluginBody.ReadConfigStringArray("add.body"))
                 },
 
                 Append = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new HashSet<string>(ExtractArrayFromBody(pluginBody, "append", "headers")),
-                    QueryString = new HashSet<string>(ExtractArrayFromBody(pluginBody, "append", "querystring")),
-                    Body = new HashSet<string>(ExtractArrayFromBody(pluginBody, "append", "body"))
+                    Headers = new HashSet<string>(pluginBody.ReadConfigStringArray("append.headers")),
+                    QueryString = new HashSet<string>(pluginBody.ReadConfigStringArray("append.querystring")),
+                    Body = new HashSet<string>(pluginBody.ReadConfigStringArray("append.body"))
                 },
             };
         }
 
-        private static string[] ExtractArrayFromBody(PluginBody pluginBody, string configKey, string childKey)
-        {
-            return ((JObject) pluginBody.config[configKey]).SafeCastJObjectProperty<string[]>(childKey) ?? new string[]{};
-        }
-
-        public override PluginBody DoCreatePluginBody(RequestTransformerAdvancedConfig target)
+        protected override PluginBody DoCreatePluginBody(RequestTransformerAdvancedConfig target)
         {
             return new PluginBody(PluginName, new Dictionary<string, object>
             {

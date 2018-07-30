@@ -45,17 +45,17 @@ namespace Kongverge.Common.Plugins.BuiltIn
             }
         }
 
-        public override CorrelationIdConfig DoCreateConfigObject(PluginBody pluginBody)
+        protected override CorrelationIdConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new CorrelationIdConfig
             {
                 EchoDownstream = (bool)pluginBody.config["echo_downstream"],
-                Template = ParseTemplate(pluginBody.config["generator"]),
-                Header = pluginBody.config["header_name"].ToString()
+                Template = ParseTemplate(pluginBody.ReadConfigString("generator")),
+                Header = pluginBody.ReadConfigString("header_name")
             };
         }
 
-        public override PluginBody DoCreatePluginBody(CorrelationIdConfig target)
+        protected override PluginBody DoCreatePluginBody(CorrelationIdConfig target)
         {
             return new PluginBody(PluginName, new Dictionary<string, object>
             {
