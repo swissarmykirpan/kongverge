@@ -35,7 +35,7 @@ namespace Kongverge.Common.Services
 
             try
             {
-                var response = await _httpClient.PostAsync("/services/", content).ConfigureAwait(false);
+                var response = await HttpClient.PostAsync("/services/", content).ConfigureAwait(false);
                 var success = response.StatusCode == HttpStatusCode.Created;
                 if (success)
                 {
@@ -70,7 +70,7 @@ namespace Kongverge.Common.Services
 
             try
             {
-                var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+                var response = await HttpClient.SendAsync(request).ConfigureAwait(false);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var updated = JsonConvert.DeserializeObject<KongService>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
@@ -96,7 +96,7 @@ namespace Kongverge.Common.Services
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
             try
             {
-                var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+                var response = await HttpClient.SendAsync(request).ConfigureAwait(false);
 
                 if (response.StatusCode == HttpStatusCode.NoContent)
                     return KongAction.Success(service);
@@ -126,7 +126,7 @@ namespace Kongverge.Common.Services
 
             try
             {
-                var result = await _httpClient.PostAsync($"/services/{service.Id ?? service.Name}/routes", content).ConfigureAwait(false);
+                var result = await HttpClient.PostAsync($"/services/{service.Id ?? service.Name}/routes", content).ConfigureAwait(false);
                 if (result.StatusCode == HttpStatusCode.Created)
                 {
                     var addedRoute = JsonConvert.DeserializeObject<KongRoute>(await result.Content.ReadAsStringAsync().ConfigureAwait(false));
@@ -161,7 +161,7 @@ namespace Kongverge.Common.Services
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
             try
             {
-                var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+                var response = await HttpClient.SendAsync(request).ConfigureAwait(false);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception e)
@@ -181,7 +181,7 @@ namespace Kongverge.Common.Services
 
             try
             {
-                var response = await _httpClient.PutAsync("/plugins", content).ConfigureAwait(false);
+                var response = await HttpClient.PutAsync("/plugins", content).ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.Created
                     && response.StatusCode != HttpStatusCode.OK)
                 {
@@ -212,7 +212,7 @@ Error was:
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
             try
             {
-                var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+                var response = await HttpClient.SendAsync(request).ConfigureAwait(false);
                 Log.Information("Called delete for plugin {id}, result {response}", pluginId, response.StatusCode);
                 return response.IsSuccessStatusCode;
             }
