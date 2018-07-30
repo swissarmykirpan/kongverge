@@ -1,3 +1,5 @@
+using System;
+
 namespace Kongverge.KongPlugin
 {
     public static class PluginBodyExtensions
@@ -22,5 +24,14 @@ namespace Kongverge.KongPlugin
             return 0;
         }
 
+        public static string[] ReadConfigStringArray(this PluginBody pluginBody, string key)
+        {
+            if (pluginBody.config.ContainsKey(key))
+            {
+                return ((string) pluginBody.config[key])?.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries) ?? new string[] { };
+            }
+
+            return new string[] { };
+        }
     }
 }
