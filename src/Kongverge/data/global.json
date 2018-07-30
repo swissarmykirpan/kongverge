@@ -1,0 +1,6 @@
+{
+  "correlation": {
+    "header_name": "Request-Id",
+    "generator":  "UUID"
+  }
+}
