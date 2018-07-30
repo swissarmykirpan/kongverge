@@ -10,7 +10,8 @@ namespace Kongverge.Common.Plugins.Custom
         }
 
         public override string PluginName => "publish-sns";
-        public override PublishSnsConfig DoCreateConfigObject(PluginBody pluginBody)
+
+        protected  override PublishSnsConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new PublishSnsConfig
             {
@@ -26,7 +27,7 @@ namespace Kongverge.Common.Plugins.Custom
             };
         }
 
-        public override PluginBody DoCreatePluginBody(PublishSnsConfig target)
+        protected override PluginBody DoCreatePluginBody(PublishSnsConfig target)
         {
             var config = new Dictionary<string, object>
             {

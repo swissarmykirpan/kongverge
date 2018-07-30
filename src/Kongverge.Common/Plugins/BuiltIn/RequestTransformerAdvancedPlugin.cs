@@ -14,7 +14,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         public override string PluginName => "request-transformer-advanced";
 
-        public override RequestTransformerAdvancedConfig DoCreateConfigObject(PluginBody pluginBody)
+        protected override RequestTransformerAdvancedConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new RequestTransformerAdvancedConfig
             {
@@ -63,7 +63,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
             return ((JObject) pluginBody.config[configKey]).SafeCastJObjectProperty<string[]>(childKey) ?? new string[]{};
         }
 
-        public override PluginBody DoCreatePluginBody(RequestTransformerAdvancedConfig target)
+        protected override PluginBody DoCreatePluginBody(RequestTransformerAdvancedConfig target)
         {
             return new PluginBody(PluginName, new Dictionary<string, object>
             {

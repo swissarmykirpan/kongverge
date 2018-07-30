@@ -11,7 +11,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         public override string PluginName => "correlation-id";
 
-        public override CorrelationIdConfig DoCreateConfigObject(PluginBody pluginBody)
+        protected override CorrelationIdConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new CorrelationIdConfig
             {
@@ -21,7 +21,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
             };
         }
 
-        public override PluginBody DoCreatePluginBody(CorrelationIdConfig target)
+        protected override PluginBody DoCreatePluginBody(CorrelationIdConfig target)
         {
             return new PluginBody(PluginName, new Dictionary<string, object>
             {
