@@ -1,6 +1,5 @@
 using FluentAssertions;
 using Kongverge.Common.Plugins.Custom;
-using Kongverge.KongPlugin;
 using Xunit;
 
 namespace Kongverge.Common.Tests
@@ -13,7 +12,7 @@ namespace Kongverge.Common.Tests
             var configIn = new PublishSnsConfig();
             var plugin = new PublishSnsPlugin();
 
-            var configOut = RoundTripFromConfig(plugin, configIn);
+            var configOut = PluginHelpers.RoundTripFromConfig(plugin, configIn);
 
             configOut.IsExactMatch(configIn).Should().BeTrue();
         }
@@ -37,18 +36,9 @@ namespace Kongverge.Common.Tests
 
             var plugin = new PublishSnsPlugin();
 
-            var configOut = RoundTripFromConfig(plugin, configIn);
+            var configOut = PluginHelpers.RoundTripFromConfig(plugin, configIn);
 
             configOut.IsExactMatch(configIn).Should().BeTrue();
-        }
-
-        private static TConfig RoundTripFromConfig<TConfig>(
-            KongPluginBase<TConfig> plugin, PublishSnsConfig configIn)
-            where TConfig : IKongPluginConfig
-        {
-            var body = plugin.CreatePluginBody(configIn);
-
-            return (TConfig)plugin.CreateConfigObject(body);
         }
     }
 }
