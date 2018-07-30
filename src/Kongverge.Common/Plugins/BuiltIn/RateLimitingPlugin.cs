@@ -11,7 +11,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         public override string PluginName => "rate-limiting-advanced";
 
-        public override RateLimitingConfig DoCreateConfigObject(PluginBody pluginBody)
+        protected override RateLimitingConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new RateLimitingConfig
             {
@@ -21,7 +21,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
             };
         }
 
-        public override PluginBody DoCreatePluginBody(RateLimitingConfig target)
+        protected override PluginBody DoCreatePluginBody(RateLimitingConfig target)
         {
             return new PluginBody(PluginName, new Dictionary<string, object>
                     {
