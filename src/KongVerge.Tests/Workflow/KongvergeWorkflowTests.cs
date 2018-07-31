@@ -189,7 +189,7 @@ namespace KongVerge.Tests.Workflow
 
             var files = new List<KongDataFile>();
 
-            var system = SetupExtract(clusterConfig, fileConfig);
+            var system = SetupExecute_WithNoServiceChanges(clusterConfig, fileConfig);
 
             await system.Sut.DoExecute();
 
@@ -217,7 +217,7 @@ namespace KongVerge.Tests.Workflow
 
             var files = new List<KongDataFile>();
 
-            var system = SetupExtract(clusterConfig, fileConfig);
+            var system = SetupExecute_WithNoServiceChanges(clusterConfig, fileConfig);
 
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin)).Returns(body);
 
@@ -250,7 +250,7 @@ namespace KongVerge.Tests.Workflow
 
             var files = new List<KongDataFile>();
 
-            var system = SetupExtract(clusterConfig, fileConfig);
+            var system = SetupExecute_WithNoServiceChanges(clusterConfig, fileConfig);
 
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin)).Returns(body);
 
@@ -278,7 +278,7 @@ namespace KongVerge.Tests.Workflow
 
             var body = _fixture.Create<PluginBody>();
 
-            KongvergeWorkflowSut system = SetupExtract(clusterConfig, fileConfig);
+            KongvergeWorkflowSut system = SetupExecute_WithNoServiceChanges(clusterConfig, fileConfig);
 
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin)).Returns(body);
 
@@ -287,7 +287,7 @@ namespace KongVerge.Tests.Workflow
             system.KongService.Verify(kong => kong.DeletePlugin(plugin.id), Times.Once());
         }
 
-        private static KongvergeWorkflowSut SetupExtract(GlobalConfig clusterConfig, GlobalConfig fileConfig)
+        private static KongvergeWorkflowSut SetupExecute_WithNoServiceChanges(GlobalConfig clusterConfig, GlobalConfig fileConfig)
         {
             var files = new List<KongDataFile>();
 
