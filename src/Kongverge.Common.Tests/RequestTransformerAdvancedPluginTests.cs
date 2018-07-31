@@ -64,5 +64,11 @@ namespace Kongverge.Common.Tests
 
             configOut.IsExactMatch(configIn).Should().BeTrue();
         }
+
+        [Fact]
+        public void RoundTripFromBodyWithNoData()
+        {
+            PluginHelpers.RoundTripFromBodyTest(new RequestTransformerAdvancedPlugin());
+        }
     }
 }
