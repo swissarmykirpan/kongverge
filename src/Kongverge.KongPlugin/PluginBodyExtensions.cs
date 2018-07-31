@@ -37,7 +37,12 @@ namespace Kongverge.KongPlugin
 
                 if (obj is string)
                 {
-                    return string.Equals(obj as string, "true", StringComparison.OrdinalIgnoreCase);
+                    bool result;
+                    var parseSuccess = bool.TryParse(obj as string, out result);
+                    if (parseSuccess)
+                    {
+                        return result;
+                    }
                 }
             }
 
