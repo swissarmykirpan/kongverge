@@ -7,7 +7,7 @@ namespace Kongverge.Common.Tests
     public class CorrelationIdPluginTests
     {
         [Fact]
-        public void TestRoundTripStartingAtConfigWithNoFields()
+        public void RoundTripFromConfigWithNoFields()
         {
             var configIn = new CorrelationIdConfig();
             var plugin = new CorrelationIdPlugin();
@@ -18,7 +18,7 @@ namespace Kongverge.Common.Tests
         }
 
         [Fact]
-        public void TestRoundTripStartingAtConfigWithAllFields()
+        public void RoundTripFromConfigWithAllFields()
         {
             var configIn = new CorrelationIdConfig
             {
@@ -32,6 +32,12 @@ namespace Kongverge.Common.Tests
             var configOut = PluginHelpers.RoundTripFromConfig(plugin, configIn);
 
             configOut.IsExactMatch(configIn).Should().BeTrue();
+        }
+
+        [Fact]
+        public void RoundTripFromBodyWithNoData()
+        {
+            PluginHelpers.RoundTripFromBodyTest(new CorrelationIdPlugin());
         }
     }
 }
