@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using Kongverge.Common.Plugins.BuiltIn;
-using Kongverge.KongPlugin;
 using Xunit;
 
 namespace Kongverge.Common.Tests
@@ -69,13 +68,7 @@ namespace Kongverge.Common.Tests
         [Fact]
         public void RoundTripFromBodyWithNoData()
         {
-            var plugin = new RequestTransformerAdvancedPlugin();
-            var bodyIn = new PluginBody(plugin.PluginName, new Dictionary<string, object>());
-
-            var bodyOut = PluginHelpers.RoundTripFromBody(plugin, bodyIn);
-
-            bodyOut.Should().NotBeNull();
-            bodyOut.name.Should().Be(bodyIn.name);
+            PluginHelpers.RountTripFromBodyTest(new RequestTransformerAdvancedPlugin());
         }
     }
 }
