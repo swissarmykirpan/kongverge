@@ -9,9 +9,13 @@
     <None Remove="bin\Debug\netcoreapp2.1\data\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="data\global.json" />
     <None Remove="data\healthcheck.json" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="data\global.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="data\healthcheck.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

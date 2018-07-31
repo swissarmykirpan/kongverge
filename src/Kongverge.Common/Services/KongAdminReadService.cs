@@ -101,6 +101,13 @@ namespace Kongverge.Common.Services
 
         private async Task PopulatePluginInfo(List<KongService> services)
         {
+            List<PluginBody> plugins = await GetAllPlugins();
+
+            GroupPlugins(services, plugins);
+        }
+
+        private async Task<List<PluginBody>> GetAllPlugins()
+        {
             var plugins = new List<PluginBody>();
             var lastPage = false;
             var requestUri = "/plugins";
@@ -125,8 +132,7 @@ namespace Kongverge.Common.Services
                 }
 
             } while (!lastPage);
-
-            GroupPlugins(services, plugins);
+            return plugins;
         }
 
         private void GroupPlugins(List<KongService> services, List<PluginBody> plugins)
@@ -141,14 +147,14 @@ namespace Kongverge.Common.Services
             {
                 if (serviceGroups.ContainsKey(service.Id))
                 {
-                    service.Extensions = serviceGroups[service.Id].Select(_kongPluginCollection.TranslateToConfig).ToList();
+                    service.Extensions = TranslateToConfig(serviceGroups[service.Id]);
                 }
 
                 foreach (var route in service.Routes ?? Enumerable.Empty<KongRoute>())
                 {
                     if (routeGroups.ContainsKey(route.Id))
                     {
-                        route.Extensions = routeGroups[route.Id].Select(_kongPluginCollection.TranslateToConfig).ToList();
+                        route.Extensions = TranslateToConfig(routeGroups[route.Id]);
                     }
                 }
             }
@@ -219,6 +225,34 @@ namespace Kongverge.Common.Services
             } while (!lastPage);
 
             return routes;
+        }
+
+        public async Task<KongAction<GlobalConfig>> GetGlobalConfig()
+        {
+            try
+            {
+                List<PluginBody> plugins = await GetAllPlugins();
+
+                var globalPlugins = plugins.Where(p => null == (p.consumer_id ?? p.service_id ?? p.route_id));
+
+                return
+                    KongAction.Success(new GlobalConfig
+                    {
+                        Extensions = TranslateToConfig(globalPlugins)
+                    });
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Unable to get all plugins from Kong server");
+                throw;
+            }
+        }
+
+        private IList<IKongPluginConfig> TranslateToConfig(IEnumerable<PluginBody> plugins)
+        {
+            return plugins.Select(_kongPluginCollection.TranslateToConfig)
+                          .Where(p => p != null)
+                          .ToList();
         }
     }
 }
