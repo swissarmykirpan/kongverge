@@ -24,6 +24,17 @@ namespace Kongverge.KongPlugin
             return 0;
         }
 
+        public static bool ReadConfigBool(this PluginBody pluginBody, string key)
+        {
+            if (pluginBody.config.ContainsKey(key))
+            {
+                return (bool)pluginBody.config[key];
+            }
+
+            return false;
+        }
+
+
         public static string[] ReadConfigStringArray(this PluginBody pluginBody, string key)
         {
             if (pluginBody.config.ContainsKey(key))
