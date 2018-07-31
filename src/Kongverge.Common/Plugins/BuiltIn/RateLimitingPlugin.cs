@@ -15,9 +15,9 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             return new RateLimitingConfig
             {
-                Limit = (int)pluginBody.config["limit"],
-                Identifier = "ip",
-                WindowSize = (int)pluginBody.config["windows_size"]
+                Identifier = pluginBody.ReadConfigString("identifier"),
+                Limit = pluginBody.ReadConfigInt("limit"),
+                WindowSize = pluginBody.ReadConfigInt("window_size")
             };
         }
 
