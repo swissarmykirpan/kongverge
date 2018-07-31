@@ -166,5 +166,34 @@ namespace KongVerge.Tests.Workflow
 
             system.KongService.Verify(k => k.UpsertPlugin(body1), Times.Once());
         }
+
+        [Fact]
+        public async Task GlobalConfigRetrieved_AndConverged()
+        {
+            var clusterConfig = _fixture.Create<GlobalConfig>();
+            var fileConfig = _fixture.Create<GlobalConfig>();
+            var files = _fixture.Create<List<KongDataFile>>();
+
+            var system = new KongvergeWorkflowSut();
+
+            system.KongService
+                  .Setup(kong =>
+                            kong.GetGlobalConfig())
+                  .ReturnsAsync(KongAction.Success(clusterConfig))
+                  .Verifiable();
+
+            system.DataFiles
+                  .Setup(file =>
+                            file.GetDataFiles(
+                                It.IsAny<string>(),
+                                out files,
+                                out fileConfig))
+                  .Verifiable();
+
+            await system.Sut.DoExecute();
+
+            system.KongService.VerifyAll();
+            system.DataFiles.VerifyAll();
+        }
     }
 }

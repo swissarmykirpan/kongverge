@@ -31,5 +31,7 @@ _ReSharper*/
 .vscode
 .vs
 artifacts/
+.nyc_output/
+coverage/
 
 launchSettings.json
