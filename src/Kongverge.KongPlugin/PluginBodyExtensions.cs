@@ -26,12 +26,29 @@ namespace Kongverge.KongPlugin
 
         public static bool ReadConfigBool(this PluginBody pluginBody, string key)
         {
-            if (pluginBody.config.ContainsKey(key))
+            if (!pluginBody.config.ContainsKey(key))
             {
-                return (bool)pluginBody.config[key];
+                return false;
             }
 
-            return false;
+            var obj = pluginBody.config[key];
+            switch (obj)
+            {
+                case bool b:
+                    return b;
+
+                case string s:
+                    var parseSuccess = bool.TryParse(s, out var result);
+                    if (parseSuccess)
+                    {
+                        return result;
+                    }
+
+                    return false;
+
+                default:
+                    return false;
+            }
         }
 
 
