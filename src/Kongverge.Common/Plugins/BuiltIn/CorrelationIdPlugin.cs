@@ -9,7 +9,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
         }
 
-        public override string PluginName => "correlation-id";
+        public override string[] PluginNames => new []{"correlation-id"};
 
         protected override CorrelationIdConfig DoCreateConfigObject(PluginBody pluginBody)
         {
@@ -23,7 +23,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         protected override PluginBody DoCreatePluginBody(CorrelationIdConfig target)
         {
-            return new PluginBody(PluginName, new Dictionary<string, object>
+            return new PluginBody(PluginNames[0], new Dictionary<string, object>
             {
                 {"echo_downstream", target.EchoDownstream },
                 { "generator", target.Template },

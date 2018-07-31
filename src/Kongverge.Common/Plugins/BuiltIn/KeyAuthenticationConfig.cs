@@ -22,6 +22,10 @@ namespace Kongverge.Common.Plugins.BuiltIn
         public bool RunOnPreflight { get; set; } = true;
 
         public string id { get; set; }
+        public bool ChangeRequiresReplacing(IKongPluginConfig other)
+        {
+            return false;
+        }
 
         public bool IsExactMatch(IKongPluginConfig other)
         {

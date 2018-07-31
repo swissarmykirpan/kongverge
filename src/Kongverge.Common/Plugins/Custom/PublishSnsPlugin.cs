@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Kongverge.KongPlugin;
 
 namespace Kongverge.Common.Plugins.Custom
@@ -9,9 +10,9 @@ namespace Kongverge.Common.Plugins.Custom
         {
         }
 
-        public override string PluginName => "publish-sns";
+        public override string[] PluginNames => new []{"publish-sns"};
 
-        protected  override PublishSnsConfig DoCreateConfigObject(PluginBody pluginBody)
+        protected override PublishSnsConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new PublishSnsConfig
             {
@@ -42,7 +43,7 @@ namespace Kongverge.Common.Plugins.Custom
                 { "environment", target.Environment }
             };
 
-            return new PluginBody(PluginName, config);
+            return new PluginBody(PluginNames.First(), config);
         }
     }
 }

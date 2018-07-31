@@ -13,7 +13,9 @@ namespace Kongverge.Common.Plugins
 
         public KongPluginCollection(IEnumerable<IKongPlugin> plugins)
         {
-            _nameLookup = plugins.ToDictionary(p => p.PluginName, p => p);
+            _nameLookup = plugins.SelectMany(p => p.PluginNames.Select(name => new {name, plugin = p}))
+                                 .ToDictionary(p => p.name, p => p.plugin);
+
             _typeLookup = plugins.ToDictionary(p => p.KongObjectType, p => p);
         }
 

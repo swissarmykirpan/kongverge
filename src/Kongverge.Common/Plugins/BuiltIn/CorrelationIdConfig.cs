@@ -21,5 +21,9 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
             return false;
         }
+        public bool ChangeRequiresReplacing(IKongPluginConfig other)
+        {
+            return false;
+        }
     }
 }

@@ -16,12 +16,17 @@ namespace Kongverge.KongPlugin
 
         public static int ReadConfigInt(this PluginBody pluginBody, string key)
         {
+            return pluginBody.config.ContainsKey(key) ? Convert.ToInt32(pluginBody.config[key]) : 0;
+        }
+
+        public static bool ReadConfigBool(this PluginBody pluginBody, string key)
+        {
             if (pluginBody.config.ContainsKey(key))
             {
-                return (int)pluginBody.config[key];
+                return (bool)pluginBody.config[key];
             }
 
-            return 0;
+            return false;
         }
 
         public static string[] ReadConfigStringArray(this PluginBody pluginBody, string key)

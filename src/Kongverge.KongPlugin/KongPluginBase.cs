@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Kongverge.KongPlugin
 {
@@ -14,7 +15,7 @@ namespace Kongverge.KongPlugin
 
         public Type KongObjectType => typeof(TConfig);
 
-        public abstract string PluginName { get; }
+        public abstract string[] PluginNames { get; }
 
         public IKongPluginConfig CreateConfigObject(PluginBody pluginBody)
         {
@@ -27,7 +28,7 @@ namespace Kongverge.KongPlugin
             var result = DoCreatePluginBody(realTarget);
 
             // Make sure nobody forgets to set this.
-            result.name = PluginName;
+            result.name = result.name ?? PluginNames.First();
             return result;
         }
 

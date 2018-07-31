@@ -29,6 +29,11 @@ namespace Kongverge.Common.Plugins.Custom
 
         public string Environment { get; set; }
 
+        public bool ChangeRequiresReplacing(IKongPluginConfig other)
+        {
+            return false;
+        }
+
         public bool IsExactMatch(IKongPluginConfig other)
         {
             if (other is PublishSnsConfig otherConfig)
