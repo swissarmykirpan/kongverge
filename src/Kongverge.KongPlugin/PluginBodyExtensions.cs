@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 
 namespace Kongverge.KongPlugin
 {
@@ -27,26 +26,29 @@ namespace Kongverge.KongPlugin
 
         public static bool ReadConfigBool(this PluginBody pluginBody, string key)
         {
-            if (pluginBody.config.ContainsKey(key))
+            if (!pluginBody.config.ContainsKey(key))
             {
-                var obj = pluginBody.config[key];
-                if (obj is bool)
-                {
-                    return (bool)obj;
-                }
+                return false;
+            }
 
-                if (obj is string)
-                {
-                    bool result;
-                    var parseSuccess = bool.TryParse(obj as string, out result);
+            var obj = pluginBody.config[key];
+            switch (obj)
+            {
+                case bool _:
+                    return (bool)obj;
+
+                case string _:
+                    var parseSuccess = bool.TryParse(obj as string, out var result);
                     if (parseSuccess)
                     {
                         return result;
                     }
-                }
-            }
 
-            return false;
+                    return false;
+
+                default:
+                    return false;
+            }
         }
 
 
