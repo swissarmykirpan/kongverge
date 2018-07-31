@@ -9,7 +9,7 @@ namespace KongVerge.Tests.Serialization
 
         public bool IsExactMatch(IKongPluginConfig other)
         {
-            return false;
+            return object.ReferenceEquals(this, other);
         }
     }
 
@@ -20,7 +20,7 @@ namespace KongVerge.Tests.Serialization
 
         public bool IsExactMatch(IKongPluginConfig other)
         {
-            return false;
+            return object.ReferenceEquals(this, other);
         }
     }
 
@@ -34,7 +34,7 @@ namespace KongVerge.Tests.Serialization
 
         public bool IsExactMatch(IKongPluginConfig other)
         {
-            return false;
+            return object.ReferenceEquals(this, other);
         }
     }
 }

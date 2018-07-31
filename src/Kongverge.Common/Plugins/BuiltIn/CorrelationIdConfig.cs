@@ -1,11 +1,23 @@
+using System;
 using Kongverge.KongPlugin;
+using Newtonsoft.Json;
+using Serilog;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {
+    public enum Template
+    {
+        UUID,
+        Counter,
+        Tracker
+    }
+
     public class CorrelationIdConfig : IKongPluginConfig
     {
+        [JsonProperty("header")]
         public string Header { get; set; }
-        public string Template { get; set; }
+        [JsonProperty("template")]
+        public Template Template { get; set; }
         public bool EchoDownstream { get; set; }
 
         public string id { get; set; }

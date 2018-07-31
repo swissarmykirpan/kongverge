@@ -44,21 +44,41 @@ namespace Kongverge.Common.Helpers
             return data;
         }
 
-        public bool GetDataFiles(string dataPath, out List<KongDataFile> dataFiles)
+        public bool GetDataFiles(string dataPath, out List<KongDataFile> dataFiles, out GlobalConfig globalConfig)
         {
             try
             {
-                dataFiles = Directory.EnumerateFiles(dataPath, $"*{Settings.FileExtension}", SearchOption.AllDirectories)
+                dataFiles =
+                    Directory.EnumerateFiles(dataPath, $"*{Settings.FileExtension}", SearchOption.AllDirectories)
+                    .Where(d => !d.EndsWith(_configuration.GlobalConfigPath))
                     .Select(ParseFile)
                     .ToList();
+
+                globalConfig =
+                    ParseGlobalConfig(Path.Combine(dataPath, _configuration.GlobalConfigPath));
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "Error occurred while reading from {path}", dataPath);
                 dataFiles = new List<KongDataFile>();
+                globalConfig = new GlobalConfig();
                 return false;
             }
             return true;
+        }
+
+        private GlobalConfig ParseGlobalConfig(string path)
+        {
+            var text = File.ReadAllText(path);
+            try
+            {
+                return JsonConvert.DeserializeObject<GlobalConfig>(text, _settings);
+            }
+            catch (FormatException ex)
+            {
+                Log.Error(ex, "Invalid Syntax in global config file: {filename}", path);
+                throw;
+            }
         }
 
         public void WriteConfigFiles(List<KongService> existingServices)
