@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using FluentAssertions;
 using Kongverge.Common.Plugins.Custom;
+using Kongverge.KongPlugin;
 using Xunit;
 
 namespace Kongverge.Common.Tests
@@ -7,7 +9,7 @@ namespace Kongverge.Common.Tests
     public class PublishSnsPluginTests
     {
         [Fact]
-        public void TestRoundTripStartingAtConfigWithNoFields()
+        public void RoundTripFromConfigWithNoFields()
         {
             var configIn = new PublishSnsConfig();
             var plugin = new PublishSnsPlugin();
@@ -18,7 +20,7 @@ namespace Kongverge.Common.Tests
         }
 
         [Fact]
-        public void TestRoundTripStartingAtConfigWithAllFields()
+        public void RoundTripFromConfigWithAllFields()
         {
             var configIn = new PublishSnsConfig
             {
@@ -39,6 +41,18 @@ namespace Kongverge.Common.Tests
             var configOut = PluginHelpers.RoundTripFromConfig(plugin, configIn);
 
             configOut.IsExactMatch(configIn).Should().BeTrue();
+        }
+
+        [Fact]
+        public void RoundTripFromBodyWithNoData()
+        {
+            var plugin = new PublishSnsPlugin();
+            var bodyIn = new PluginBody(plugin.PluginName, new Dictionary<string, object>());
+
+            var bodyOut = PluginHelpers.RoundTripFromBody(plugin, bodyIn);
+
+            bodyOut.Should().NotBeNull();
+            bodyOut.name.Should().Be(bodyIn.name);
         }
     }
 }

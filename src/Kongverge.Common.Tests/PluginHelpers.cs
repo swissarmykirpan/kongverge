@@ -14,5 +14,12 @@ namespace Kongverge.Common.Tests
             return (TConfig)plugin.CreateConfigObject(body);
         }
 
+        public static PluginBody RoundTripFromBody<TConfig>(
+            KongPluginBase<TConfig> plugin, PluginBody body)
+            where TConfig : IKongPluginConfig
+        {
+            var config = (TConfig)plugin.CreateConfigObject(body);
+            return plugin.CreatePluginBody(config);
+        }
     }
 }
