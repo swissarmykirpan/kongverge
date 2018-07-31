@@ -13,13 +13,15 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         protected override KeyAuthenticationConfig DoCreateConfigObject(PluginBody pluginBody)
         {
+            var keyNames = pluginBody.ReadConfigString("key_names");
+
             return new KeyAuthenticationConfig
             {
-                KeyNames = new HashSet<string>(((string)pluginBody.config["key_names"]).Split(',')),
-                KeyInBody = (bool)pluginBody.config["key_in_body"],
-                Anonymous = (string) pluginBody.config["anonymous"],
-                RunOnPreflight = (bool) pluginBody.config["run_on_preflight"],
-                HideCredentials = (bool) pluginBody.config["hide_credentials"],
+                KeyNames = new HashSet<string>(keyNames.Split(',')),
+                KeyInBody = pluginBody.ReadConfigBool("key_in_body"),
+                Anonymous = pluginBody.ReadConfigString("anonymous"),
+                RunOnPreflight = pluginBody.ReadConfigBool("run_on_preflight"),
+                HideCredentials = pluginBody.ReadConfigBool("hide_credentials")
             };
         }
 

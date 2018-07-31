@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 
 namespace Kongverge.KongPlugin
 {
@@ -28,7 +29,21 @@ namespace Kongverge.KongPlugin
         {
             if (pluginBody.config.ContainsKey(key))
             {
-                return (bool)pluginBody.config[key];
+                var obj = pluginBody.config[key];
+                if (obj is bool)
+                {
+                    return (bool)obj;
+                }
+
+                if (obj is string)
+                {
+                    bool result;
+                    var parseSuccess = bool.TryParse(obj as string, out result);
+                    if (parseSuccess)
+                    {
+                        return result;
+                    }
+                }
             }
 
             return false;
