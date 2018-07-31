@@ -12,6 +12,7 @@ using Kongverge.Common.Plugins;
 using System.Linq;
 using Kongverge.KongPlugin;
 using KongVerge.Tests.Serialization;
+using AutoFixture.Kernel;
 
 namespace KongVerge.Tests.Workflow
 {
@@ -168,13 +169,133 @@ namespace KongVerge.Tests.Workflow
         }
 
         [Fact]
-        public async Task GlobalConfigRetrieved_AndConverged()
+        public async Task GlobalConfig_NoChangesIfMatch()
         {
-            var clusterConfig = _fixture.Create<GlobalConfig>();
-            var fileConfig = _fixture.Create<GlobalConfig>();
-            var files = _fixture.Create<List<KongDataFile>>();
+            var plugin = _fixture.Create<TestKongConfig>();
+
+            var clusterConfig = new GlobalConfig()
+            {
+                Extensions = new List<IKongPluginConfig>(){
+                    plugin
+                }
+            };
+
+            var fileConfig = new GlobalConfig()
+            {
+                Extensions = new List<IKongPluginConfig>(){
+                    plugin
+                }
+            };
+
+            var files = new List<KongDataFile>();
+
+            var system = SetupExtract(clusterConfig, fileConfig);
+
+            await system.Sut.DoExecute();
+
+            system.KongService.Verify(kong => kong.UpsertPlugin(It.IsAny<PluginBody>()), Times.Never());
+        }
+
+        [Fact]
+        public async Task GlobalConfig_AddsPluginGlobally()
+        {
+            var plugin = _fixture.Create<TestKongConfig>();
+
+            var clusterConfig = new GlobalConfig()
+            {
+                Extensions = new List<IKongPluginConfig>()
+            };
+
+            var fileConfig = new GlobalConfig()
+            {
+                Extensions = new List<IKongPluginConfig>(){
+                    plugin
+                }
+            };
+
+            var body = _fixture.Create<PluginBody>();
+
+            var files = new List<KongDataFile>();
+
+            var system = SetupExtract(clusterConfig, fileConfig);
+
+            system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin)).Returns(body);
+
+            await system.Sut.DoExecute();
+
+            system.KongService.Verify(kong => kong.UpsertPlugin(It.IsAny<PluginBody>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task GlobalConfig_UpdatesPluginGlobally()
+        {
+            var plugin = _fixture.Create<TestKongConfig>();
+            var plugin2 = _fixture.Create<TestKongConfig>();
+
+            var clusterConfig = new GlobalConfig()
+            {
+                Extensions = new List<IKongPluginConfig>(){
+                    plugin2
+                }
+            };
+
+            var fileConfig = new GlobalConfig()
+            {
+                Extensions = new List<IKongPluginConfig>(){
+                    plugin
+                }
+            };
+
+            var body = _fixture.Create<PluginBody>();
+
+            var files = new List<KongDataFile>();
+
+            var system = SetupExtract(clusterConfig, fileConfig);
+
+            system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin)).Returns(body);
+
+            await system.Sut.DoExecute();
+
+            system.KongService.Verify(kong => kong.UpsertPlugin(It.IsAny<PluginBody>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task GlobalConfig_RemovesPluginGlobally()
+        {
+            var plugin = _fixture.Create<TestKongConfig>();
+
+            var clusterConfig = new GlobalConfig()
+            {
+                Extensions = new List<IKongPluginConfig>(){
+                    plugin
+                }
+            };
+
+            var fileConfig = new GlobalConfig()
+            {
+                Extensions = new List<IKongPluginConfig>()
+            };
+
+            var body = _fixture.Create<PluginBody>();
+
+            KongvergeWorkflowSut system = SetupExtract(clusterConfig, fileConfig);
+
+            system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin)).Returns(body);
+
+            await system.Sut.DoExecute();
+
+            system.KongService.Verify(kong => kong.DeletePlugin(plugin.id), Times.Once());
+        }
+
+        private static KongvergeWorkflowSut SetupExtract(GlobalConfig clusterConfig, GlobalConfig fileConfig)
+        {
+            var files = new List<KongDataFile>();
 
             var system = new KongvergeWorkflowSut();
+
+            system.KongService
+                  .Setup(kong => kong.GetServices())
+                  .ReturnsAsync(new List<KongService>());
 
             system.KongService
                   .Setup(kong =>
@@ -188,12 +309,9 @@ namespace KongVerge.Tests.Workflow
                                 It.IsAny<string>(),
                                 out files,
                                 out fileConfig))
+                  .Returns(true)
                   .Verifiable();
-
-            await system.Sut.DoExecute();
-
-            system.KongService.VerifyAll();
-            system.DataFiles.VerifyAll();
+            return system;
         }
     }
 }
