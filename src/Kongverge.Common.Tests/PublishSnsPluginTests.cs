@@ -7,7 +7,7 @@ namespace Kongverge.Common.Tests
     public class PublishSnsPluginTests
     {
         [Fact]
-        public void TestRoundTripStartingAtConfigWithNoFields()
+        public void RoundTripFromConfigWithNoFields()
         {
             var configIn = new PublishSnsConfig();
             var plugin = new PublishSnsPlugin();
@@ -18,7 +18,7 @@ namespace Kongverge.Common.Tests
         }
 
         [Fact]
-        public void TestRoundTripStartingAtConfigWithAllFields()
+        public void RoundTripFromConfigWithAllFields()
         {
             var configIn = new PublishSnsConfig
             {
@@ -39,6 +39,12 @@ namespace Kongverge.Common.Tests
             var configOut = PluginHelpers.RoundTripFromConfig(plugin, configIn);
 
             configOut.IsExactMatch(configIn).Should().BeTrue();
+        }
+
+        [Fact]
+        public void RoundTripFromBodyWithNoData()
+        {
+            PluginHelpers.RoundTripFromBodyTest(new PublishSnsPlugin());
         }
     }
 }

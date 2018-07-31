@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Kongverge.KongPlugin;
-using Newtonsoft.Json.Linq;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {
@@ -16,7 +15,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             return new RequestTransformerAdvancedConfig
             {
-                HttpMethod = (string) pluginBody.config["http_method"],
+                HttpMethod = pluginBody.ReadConfigString("http_method"),
 
                 Remove = new RequestTransformerAdvancedTransformBase
                 {
@@ -52,7 +51,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
                     Headers = new HashSet<string>(pluginBody.ReadConfigStringArray("append.headers")),
                     QueryString = new HashSet<string>(pluginBody.ReadConfigStringArray("append.querystring")),
                     Body = new HashSet<string>(pluginBody.ReadConfigStringArray("append.body"))
-                },
+                }
             };
         }
 
