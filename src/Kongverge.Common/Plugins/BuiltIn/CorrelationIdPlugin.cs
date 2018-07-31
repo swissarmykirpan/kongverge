@@ -13,31 +13,31 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         public override string PluginName => "correlation-id";
 
-        public Template ParseTemplate(object text)
+        public CorrelationIdGenerator ParseTemplate(object text)
         {
             switch (text.ToString())
             {
                 case "uuid":
-                    return Template.UUID;
+                    return CorrelationIdGenerator.UUID;
                 case "tracker":
-                    return Template.Tracker;
+                    return CorrelationIdGenerator.Tracker;
                 case "uuid#counter": //Cursed #
-                    return Template.Counter;
+                    return CorrelationIdGenerator.Counter;
                 default:
                     Log.Error("Invalid value for template: {text}", text);
                     throw new InvalidOperationException("Invalid value for template");
             }
         }
 
-        public string SerializeTemplate(Template templ)
+        public string SerializeTemplate(CorrelationIdGenerator templ)
         {
             switch (templ)
             {
-                case Template.UUID:
+                case CorrelationIdGenerator.UUID:
                     return "uuid";
-                case Template.Tracker:
+                case CorrelationIdGenerator.Tracker:
                     return "tracker";
-                case Template.Counter:
+                case CorrelationIdGenerator.Counter:
                     return "uuid#counter"; //Cursed #
                 default:
                     Log.Error("Unable to write json for template value: {value}", templ);

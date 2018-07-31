@@ -5,7 +5,7 @@ using Serilog;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {
-    public enum Template
+    public enum CorrelationIdGenerator
     {
         UUID,
         Counter,
@@ -17,7 +17,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
         [JsonProperty("header")]
         public string Header { get; set; }
         [JsonProperty("template")]
-        public Template Template { get; set; }
+        public CorrelationIdGenerator Template { get; set; }
         public bool EchoDownstream { get; set; }
 
         public string id { get; set; }
