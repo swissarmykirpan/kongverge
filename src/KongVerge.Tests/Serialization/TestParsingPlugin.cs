@@ -9,7 +9,7 @@ namespace KongVerge.Tests.Serialization
         {
         }
 
-        public override string PluginName => throw new System.NotImplementedException();
+        public override string[] PluginNames => throw new System.NotImplementedException();
 
         protected override TestKongConfig DoCreateConfigObject(PluginBody pluginBody)
         {
@@ -21,7 +21,7 @@ namespace KongVerge.Tests.Serialization
 
         protected override PluginBody DoCreatePluginBody(TestKongConfig target)
         {
-            return new PluginBody(this.PluginName, new System.Collections.Generic.Dictionary<string, object>
+            return new PluginBody(this.PluginNames.First(), new System.Collections.Generic.Dictionary<string, object>
             {
                 {"Value", target.Value }
             });
@@ -34,7 +34,7 @@ namespace KongVerge.Tests.Serialization
         {
         }
 
-        public override string PluginName => throw new System.NotImplementedException();
+        public override string[] PluginNames => throw new System.NotImplementedException();
 
         protected override OtherTestKongConfig DoCreateConfigObject(PluginBody pluginBody)
         {
@@ -46,7 +46,7 @@ namespace KongVerge.Tests.Serialization
 
         protected override PluginBody DoCreatePluginBody(OtherTestKongConfig target)
         {
-            return new PluginBody(this.PluginName, new System.Collections.Generic.Dictionary<string, object>
+            return new PluginBody(this.PluginNames.First(), new System.Collections.Generic.Dictionary<string, object>
             {
                 {"Value", target.Value }
             });
@@ -59,7 +59,7 @@ namespace KongVerge.Tests.Serialization
         {
         }
 
-        public override string PluginName => throw new System.NotImplementedException();
+        public override string[] PluginNames => throw new System.NotImplementedException();
 
         protected override NestedTestKongConfig DoCreateConfigObject(PluginBody pluginBody)
         {
@@ -72,7 +72,7 @@ namespace KongVerge.Tests.Serialization
 
         protected override PluginBody DoCreatePluginBody(NestedTestKongConfig target)
         {
-            return new PluginBody(this.PluginName, new System.Collections.Generic.Dictionary<string, object>
+            return new PluginBody(this.PluginNames.First(), new System.Collections.Generic.Dictionary<string, object>
             {
                 {"Value", target.Value }
             });

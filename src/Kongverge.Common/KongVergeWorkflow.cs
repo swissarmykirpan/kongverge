@@ -187,6 +187,17 @@ namespace Kongverge
 
                     await _adminService.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
                 }
+                else if (change.Target.ChangeRequiresReplacing(change.Existing))
+                {
+                    var oldPluginBody = _kongPluginCollection.CreatePluginBody(change.Existing);
+                    var pluginBody = _kongPluginCollection.CreatePluginBody(change.Target);
+
+                    Log.Information("Replacing plugin \"{oldPlugin}\" with \"{newPlugin}\"", oldPluginBody.name, pluginBody.name);
+                    await _adminService.DeletePlugin(change.Existing.id).ConfigureAwait(false);
+
+                    await _adminService.UpsertPlugin(target.DecoratePluginBody(pluginBody)).ConfigureAwait(false);
+
+                }
                 else if(!change.Target.IsExactMatch(change.Existing))
                 {
                     var content = _kongPluginCollection.CreatePluginBody(change.Target);

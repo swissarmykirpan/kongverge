@@ -16,6 +16,11 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         public string id { get; set; }
 
+        public bool ChangeRequiresReplacing(IKongPluginConfig other)
+        {
+            return false;
+        }
+
         public bool IsExactMatch(IKongPluginConfig other)
         {
             if (other is RateLimitingConfig otherConfig)

@@ -3,6 +3,7 @@
 Thumbs.db
 
 #Ignore files build by Visual Studio
+.dotnetcli/
 *.obj
 *.exe
 *.pdb
@@ -31,8 +32,8 @@ _ReSharper*/
 .vscode
 .vs
 artifacts/
+*.ncrunchsolution
 .nyc_output/
 coverage/
 .dotnetcli/
-
 launchSettings.json

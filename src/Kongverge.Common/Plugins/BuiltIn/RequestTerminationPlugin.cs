@@ -10,7 +10,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
         }
 
-        public override string PluginName => "request-termination";
+        public override string[] PluginNames => new[]{"request-termination"};
 
         protected override RequestTerminationConfig DoCreateConfigObject(PluginBody pluginBody)
         {
@@ -23,7 +23,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         protected override PluginBody DoCreatePluginBody(RequestTerminationConfig target)
         {
-            return new PluginBody(PluginName, new Dictionary<string, object>
+            return new PluginBody(PluginNames[0], new Dictionary<string, object>
             {
                 {"message", target.Message },
                 {"status_code", target.StatusCode }

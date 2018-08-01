@@ -6,7 +6,7 @@ namespace Kongverge.KongPlugin
     {
         string SectionName { get; }
 
-        string PluginName { get; }
+        string[] PluginNames { get; }
 
         Type KongObjectType { get; }
 
