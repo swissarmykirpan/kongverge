@@ -29,7 +29,7 @@ namespace Kongverge.Common.Tests
             where TConfig : IKongPluginConfig
         {
             configData = configData ?? new Dictionary<string, object>();
-            var bodyIn = new PluginBody(plugin.PluginName, configData);
+            var bodyIn = new PluginBody(plugin.PluginNames[0], configData);
 
             var bodyOut = RoundTripFromBody(plugin, bodyIn);
 

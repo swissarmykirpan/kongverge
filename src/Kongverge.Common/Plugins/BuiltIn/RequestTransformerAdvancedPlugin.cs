@@ -9,7 +9,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
         }
 
-        public override string PluginName => "request-transformer-advanced";
+        public override string[] PluginNames => new []{"request-transformer-advanced"};
 
         protected override RequestTransformerAdvancedConfig DoCreateConfigObject(PluginBody pluginBody)
         {
@@ -57,7 +57,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         protected override PluginBody DoCreatePluginBody(RequestTransformerAdvancedConfig target)
         {
-            return new PluginBody(PluginName, new Dictionary<string, object>
+            return new PluginBody(PluginNames[0], new Dictionary<string, object>
             {
                 { "http_method", target.HttpMethod },
 

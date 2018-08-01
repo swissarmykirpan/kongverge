@@ -6,6 +6,10 @@ namespace KongVerge.Tests.Serialization
     {
         public string Value { get; set; }
         public string id { get; set; }
+        public bool ChangeRequiresReplacing(IKongPluginConfig other)
+        {
+            return false;
+        }
 
         public bool IsExactMatch(IKongPluginConfig other)
         {
@@ -22,6 +26,10 @@ namespace KongVerge.Tests.Serialization
         {
             return false;
         }
+        public bool ChangeRequiresReplacing(IKongPluginConfig other)
+        {
+            return false;
+        }
     }
 
     internal class NestedTestKongConfig : IKongPluginConfig
@@ -33,6 +41,10 @@ namespace KongVerge.Tests.Serialization
         public string id { get; set; }
 
         public bool IsExactMatch(IKongPluginConfig other)
+        {
+            return false;
+        }
+        public bool ChangeRequiresReplacing(IKongPluginConfig other)
         {
             return false;
         }

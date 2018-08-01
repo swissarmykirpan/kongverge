@@ -5,14 +5,8 @@ namespace Kongverge.Common.Plugins
 {
     public static class Plugins
     {
-        public static PluginBody Http
-        {
-            get
-            {
-                return new PluginBody("http-log", new Dictionary<string, object>{
-                    {"test", 1 }
-                });
-            }
-        }
+        public static PluginBody Http => new PluginBody("http-log", new Dictionary<string, object>{
+            {"test", 1 }
+        });
     }
 }
