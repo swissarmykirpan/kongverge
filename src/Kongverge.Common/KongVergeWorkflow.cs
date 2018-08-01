@@ -29,9 +29,10 @@ namespace Kongverge
         public override async Task<int> DoExecute()
         {
             var existingServices = await _adminService.GetServices().ConfigureAwait(false);
+            var existingGlobalConfig = await _adminService.GetGlobalConfig().ConfigureAwait(false);
 
             Log.Information("Reading files from {input}", _configuration.InputFolder);
-            var success = _fileHelper.GetDataFiles(_configuration.InputFolder, out var dataFiles);
+            var success = _fileHelper.GetDataFiles(_configuration.InputFolder, out var dataFiles, out var newGlobalConfig);
             if (!success)
             {
                 return ExitWithCode.Return(ExitCodes.InputFolderUnreachable);
@@ -39,6 +40,16 @@ namespace Kongverge
 
             //Process Input Files
             var processedFiles = await ProcessFiles(existingServices, dataFiles).ConfigureAwait(false);
+
+            // Ensure global config has converged
+            if (existingGlobalConfig.Succeeded)
+            {
+                await ConvergePlugins(newGlobalConfig, existingGlobalConfig.Result);
+            }
+            else
+            {
+                Log.Error("Unable to get current global config");
+            }
 
             //Remove Missing Services
             var missingServices = existingServices

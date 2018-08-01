@@ -5,13 +5,13 @@ using Xunit;
 
 namespace Kongverge.Common.Tests
 {
-    public class CorrelationIdPluginTests
+    public class KeyAuthenticationPluginTests
     {
         [Fact]
         public void RoundTripFromConfigWithNoFields()
         {
-            var configIn = new CorrelationIdConfig();
-            var plugin = new CorrelationIdPlugin();
+            var configIn = new KeyAuthenticationConfig();
+            var plugin = new KeyAuthenticationPlugin();
 
             var configOut = PluginHelpers.RoundTripFromConfig(plugin, configIn);
 
@@ -21,14 +21,16 @@ namespace Kongverge.Common.Tests
         [Fact]
         public void RoundTripFromConfigWithAllFields()
         {
-            var configIn = new CorrelationIdConfig
+            var configIn = new KeyAuthenticationConfig
             {
-                EchoDownstream = true,
-                Header = "hdr",
-                id = "someId",
-                Template = CorrelationIdGenerator.Counter
+                id = "corr_id",
+                Anonymous = "nobody",
+                HideCredentials = true,
+                KeyInBody = true,
+                RunOnPreflight = true,
+                KeyNames = new HashSet<string> { "foo", "bar", "fish" }
             };
-            var plugin = new CorrelationIdPlugin();
+            var plugin = new KeyAuthenticationPlugin();
 
             var configOut = PluginHelpers.RoundTripFromConfig(plugin, configIn);
 
@@ -38,10 +40,7 @@ namespace Kongverge.Common.Tests
         [Fact]
         public void RoundTripFromBodyWithNoData()
         {
-            // Have to provide at least the generator
-            PluginHelpers.RoundTripFromBodyTest(new CorrelationIdPlugin(), new Dictionary<string, object>{
-                { "generator", "uuid" }
-            });
+            PluginHelpers.RoundTripFromBodyTest(new KeyAuthenticationPlugin());
         }
     }
 }

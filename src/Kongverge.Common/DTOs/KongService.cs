@@ -107,9 +107,6 @@ namespace Kongverge.Common.DTOs
             return body;
         }
 
-        public bool ShouldSerializeValidateHost()
-        {
-            return false;
-        }
+        public bool ShouldSerializeValidateHost => false;
     }
 }

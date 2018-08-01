@@ -1,6 +1,7 @@
 
 #ignore thumbnails created by windows
 Thumbs.db
+
 #Ignore files build by Visual Studio
 .dotnetcli/
 *.obj
@@ -32,4 +33,7 @@ _ReSharper*/
 .vs
 artifacts/
 *.ncrunchsolution
-
+.nyc_output/
+coverage/
+.dotnetcli/
+launchSettings.json

@@ -1,17 +1,16 @@
-using System.Collections.Generic;
 using FluentAssertions;
 using Kongverge.Common.Plugins.BuiltIn;
 using Xunit;
 
 namespace Kongverge.Common.Tests
 {
-    public class CorrelationIdPluginTests
+    public class RateLimitingPluginPluginTests
     {
         [Fact]
         public void RoundTripFromConfigWithNoFields()
         {
-            var configIn = new CorrelationIdConfig();
-            var plugin = new CorrelationIdPlugin();
+            var configIn = new RateLimitingConfig();
+            var plugin = new RateLimitingPlugin();
 
             var configOut = PluginHelpers.RoundTripFromConfig(plugin, configIn);
 
@@ -21,14 +20,14 @@ namespace Kongverge.Common.Tests
         [Fact]
         public void RoundTripFromConfigWithAllFields()
         {
-            var configIn = new CorrelationIdConfig
+            var configIn = new RateLimitingConfig
             {
-                EchoDownstream = true,
-                Header = "hdr",
-                id = "someId",
-                Template = CorrelationIdGenerator.Counter
+                id = "corr_id",
+                Identifier = "rat rat rat",
+                Limit = 42,
+                WindowSize = 1234
             };
-            var plugin = new CorrelationIdPlugin();
+            var plugin = new RateLimitingPlugin();
 
             var configOut = PluginHelpers.RoundTripFromConfig(plugin, configIn);
 
@@ -38,10 +37,7 @@ namespace Kongverge.Common.Tests
         [Fact]
         public void RoundTripFromBodyWithNoData()
         {
-            // Have to provide at least the generator
-            PluginHelpers.RoundTripFromBodyTest(new CorrelationIdPlugin(), new Dictionary<string, object>{
-                { "generator", "uuid" }
-            });
+            PluginHelpers.RoundTripFromBodyTest(new RateLimitingPlugin());
         }
     }
 }
