@@ -6,13 +6,18 @@ namespace Kongverge.Common.Plugins.Custom
     public class JeTcpLogConfig : IKongPluginConfig
     {
         public int Timeout { get; set; }
+
         public int KeepAlive { get; set; }
+
         [JsonProperty("host")]
         public string Host { get; set; }
+
         [JsonProperty("port")]
         public int Port { get; set; }
+
         [JsonProperty("log_body")]
         public bool LogBody { get; set; }
+
         [JsonProperty("max_body_size")]
         public int MaxBodySize { get; set; } = 65536;
         
@@ -30,6 +35,7 @@ namespace Kongverge.Common.Plugins.Custom
             }
             return false;
         }
+
         public string id { get; set; }
     }
 }

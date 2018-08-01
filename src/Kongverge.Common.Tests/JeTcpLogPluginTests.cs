@@ -14,6 +14,7 @@ namespace Kongverge.Common.Tests
             var configOut = PluginHelpers.RoundTripFromConfig(plugin, configIn);
             configOut.IsExactMatch(configIn).Should().BeTrue();
         }
+
         [Fact]
         public void TestRoundTripStartingAtConfigWithAllFields()
         {
@@ -31,6 +32,7 @@ namespace Kongverge.Common.Tests
             var configOut = PluginHelpers.RoundTripFromConfig(plugin, configIn);
             configOut.IsExactMatch(configIn).Should().BeTrue();
         }
+
         [Fact]
         public void RoundTripFromBodyWithNoData()
         {
