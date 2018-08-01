@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FluentAssertions;
 using Kongverge.Common.Plugins.BuiltIn;
 using Xunit;
@@ -25,7 +26,7 @@ namespace Kongverge.Common.Tests
                 EchoDownstream = true,
                 Header = "hdr",
                 id = "someId",
-                Template = "temp"
+                Template = CorrelationIdGenerator.Counter
             };
             var plugin = new CorrelationIdPlugin();
 
@@ -37,7 +38,10 @@ namespace Kongverge.Common.Tests
         [Fact]
         public void RoundTripFromBodyWithNoData()
         {
-            PluginHelpers.RoundTripFromBodyTest(new CorrelationIdPlugin());
+            // Have to provide at least the generator
+            PluginHelpers.RoundTripFromBodyTest(new CorrelationIdPlugin(), new Dictionary<string, object>{
+                { "generator", "uuid" }
+            });
         }
     }
 }
