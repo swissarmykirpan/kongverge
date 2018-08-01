@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Kongverge.Common.Tests
 {
-    public class JeTcpLogPluginTests
+    public class JeUdpLogPluginTests
     {
         [Fact]
         public void TestRoundTripStartingAtConfigWithNoFields()
