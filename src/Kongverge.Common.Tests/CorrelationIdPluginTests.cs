@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using Kongverge.Common.Plugins.BuiltIn;
+using Kongverge.KongPlugin;
 using Xunit;
 
 namespace Kongverge.Common.Tests
@@ -35,13 +36,16 @@ namespace Kongverge.Common.Tests
             configOut.IsExactMatch(configIn).Should().BeTrue();
         }
 
+
         [Fact]
         public void RoundTripFromBodyWithNoData()
         {
             // Have to provide at least the generator
-            PluginHelpers.RoundTripFromBodyTest(new CorrelationIdPlugin(), new Dictionary<string, object>{
+            var bodyOut = PluginHelpers.RoundTripFromBodyTest(new CorrelationIdPlugin(), new Dictionary<string, object>{
                 { "generator", "uuid" }
             });
+
+            bodyOut.ReadConfigString("generator").Should().Be("uuid");
         }
     }
 }

@@ -39,6 +39,5 @@ namespace Kongverge.Common.Tests
             // Have to provide at least the generator
             PluginHelpers.RoundTripFromBodyTest(new RequestTerminationPlugin());
         }
-
     }
 }
