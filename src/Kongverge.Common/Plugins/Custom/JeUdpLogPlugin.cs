@@ -5,11 +5,11 @@ namespace Kongverge.Common.Plugins.Custom
 {
     public class JeUdpLogPlugin : KongPluginBase<JeUdpLogConfig>
     {
-        public JeUdpLogPlugin() : base("je-tcp-log")
+        public JeUdpLogPlugin() : base("je-udp-log")
         {
         }
 
-        public override string PluginName => "je-tcp-log";
+        public override string PluginName => "je-udp-log";
 
         protected override JeUdpLogConfig DoCreateConfigObject(PluginBody pluginBody)
         {
