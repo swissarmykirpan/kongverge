@@ -8,13 +8,14 @@ namespace Kongverge.KongPlugin
         protected KongPluginBase(string section)
         {
             SectionName = section;
+            PluginName = section;
         }
 
         public string SectionName { get; }
 
         public Type KongObjectType => typeof(TConfig);
 
-        public abstract string PluginName { get; }
+        public virtual string PluginName { get; set; }
 
         public IKongPluginConfig CreateConfigObject(PluginBody pluginBody)
         {
