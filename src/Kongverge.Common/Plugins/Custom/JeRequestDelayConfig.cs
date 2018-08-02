@@ -5,15 +5,15 @@ namespace Kongverge.Common.Plugins.Custom
 {
     public class JeRequestDelayConfig : IKongPluginConfig
     {
-        [JsonProperty("delay")]
-        public int DelayMillis { get; set; }
+        [JsonProperty("delay-ms")]
+        public int DelayMs { get; set; }
 
         public bool IsExactMatch(IKongPluginConfig other)
         {
             if (other is JeRequestDelayConfig otherConfig)
             {
                 return
-                    DelayMillis == otherConfig.DelayMillis;
+                    DelayMs == otherConfig.DelayMs;
             }
             return false;
         }

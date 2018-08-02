@@ -21,7 +21,7 @@ namespace Kongverge.Common.Tests
             var configIn = new JeRequestDelayConfig()
             {
                 id = "test1",
-                DelayMillis = 100
+                DelayMs = 100
             };
             var plugin = new JeRequestDelayPlugin();
             var configOut = PluginHelpers.RoundTripFromConfig(plugin, configIn);
