@@ -12,12 +12,12 @@ Kongverge uses several DTOs to read from files and write to Kong (and vice versa
 
 These objects also handle matching - i.e. reconciling the state described by files with the state in Kong, and performing actions in Kong as needed to make them the same. The possible cases for these objects are:
 
-* Existing unchanged; no action is required.
-* Changed; action is required to update it in place.
-* New; the object needs to be added.
-* Deleted; the object needs to be removed.
+* Unchanged; no action is required on an existing object. The object in Kong is identical to the object in config.
+* Changed; the object in Kong is matched with an object in config, but not all of the properties are the same. Action is required to update the object in place.
+* New; the object needs to be added to Kong.
+* Deleted; the object needs to be removed from Kong.
 
-Kong's plugin model is more complex, as each plugin has its own set of properties used to configure it.  Therefor each Kong plugin has it's own classes,
+Kong's plugin model is more complex, as each plugin has its own set of properties used to configure it.  Therefore each Kong plugin has it's own classes,
 for config and serialisation, which inherit from `KongPluginBase<TConfig>` and `IKongPluginConfig`. These have to match what is read from Kong and from file.
 
 e.g. the Plugin `rate-limiting-advanced` has classes `RateLimitingPlugin` and `RateLimitingConfig`.
