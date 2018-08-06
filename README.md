@@ -12,7 +12,7 @@ Kongverge uses several DTOs to read from files and write to Kong (and vice versa
 
 These objects also handle matching - i.e. reconciling the state described by files with the state in Kong, and performing actions in Kong as needed to make them the same. The possible cases for these objects are:
 
-* Unchanged; no action is required on an existing object. The object in Kong is identical to the object in config.
+* Unchanged; The object in Kong is identical to the object in config, so no action is required.
 * Changed; the object in Kong is matched with an object in config, but not all of the properties are the same. Action is required to update the object in place.
 * New; the object needs to be added to Kong.
 * Deleted; the object needs to be removed from Kong.
@@ -24,4 +24,4 @@ e.g. the Plugin `rate-limiting-advanced` has classes `RateLimitingPlugin` and `R
 
 The C# objects describe the serialisation, matching and update of a Kong plugin. The plugin itself is lua code. If you want new plugin functionality, you will need to write lua to do the plugin's work. To get Kongverge to handle it, you then make sure that the C# object correctly serialises and updates it.
 
-For documentation on the plugin's fields and how they work, you can generally refer to the plugin's documentation on the Kong site if it's a standard plugin. E.g. [Rate Limiting Advanced Plugin Configuration Parameters](https://docs.konghq.com/enterprise/0.31-x/plugins/rate-limiting/#configuration-parameters)
+For documentation on the plugin's fields and how they work, you can generally refer to the plugin's documentation on the Kong site if it's a standard plugin. E.g. [Rate Limiting Advanced Plugin Configuration Parameters](https://docs.konghq.com/enterprise/0.31-x/plugins/rate-limiting/#configuration-parameters).
