@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using Kongverge.Common;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
 using Kongverge.Common.Plugins;
@@ -49,7 +50,7 @@ namespace Kongverge
 
             services.AddSingleton<IKongAdminReadService, KongAdminReadService>();
 
-            services.AddSingleton<IKongAdminService>(s =>
+            services.AddSingleton<IKongAdminWriteService>(s =>
             {
                 var config = s.GetService<IOptions<Settings>>();
 

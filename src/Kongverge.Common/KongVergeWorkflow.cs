@@ -10,29 +10,34 @@ using Kongverge.KongPlugin;
 using Microsoft.Extensions.Options;
 using Serilog;
 
-namespace Kongverge
+namespace Kongverge.Common
 {
     public class KongvergeWorkflow : Workflow
     {
-        new protected IKongAdminService _adminService;
+        private readonly IKongAdminWriteService _adminWriteService;
         private readonly IDataFileHelper _fileHelper;
         private readonly IKongPluginCollection _kongPluginCollection;
 
-        public KongvergeWorkflow(IKongAdminService adminService, IDataFileHelper fileHelper, IOptions<Settings> configuration, IKongPluginCollection kongPluginCollection)
-            : base(adminService, configuration)
+        public KongvergeWorkflow(
+            IKongAdminReadService adminReadService,
+            IOptions<Settings> configuration,
+            IKongAdminWriteService adminWriteService,
+            IDataFileHelper fileHelper,
+            IKongPluginCollection kongPluginCollection)
+            : base(adminReadService, configuration)
         {
+            _adminWriteService = adminWriteService;
             _fileHelper = fileHelper;
-            _adminService = adminService;
             _kongPluginCollection = kongPluginCollection;
         }
 
         public override async Task<int> DoExecute()
         {
-            var existingServices = await _adminService.GetServices().ConfigureAwait(false);
-            var existingGlobalConfig = await _adminService.GetGlobalConfig().ConfigureAwait(false);
+            var existingServices = await KongAdminReadService.GetServices().ConfigureAwait(false);
+            var existingGlobalConfig = await KongAdminReadService.GetGlobalConfig().ConfigureAwait(false);
 
-            Log.Information("Reading files from {input}", _configuration.InputFolder);
-            var success = _fileHelper.GetDataFiles(_configuration.InputFolder, out var dataFiles, out var newGlobalConfig);
+            Log.Information("Reading files from {input}", Configuration.InputFolder);
+            var success = _fileHelper.GetDataFiles(Configuration.InputFolder, out var dataFiles, out var newGlobalConfig);
             if (!success)
             {
                 return ExitWithCode.Return(ExitCodes.InputFolderUnreachable);
@@ -73,8 +78,8 @@ namespace Kongverge
             {
                 Log.Information("Deleting service \"{serviceName}\"", service.Name);
 
-                await _adminService.DeleteRoutes(service).ConfigureAwait(false);
-                await _adminService.DeleteService(service).ConfigureAwait(false);
+                await _adminWriteService.DeleteRoutes(service).ConfigureAwait(false);
+                await _adminWriteService.DeleteService(service).ConfigureAwait(false);
             }
         }
 
@@ -108,7 +113,7 @@ namespace Kongverge
                     return;
                 }
 
-                var serviceAdded = await _adminService.AddService(data.Service).ConfigureAwait(false);
+                var serviceAdded = await _adminWriteService.AddService(data.Service).ConfigureAwait(false);
 
                 if (serviceAdded.Succeeded)
                 {
@@ -133,7 +138,7 @@ namespace Kongverge
 
                 Log.Information("Updating service: \"{name}\"", data.Service.Name);
 
-                await _adminService.UpdateService(data.Service).ConfigureAwait(false);
+                await _adminWriteService.UpdateService(data.Service).ConfigureAwait(false);
             }
         }
 
@@ -147,8 +152,8 @@ namespace Kongverge
             var toAdd = service.Routes.Except(existingRoutes);
             var toRemove = existingRoutes.Except(service.Routes);
 
-            await Task.WhenAll(toRemove.Select(r => _adminService.DeleteRoute(r))).ConfigureAwait(false);
-            await Task.WhenAll(toAdd.Select(r => _adminService.AddRoute(service, r))).ConfigureAwait(false);
+            await Task.WhenAll(toRemove.Select(r => _adminWriteService.DeleteRoute(r))).ConfigureAwait(false);
+            await Task.WhenAll(toAdd.Select(r => _adminWriteService.AddRoute(service, r))).ConfigureAwait(false);
 
             var matchingRoutePairs =
                 service.Routes.Select(r => new ExtendibleKongObjectTargetPair(r, existingRoutes));
@@ -164,8 +169,8 @@ namespace Kongverge
 
         public async Task ConvergePlugins(ExtendibleKongObject target, ExtendibleKongObject existing)
         {
-            var newSet = target.Extensions.SafeIfNull().ToDictionary(e => e.GetType()) ?? new Dictionary<Type, IKongPluginConfig>();
-            var existingSet = existing?.Extensions.SafeIfNull().ToDictionary(t => t.GetType()) ?? new Dictionary<Type, IKongPluginConfig>();
+            var newSet = target?.Extensions?.ToDictionary(e => e.GetType()) ?? new Dictionary<Type, IKongPluginConfig>();
+            var existingSet = existing?.Extensions?.ToDictionary(t => t.GetType()) ?? new Dictionary<Type, IKongPluginConfig>();
 
             var changes = newSet.Keys.Union(existingSet.Keys)
                 .Select(key =>
@@ -179,13 +184,13 @@ namespace Kongverge
             {
                 if (change.Target == null)
                 {
-                    await _adminService.DeletePlugin(change.Existing.id).ConfigureAwait(false);
+                    await _adminWriteService.DeletePlugin(change.Existing.id).ConfigureAwait(false);
                 }
                 else if (change.Existing == null)
                 {
                     var content = _kongPluginCollection.CreatePluginBody(change.Target);
 
-                    await _adminService.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
+                    await _adminWriteService.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
                 }
                 else if(!change.Target.IsExactMatch(change.Existing))
                 {
@@ -196,7 +201,7 @@ namespace Kongverge
                     // TODO: Same problem here - target has come from a file, and it doesn't have the Created info to feed into created_at
                     target.Created = existing.Created;
 
-                    await _adminService.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
+                    await _adminWriteService.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
                 }
             }
         }
