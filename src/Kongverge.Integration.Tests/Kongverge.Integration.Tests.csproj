@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Kongverge\Kongverge.csproj" />
+    <ProjectReference Include="..\Kongverge\Kongverge.csproj" />
   </ItemGroup>
 
 </Project>
