@@ -12,7 +12,7 @@ namespace Kongverge.Integration.Tests
     {
         private readonly ServiceProvider _serviceProvider;
         public IDataFileHelper DataFileHelper => _serviceProvider.GetService<IDataFileHelper>();
-        public IKongAdminWriteService KongAdminService => _serviceProvider.GetService<IKongAdminWriteService>();
+        public IKongAdminWriter KongAdminService => _serviceProvider.GetService<IKongAdminWriter>();
         public Settings Settings => _serviceProvider.GetRequiredService<IOptions<Settings>>().Value;
 
         public IList<KongService> CleanUp { get; }

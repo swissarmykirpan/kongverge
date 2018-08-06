@@ -33,7 +33,7 @@ namespace Kongverge.Validation
                 .CreateLogger();
 
             services.Replace(new ServiceDescriptor(typeof(TestTracker), _testTracker));
-            services.AddSingleton<IKongAdminWriteService, KongAdminService>();
+            services.AddSingleton<IKongAdminWriter, KongAdminWriter>();
             services.AddSingleton<ITestFileHelper, TestFileHelper>();
 
 

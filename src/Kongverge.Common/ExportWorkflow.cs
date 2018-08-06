@@ -11,17 +11,17 @@ namespace Kongverge.Common
         private readonly IDataFileHelper _fileHelper;
 
         public ExportWorkflow(
-            IKongAdminReadService adminReadService,
+            IKongAdminReader kongReader,
             IOptions<Settings> configuration,
             IDataFileHelper fileHelper) :
-            base(adminReadService, configuration)
+            base(kongReader, configuration)
         {
             _fileHelper = fileHelper;
         }
 
         public override async Task<int> DoExecute()
         {
-            var existingServices = await KongAdminReadService.GetServices().ConfigureAwait(false);
+            var existingServices = await KongReader.GetServices().ConfigureAwait(false);
 
             //Write Output Files
             _fileHelper.WriteConfigFiles(existingServices);

@@ -39,7 +39,7 @@ namespace KongVerge.Tests
 
             var kongPluginCollection = new Mock<IKongPluginCollection>();
             var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
-            var sut = new KongAdminService(_configuration, httpClient, kongPluginCollection.Object, null);
+            var sut = new KongAdminWriter(_configuration, httpClient, kongPluginCollection.Object, null);
 
             //Act
             var result = await sut.KongIsReachable().ConfigureAwait(false);
@@ -60,7 +60,7 @@ namespace KongVerge.Tests
 
             var kongPluginCollection = new Mock<IKongPluginCollection>();
             var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
-            var sut = new KongAdminService(_configuration, httpClient, kongPluginCollection.Object, null);
+            var sut = new KongAdminWriter(_configuration, httpClient, kongPluginCollection.Object, null);
 
             //Act
             var result = await sut.KongIsReachable().ConfigureAwait(false);
@@ -77,7 +77,7 @@ namespace KongVerge.Tests
 
             var kongPluginCollection = new Mock<IKongPluginCollection>();
             var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
-            var sut = new KongAdminService(_configuration, httpClient, kongPluginCollection.Object, null);
+            var sut = new KongAdminWriter(_configuration, httpClient, kongPluginCollection.Object, null);
 
             //Act
             var result = await sut.KongIsReachable().ConfigureAwait(false);
@@ -116,7 +116,7 @@ namespace KongVerge.Tests
 
             var kongPluginCollection = new Mock<IKongPluginCollection>();
             var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
-            var sut = new KongAdminService(_configuration, httpClient, kongPluginCollection.Object, null);
+            var sut = new KongAdminWriter(_configuration, httpClient, kongPluginCollection.Object, null);
 
             //Act
             var result = await sut
@@ -155,7 +155,7 @@ namespace KongVerge.Tests
 
             var kongPluginCollection = new Mock<IKongPluginCollection>();
             var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
-            var sut = new KongAdminService(_configuration, httpClient, kongPluginCollection.Object, null);
+            var sut = new KongAdminWriter(_configuration, httpClient, kongPluginCollection.Object, null);
 
             //Act
             await sut.AddRoute(service, route);
