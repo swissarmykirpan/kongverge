@@ -30,7 +30,7 @@ namespace Kongverge
         public static void AddServices(IServiceCollection services)
         {
             services.AddSingleton<KongAdminDryRun>();
-            services.AddSingleton<KongAdminService>();
+            services.AddSingleton<KongAdminWriter>();
             services.AddSingleton<KongvergeWorkflow>();
             services.AddSingleton<ExportWorkflow>();
 
@@ -48,9 +48,9 @@ namespace Kongverge
 
             services.AddSingleton<IKongPluginCollection>(s => new KongPluginCollection(s.GetServices<IKongPlugin>()));
 
-            services.AddSingleton<IKongAdminReadService, KongAdminReadService>();
+            services.AddSingleton<IKongAdminReader, KongAdminReader>();
 
-            services.AddSingleton<IKongAdminWriteService>(s =>
+            services.AddSingleton<IKongAdminWriter>(s =>
             {
                 var config = s.GetService<IOptions<Settings>>();
 
@@ -61,7 +61,7 @@ namespace Kongverge
                 }
 
                 Log.Information("Performing live integration.\n\tChanges will be made to {host}", config.Value.Admin.Host);
-                return s.GetService<KongAdminService>();
+                return s.GetService<KongAdminWriter>();
             });
 
             services.AddSingleton<Workflow>(s =>

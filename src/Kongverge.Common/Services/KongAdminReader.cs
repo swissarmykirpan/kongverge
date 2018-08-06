@@ -14,7 +14,7 @@ using Serilog;
 
 namespace Kongverge.Common.Services
 {
-    public class KongAdminReadService : IKongAdminReadService
+    public class KongAdminReader : IKongAdminReader
     {
         private const string ServicesRoute = "/services/";
         private const string RoutesRoute = "/routes";
@@ -24,7 +24,7 @@ namespace Kongverge.Common.Services
         private readonly JsonSerializerSettings _settings;
         private readonly IKongPluginCollection _kongPluginCollection;
 
-        public KongAdminReadService(IOptions<Settings> configuration, HttpClient httpClient, IKongPluginCollection kongPluginCollection, PluginConverter converter)
+        public KongAdminReader(IOptions<Settings> configuration, HttpClient httpClient, IKongPluginCollection kongPluginCollection, PluginConverter converter)
         {
             _configuration = configuration.Value;
             HttpClient = httpClient;

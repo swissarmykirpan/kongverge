@@ -24,8 +24,8 @@ namespace KongVerge.Tests.Workflow
             private static readonly Fixture Fixture = new Fixture();
 
             public Mock<IDataFileHelper> DataFiles = new Mock<IDataFileHelper>();
-            public Mock<IKongAdminReadService> KongReadService = new Mock<IKongAdminReadService>();
-            public Mock<IKongAdminWriteService> KongWriteService = new Mock<IKongAdminWriteService>();
+            public Mock<IKongAdminReader> KongReader = new Mock<IKongAdminReader>();
+            public Mock<IKongAdminWriter> KongWriter = new Mock<IKongAdminWriter>();
             public Mock<IKongPluginCollection> KongPluginCollection = new Mock<IKongPluginCollection>();
 
             public Settings Settings { get; }
@@ -33,7 +33,7 @@ namespace KongVerge.Tests.Workflow
 
             public KongvergeWorkflowSut()
             {
-                KongReadService.Setup(k => k.KongIsReachable()).ReturnsAsync(true);
+                KongReader.Setup(k => k.KongIsReachable()).ReturnsAsync(true);
 
                 Settings = new Settings
                 {
@@ -44,9 +44,9 @@ namespace KongVerge.Tests.Workflow
                 configuration.Setup(c => c.Value).Returns(Settings);
 
                 Sut = new KongvergeWorkflow(
-                    KongReadService.Object,
+                    KongReader.Object,
                     configuration.Object,
-                    KongWriteService.Object,
+                    KongWriter.Object,
                     DataFiles.Object,
                     KongPluginCollection.Object);
             }
@@ -68,7 +68,7 @@ namespace KongVerge.Tests.Workflow
 
             await system.Sut.ConvergeRoutes(service, Enumerable.Empty<KongRoute>());
 
-            system.KongWriteService.Verify(k => k.AddRoute(service, route1), Times.Once());
+            system.KongWriter.Verify(k => k.AddRoute(service, route1), Times.Once());
         }
 
         [Fact]
@@ -89,7 +89,7 @@ namespace KongVerge.Tests.Workflow
 
             await system.Sut.ConvergeRoutes(service, routes);
 
-            system.KongWriteService.Verify(k => k.DeleteRoute(route1), Times.Once());
+            system.KongWriter.Verify(k => k.DeleteRoute(route1), Times.Once());
         }
 
         [Fact]
@@ -110,8 +110,8 @@ namespace KongVerge.Tests.Workflow
 
             await system.Sut.ConvergePlugins(targetService, service);
 
-            system.KongWriteService.Verify(k => k.DeletePlugin(plugin1.id), Times.Once());
-            system.KongWriteService.Verify(k => k.DeletePlugin(plugin2.id), Times.Once());
+            system.KongWriter.Verify(k => k.DeletePlugin(plugin1.id), Times.Once());
+            system.KongWriter.Verify(k => k.DeletePlugin(plugin2.id), Times.Once());
         }
 
         [Fact]
@@ -137,8 +137,8 @@ namespace KongVerge.Tests.Workflow
 
             await system.Sut.ConvergePlugins(targetService, service);
 
-            system.KongWriteService.Verify(k => k.UpsertPlugin(body1), Times.Once());
-            system.KongWriteService.Verify(k => k.UpsertPlugin(body2), Times.Once());
+            system.KongWriter.Verify(k => k.UpsertPlugin(body1), Times.Once());
+            system.KongWriter.Verify(k => k.UpsertPlugin(body2), Times.Once());
         }
 
         [Fact]
@@ -164,7 +164,7 @@ namespace KongVerge.Tests.Workflow
 
             await system.Sut.ConvergePlugins(targetService, service);
 
-            system.KongWriteService.Verify(k => k.UpsertPlugin(body1), Times.Once());
+            system.KongWriter.Verify(k => k.UpsertPlugin(body1), Times.Once());
         }
 
         [Fact]
@@ -192,7 +192,7 @@ namespace KongVerge.Tests.Workflow
 
             await system.Sut.DoExecute();
 
-            system.KongWriteService.Verify(kong => kong.UpsertPlugin(It.IsAny<PluginBody>()), Times.Never());
+            system.KongWriter.Verify(kong => kong.UpsertPlugin(It.IsAny<PluginBody>()), Times.Never());
         }
 
         [Fact]
@@ -221,7 +221,7 @@ namespace KongVerge.Tests.Workflow
 
             await system.Sut.DoExecute();
 
-            system.KongWriteService.Verify(kong => kong.UpsertPlugin(It.IsAny<PluginBody>()), Times.Once());
+            system.KongWriter.Verify(kong => kong.UpsertPlugin(It.IsAny<PluginBody>()), Times.Once());
         }
 
         [Fact]
@@ -254,7 +254,7 @@ namespace KongVerge.Tests.Workflow
 
             await system.Sut.DoExecute();
 
-            system.KongWriteService.Verify(kong => kong.UpsertPlugin(It.IsAny<PluginBody>()), Times.Once());
+            system.KongWriter.Verify(kong => kong.UpsertPlugin(It.IsAny<PluginBody>()), Times.Once());
         }
 
         [Fact]
@@ -282,7 +282,7 @@ namespace KongVerge.Tests.Workflow
 
             await system.Sut.DoExecute();
 
-            system.KongWriteService.Verify(kong => kong.DeletePlugin(plugin.id), Times.Once());
+            system.KongWriter.Verify(kong => kong.DeletePlugin(plugin.id), Times.Once());
         }
 
         private static KongvergeWorkflowSut SetupExecute_WithNoServiceChanges(GlobalConfig clusterConfig, GlobalConfig fileConfig)
@@ -291,11 +291,11 @@ namespace KongVerge.Tests.Workflow
 
             var system = new KongvergeWorkflowSut();
 
-            system.KongReadService
+            system.KongReader
                   .Setup(kong => kong.GetServices())
                   .ReturnsAsync(new List<KongService>());
 
-            system.KongReadService
+            system.KongReader
                   .Setup(kong =>
                             kong.GetGlobalConfig())
                   .ReturnsAsync(KongAction.Success(clusterConfig))

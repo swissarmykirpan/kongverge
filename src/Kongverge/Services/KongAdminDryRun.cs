@@ -12,7 +12,7 @@ using Serilog;
 
 namespace Kongverge.Services
 {
-    public class KongAdminDryRun : KongAdminReadService, IKongAdminWriteService
+    public class KongAdminDryRun : KongAdminReader, IKongAdminWriter
     {
         public KongAdminDryRun(
             IOptions<Settings> configuration,

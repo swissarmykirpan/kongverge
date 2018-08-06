@@ -14,27 +14,27 @@ namespace Kongverge.Common
 {
     public class KongvergeWorkflow : Workflow
     {
-        private readonly IKongAdminWriteService _adminWriteService;
+        private readonly IKongAdminWriter _kongWriter;
         private readonly IDataFileHelper _fileHelper;
         private readonly IKongPluginCollection _kongPluginCollection;
 
         public KongvergeWorkflow(
-            IKongAdminReadService adminReadService,
+            IKongAdminReader kongReader,
             IOptions<Settings> configuration,
-            IKongAdminWriteService adminWriteService,
+            IKongAdminWriter kongWriter,
             IDataFileHelper fileHelper,
             IKongPluginCollection kongPluginCollection)
-            : base(adminReadService, configuration)
+            : base(kongReader, configuration)
         {
-            _adminWriteService = adminWriteService;
+            _kongWriter = kongWriter;
             _fileHelper = fileHelper;
             _kongPluginCollection = kongPluginCollection;
         }
 
         public override async Task<int> DoExecute()
         {
-            var existingServices = await KongAdminReadService.GetServices().ConfigureAwait(false);
-            var existingGlobalConfig = await KongAdminReadService.GetGlobalConfig().ConfigureAwait(false);
+            var existingServices = await KongReader.GetServices().ConfigureAwait(false);
+            var existingGlobalConfig = await KongReader.GetGlobalConfig().ConfigureAwait(false);
 
             Log.Information("Reading files from {input}", Configuration.InputFolder);
             var success = _fileHelper.GetDataFiles(Configuration.InputFolder, out var dataFiles, out var newGlobalConfig);
@@ -78,8 +78,8 @@ namespace Kongverge.Common
             {
                 Log.Information("Deleting service \"{serviceName}\"", service.Name);
 
-                await _adminWriteService.DeleteRoutes(service).ConfigureAwait(false);
-                await _adminWriteService.DeleteService(service).ConfigureAwait(false);
+                await _kongWriter.DeleteRoutes(service).ConfigureAwait(false);
+                await _kongWriter.DeleteService(service).ConfigureAwait(false);
             }
         }
 
@@ -113,7 +113,7 @@ namespace Kongverge.Common
                     return;
                 }
 
-                var serviceAdded = await _adminWriteService.AddService(data.Service).ConfigureAwait(false);
+                var serviceAdded = await _kongWriter.AddService(data.Service).ConfigureAwait(false);
 
                 if (serviceAdded.Succeeded)
                 {
@@ -138,7 +138,7 @@ namespace Kongverge.Common
 
                 Log.Information("Updating service: \"{name}\"", data.Service.Name);
 
-                await _adminWriteService.UpdateService(data.Service).ConfigureAwait(false);
+                await _kongWriter.UpdateService(data.Service).ConfigureAwait(false);
             }
         }
 
@@ -152,8 +152,8 @@ namespace Kongverge.Common
             var toAdd = service.Routes.Except(existingRoutes);
             var toRemove = existingRoutes.Except(service.Routes);
 
-            await Task.WhenAll(toRemove.Select(r => _adminWriteService.DeleteRoute(r))).ConfigureAwait(false);
-            await Task.WhenAll(toAdd.Select(r => _adminWriteService.AddRoute(service, r))).ConfigureAwait(false);
+            await Task.WhenAll(toRemove.Select(r => _kongWriter.DeleteRoute(r))).ConfigureAwait(false);
+            await Task.WhenAll(toAdd.Select(r => _kongWriter.AddRoute(service, r))).ConfigureAwait(false);
 
             var matchingRoutePairs =
                 service.Routes.Select(r => new ExtendibleKongObjectTargetPair(r, existingRoutes));
@@ -184,13 +184,13 @@ namespace Kongverge.Common
             {
                 if (change.Target == null)
                 {
-                    await _adminWriteService.DeletePlugin(change.Existing.id).ConfigureAwait(false);
+                    await _kongWriter.DeletePlugin(change.Existing.id).ConfigureAwait(false);
                 }
                 else if (change.Existing == null)
                 {
                     var content = _kongPluginCollection.CreatePluginBody(change.Target);
 
-                    await _adminWriteService.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
+                    await _kongWriter.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
                 }
                 else if(!change.Target.IsExactMatch(change.Existing))
                 {
@@ -201,7 +201,7 @@ namespace Kongverge.Common
                     // TODO: Same problem here - target has come from a file, and it doesn't have the Created info to feed into created_at
                     target.Created = existing.Created;
 
-                    await _adminWriteService.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
+                    await _kongWriter.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
                 }
             }
         }
