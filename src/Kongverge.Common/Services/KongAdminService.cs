@@ -14,7 +14,7 @@ using Serilog;
 
 namespace Kongverge.Common.Services
 {
-    public class KongAdminService : KongAdminReadService, IKongAdminService
+    public class KongAdminService : KongAdminReadService, IKongAdminWriteService
     {
         public KongAdminService(
             IOptions<Settings> configuration,
@@ -23,8 +23,6 @@ namespace Kongverge.Common.Services
             PluginConverter converter) : base(configuration, httpClient, kongPluginCollection, converter)
         {
         }
-
-        #region Services
 
         public async Task<KongAction<KongService>> AddService(KongService service)
         {
@@ -110,10 +108,6 @@ namespace Kongverge.Common.Services
             }
         }
 
-        #endregion
-
-        #region Routes
-
         public async Task<KongAction<KongRoute>> AddRoute(KongService service, KongRoute route)
         {
             Log.Information(@"Adding Route
@@ -171,10 +165,6 @@ namespace Kongverge.Common.Services
             }
         }
 
-        #endregion
-
-        #region Plugins
-
         public async Task<KongPluginResponse> UpsertPlugin(PluginBody plugin)
         {
             var content = KongJsonConvert.Serialize(plugin);
@@ -222,7 +212,5 @@ Error was:
                 throw;
             }
         }
-
-        #endregion
     }
 }

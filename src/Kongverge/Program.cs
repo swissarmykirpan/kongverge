@@ -1,4 +1,5 @@
 using System;
+using Kongverge.Common;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
 using McMaster.Extensions.CommandLineUtils;

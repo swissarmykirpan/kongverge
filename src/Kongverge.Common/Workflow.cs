@@ -1,29 +1,29 @@
 using System;
 using System.Threading.Tasks;
+using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
 using Kongverge.Common.Services;
 using Microsoft.Extensions.Options;
-using Kongverge.Common.DTOs;
 using Serilog;
 
-namespace Kongverge
+namespace Kongverge.Common
 {
     public abstract class Workflow
     {
-        protected readonly IKongAdminReadService _adminService;
-        protected readonly Settings _configuration;
-
-        protected Workflow(IKongAdminReadService adminService, IOptions<Settings> configuration)
+        protected Workflow(IKongAdminReadService adminReadService, IOptions<Settings> configuration)
         {
-            _adminService = adminService;
-            _configuration = configuration.Value;
+            KongAdminReadService = adminReadService;
+            Configuration = configuration.Value;
         }
+
+        protected IKongAdminReadService KongAdminReadService { get; }
+        protected Settings Configuration { get; }
 
         public async Task<int> Execute()
         {
-            Log.Information("Getting existing services from {host}\n", _configuration.Admin.Host);
+            Log.Information("Getting existing services from {host}\n", Configuration.Admin.Host);
 
-            var reachable = await _adminService.KongIsReachable().ConfigureAwait(false);
+            var reachable = await KongAdminReadService.KongIsReachable().ConfigureAwait(false);
             if (!reachable)
             {
                 return ExitWithCode.Return(ExitCodes.HostUnreachable);
