@@ -1,7 +1,5 @@
-using System;
 using Kongverge.KongPlugin;
 using Newtonsoft.Json;
-using Serilog;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {

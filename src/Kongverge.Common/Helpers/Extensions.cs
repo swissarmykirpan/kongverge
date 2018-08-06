@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Kongverge.KongPlugin;
-using Newtonsoft.Json.Linq;
 
 namespace Kongverge.Common.Helpers
 {
