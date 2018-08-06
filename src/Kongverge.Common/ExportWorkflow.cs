@@ -4,21 +4,24 @@ using Kongverge.Common.Helpers;
 using Kongverge.Common.Services;
 using Microsoft.Extensions.Options;
 
-namespace Kongverge
+namespace Kongverge.Common
 {
     public class ExportWorkflow : Workflow
     {
         private readonly IDataFileHelper _fileHelper;
 
-        public ExportWorkflow(IKongAdminReadService adminService, IDataFileHelper fileHelper, IOptions<Settings> configuration) :
-            base(adminService, configuration)
+        public ExportWorkflow(
+            IKongAdminReadService adminReadService,
+            IOptions<Settings> configuration,
+            IDataFileHelper fileHelper) :
+            base(adminReadService, configuration)
         {
             _fileHelper = fileHelper;
         }
 
         public override async Task<int> DoExecute()
         {
-            var existingServices = await _adminService.GetServices().ConfigureAwait(false);
+            var existingServices = await KongAdminReadService.GetServices().ConfigureAwait(false);
 
             //Write Output Files
             _fileHelper.WriteConfigFiles(existingServices);

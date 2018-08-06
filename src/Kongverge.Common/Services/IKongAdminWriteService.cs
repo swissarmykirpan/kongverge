@@ -5,7 +5,7 @@ using Kongverge.KongPlugin;
 
 namespace Kongverge.Common.Services
 {
-    public interface IKongAdminService : IKongAdminReadService
+    public interface IKongAdminWriteService
     {
         Task<KongAction<KongService>> AddService(KongService service);
 

@@ -23,7 +23,7 @@ namespace Kongverge.Validation
 {
     public class Program
     {
-        private static IKongAdminService _kongAdminService;
+        private static IKongAdminWriteService _kongAdminService;
         private static ITestHelper _testHelper;
         private static string _pluginId;
         
@@ -58,7 +58,7 @@ namespace Kongverge.Validation
                 startup.ConfigureServices(services);
                 var serviceProvider = services.BuildServiceProvider();
 
-                _kongAdminService = serviceProvider.GetRequiredService<IKongAdminService>();
+                _kongAdminService = serviceProvider.GetRequiredService<IKongAdminWriteService>();
                 _testHelper = serviceProvider.GetService<ITestHelper>();
 
                 var configuration = serviceProvider.GetService<IOptions<Settings>>().Value;
