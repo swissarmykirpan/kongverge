@@ -13,7 +13,7 @@ using Xunit;
 
 namespace KongVerge.Tests
 {
-    public class KongAdminServiceTests
+    public class KongAdminWriterTests
     {
         private readonly Mock<FakeHttpMessageHandler> _fakeHttpMessageHandler =
             new Mock<FakeHttpMessageHandler> {CallBase = true};
