@@ -12,7 +12,7 @@ namespace KongVerge.Tests.Serialization
 {
     public class PluginConverterTests
     {
-        public class ExtendibleTestObject : ExtendibleKongObject
+        private class ExtendibleTestObject : ExtendibleKongObject
         {
             protected override PluginBody DoDecoratePluginBody(PluginBody body)
             {
@@ -71,9 +71,9 @@ namespace KongVerge.Tests.Serialization
             var testKongConfig = _fixture.Create<TestKongConfig>();
 
             var start =
-                new ExtendibleTestObject()
+                new ExtendibleTestObject
                 {
-                    Extensions = new List<IKongPluginConfig>()
+                    Extensions = new List<IKongPluginConfig>
                     {
                         testKongConfig
                     }
@@ -96,9 +96,9 @@ namespace KongVerge.Tests.Serialization
             var testKongConfig2 = _fixture.Create<OtherTestKongConfig>();
 
             var start =
-                new ExtendibleTestObject()
+                new ExtendibleTestObject
                 {
-                    Extensions = new List<IKongPluginConfig>()
+                    Extensions = new List<IKongPluginConfig>
                     {
                         testKongConfig,
                         testKongConfig2
@@ -121,9 +121,9 @@ namespace KongVerge.Tests.Serialization
             var testKongConfig = _fixture.Create<NestedTestKongConfig>();
 
             var start =
-                new ExtendibleTestObject()
+                new ExtendibleTestObject
                 {
-                    Extensions = new List<IKongPluginConfig>()
+                    Extensions = new List<IKongPluginConfig>
                     {
                         testKongConfig,
                     }

@@ -1,3 +1,4 @@
+using System;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
 using Kongverge.Common.Services;
@@ -66,7 +67,7 @@ namespace KongVerge.Tests.Workflow
                 }
             };
 
-            await system.Sut.ConvergeRoutes(service, Enumerable.Empty<KongRoute>());
+            await system.Sut.ConvergeRoutes(service, Array.Empty<KongRoute>());
 
             system.KongWriter.Verify(k => k.AddRoute(service, route1), Times.Once());
         }
@@ -148,12 +149,12 @@ namespace KongVerge.Tests.Workflow
             var plugin1 = _fixture.Create<TestKongConfig>();
             var body1 = _fixture.Create<PluginBody>();
 
-            var service = new KongService()
+            var service = new KongService
             {
                 Extensions = new List<IKongPluginConfig> { plugin2 }
             };
 
-            var targetService = new KongService()
+            var targetService = new KongService
             {
                 Extensions = new List<IKongPluginConfig> { plugin1 }
             };
@@ -262,9 +263,10 @@ namespace KongVerge.Tests.Workflow
         {
             var plugin = _fixture.Create<TestKongConfig>();
 
-            var clusterConfig = new GlobalConfig()
+            var clusterConfig = new GlobalConfig
             {
-                Extensions = new List<IKongPluginConfig>(){
+                Extensions = new List<IKongPluginConfig>
+                {
                     plugin
                 }
             };
@@ -276,7 +278,7 @@ namespace KongVerge.Tests.Workflow
 
             var body = _fixture.Create<PluginBody>();
 
-            KongvergeWorkflowSut system = SetupExecute_WithNoServiceChanges(clusterConfig, fileConfig);
+            var system = SetupExecute_WithNoServiceChanges(clusterConfig, fileConfig);
 
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin)).Returns(body);
 
@@ -287,7 +289,7 @@ namespace KongVerge.Tests.Workflow
 
         private static KongvergeWorkflowSut SetupExecute_WithNoServiceChanges(GlobalConfig clusterConfig, GlobalConfig fileConfig)
         {
-            var files = new List<KongDataFile>();
+            IReadOnlyCollection<KongDataFile> files = Array.Empty<KongDataFile>();
 
             var system = new KongvergeWorkflowSut();
 

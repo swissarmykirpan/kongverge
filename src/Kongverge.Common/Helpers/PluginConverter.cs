@@ -44,7 +44,7 @@ namespace Kongverge.Common.Helpers
 
                 if (routes != null)
                 {
-                    var parsedRoutes = routes.ToObject<IEnumerable<KongRoute>>(serializer);
+                    var parsedRoutes = routes.ToObject<KongRoute[]>(serializer);
 
                     (extendibleObject as KongService).Routes = parsedRoutes;
                 }
