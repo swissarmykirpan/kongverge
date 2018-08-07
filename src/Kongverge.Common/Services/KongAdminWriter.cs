@@ -87,9 +87,9 @@ namespace Kongverge.Common.Services
             return KongAction.Failure<KongService>();
         }
 
-        public async Task<KongAction<KongService>> DeleteService(KongService service)
+        public async Task<KongAction<string>> DeleteService(string serviceId)
         {
-            var requestUri = $"/services/{service.Id}";
+            var requestUri = $"/services/{serviceId}";
 
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
             try
@@ -97,9 +97,12 @@ namespace Kongverge.Common.Services
                 var response = await HttpClient.SendAsync(request).ConfigureAwait(false);
 
                 if (response.StatusCode == HttpStatusCode.NoContent)
-                    return KongAction.Success(service);
-                else
-                    return KongAction.Failure<KongService>();
+                {
+                    return KongAction.Success(serviceId);
+
+                }
+
+                return KongAction.Failure<string>();
             }
             catch (Exception e)
             {
