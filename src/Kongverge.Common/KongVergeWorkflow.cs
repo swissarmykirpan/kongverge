@@ -79,7 +79,7 @@ namespace Kongverge.Common
                 Log.Information("Deleting service \"{serviceName}\"", service.Name);
 
                 await _kongWriter.DeleteRoutes(service).ConfigureAwait(false);
-                await _kongWriter.DeleteService(service).ConfigureAwait(false);
+                await _kongWriter.DeleteService(service.Id).ConfigureAwait(false);
             }
         }
 
@@ -152,7 +152,7 @@ namespace Kongverge.Common
             var toAdd = service.Routes.Except(existingRoutes);
             var toRemove = existingRoutes.Except(service.Routes);
 
-            await Task.WhenAll(toRemove.Select(r => _kongWriter.DeleteRoute(r))).ConfigureAwait(false);
+            await Task.WhenAll(toRemove.Select(r => _kongWriter.DeleteRoute(r.Id))).ConfigureAwait(false);
             await Task.WhenAll(toAdd.Select(r => _kongWriter.AddRoute(service, r))).ConfigureAwait(false);
 
             var matchingRoutePairs =
