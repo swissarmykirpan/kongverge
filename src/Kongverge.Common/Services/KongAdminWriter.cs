@@ -14,9 +14,9 @@ using Serilog;
 
 namespace Kongverge.Common.Services
 {
-    public class KongAdminService : KongAdminReadService, IKongAdminWriteService
+    public class KongAdminWriter : KongAdminReader, IKongAdminWriter
     {
-        public KongAdminService(
+        public KongAdminWriter(
             IOptions<Settings> configuration,
             HttpClient httpClient,
             IKongPluginCollection kongPluginCollection,

@@ -10,20 +10,20 @@ namespace Kongverge.Common
 {
     public abstract class Workflow
     {
-        protected Workflow(IKongAdminReadService adminReadService, IOptions<Settings> configuration)
+        protected Workflow(IKongAdminReader kongReader, IOptions<Settings> configuration)
         {
-            KongAdminReadService = adminReadService;
+            KongReader = kongReader;
             Configuration = configuration.Value;
         }
 
-        protected IKongAdminReadService KongAdminReadService { get; }
+        protected IKongAdminReader KongReader { get; }
         protected Settings Configuration { get; }
 
         public async Task<int> Execute()
         {
             Log.Information("Getting existing services from {host}\n", Configuration.Admin.Host);
 
-            var reachable = await KongAdminReadService.KongIsReachable().ConfigureAwait(false);
+            var reachable = await KongReader.KongIsReachable().ConfigureAwait(false);
             if (!reachable)
             {
                 return ExitWithCode.Return(ExitCodes.HostUnreachable);
