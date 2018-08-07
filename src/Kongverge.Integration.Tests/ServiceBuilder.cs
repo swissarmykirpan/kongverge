@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Kongverge.Common.DTOs;
-using Kongverge.KongPlugin;
 
 namespace Kongverge.Integration.Tests
 {
