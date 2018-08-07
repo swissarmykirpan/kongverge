@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Kongverge.Common.DTOs;
 using Xunit;
 
 namespace Kongverge.Integration.Tests
@@ -53,6 +54,30 @@ namespace Kongverge.Integration.Tests
             service.Routes.First().Paths.Should().BeEquivalentTo(paths);
 
             await _fixture.KongAdminReader.HasServiceWithId(kongAction.Result.Id);
+        }
+
+        [Fact]
+        public async Task DeleteServiceWorksAsExpected()
+        {
+            var service = await AddTestService();
+
+            var deleteAction = await _fixture.KongAdminWriter.DeleteService(service);
+
+            deleteAction.Succeeded.Should().BeTrue();
+            await _fixture.KongAdminReader.HasNoServiceWithId(service.Id);
+        }
+
+        private async Task<KongService> AddTestService()
+        {
+            var service = new ServiceBuilder().AddDefaultTestService().Build();
+            var addAction = await _fixture.KongAdminWriter.AddService(service);
+
+            addAction.Succeeded.Should().BeTrue();
+            addAction.Result.Id.Should().NotBeNullOrEmpty();
+
+            await _fixture.KongAdminReader.HasServiceWithId(service.Id);
+
+            return addAction.Result;
         }
     }
 }
