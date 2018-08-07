@@ -44,7 +44,7 @@ namespace Kongverge.Common.Helpers
             return data;
         }
 
-        public bool GetDataFiles(string dataPath, out List<KongDataFile> dataFiles, out GlobalConfig globalConfig)
+        public bool GetDataFiles(string dataPath, out IReadOnlyCollection<KongDataFile> dataFiles, out GlobalConfig globalConfig)
         {
             try
             {
@@ -81,7 +81,7 @@ namespace Kongverge.Common.Helpers
             }
         }
 
-        public void WriteConfigFiles(List<KongService> existingServices)
+        public void WriteConfigFiles(IEnumerable<KongService> existingServices)
         {
             if (!Directory.Exists(_configuration.OutputFolder))
             {

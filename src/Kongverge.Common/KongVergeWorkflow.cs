@@ -83,9 +83,9 @@ namespace Kongverge.Common
             }
         }
 
-        public async Task<IEnumerable<KongService>> ProcessFiles(
-            List<KongService> existingServices,
-            List<KongDataFile> dataFiles)
+        private async Task<IEnumerable<KongService>> ProcessFiles(
+            IReadOnlyCollection<KongService> existingServices,
+            IEnumerable<KongDataFile> dataFiles)
         {
             var processedFiles = new List<KongService>();
             foreach (var data in dataFiles)
@@ -97,9 +97,9 @@ namespace Kongverge.Common
             return processedFiles;
         }
 
-        public async Task ProcessFile(List<KongService> existingServices, KongDataFile data)
+        private async Task ProcessFile(IEnumerable<KongService> existingServices, KongDataFile data)
         {
-            var existingService = existingServices.Find(x => x.Name == data.Service.Name);
+            var existingService = existingServices.SingleOrDefault(x => x.Name == data.Service.Name);
 
             if (existingService == null)
             {
@@ -142,12 +142,12 @@ namespace Kongverge.Common
             }
         }
 
-        public Task ConvergePlugins(KongService result)
+        private Task ConvergePlugins(KongService result)
         {
             return ConvergePlugins(result, ExtendibleKongObject.Empty);
         }
 
-        public async Task ConvergeRoutes(KongService service, IEnumerable<KongRoute> existingRoutes)
+        public async Task ConvergeRoutes(KongService service, IReadOnlyCollection<KongRoute> existingRoutes)
         {
             var toAdd = service.Routes.Except(existingRoutes);
             var toRemove = existingRoutes.Except(service.Routes);
@@ -206,7 +206,7 @@ namespace Kongverge.Common
             }
         }
 
-        public static bool ServiceHasChanged(KongService existingService, KongService newService)
+        private static bool ServiceHasChanged(KongService existingService, KongService newService)
         {
             if (!existingService.Equals(newService))
             {

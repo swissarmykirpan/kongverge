@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,7 +39,7 @@ namespace Kongverge.Common.DTOs
         [JsonProperty("path")]
         public string Path { get; set; }
 
-        public IEnumerable<KongRoute> Routes { get; set; } = new List<KongRoute>();
+        public IReadOnlyCollection<KongRoute> Routes { get; set; } = Array.Empty<KongRoute>();
 
         public bool Equals(KongService other)
         {

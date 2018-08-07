@@ -18,7 +18,7 @@ namespace Kongverge.Common.Tests
         [Fact]
         public void TestRoundTripStartingAtConfigWithAllFields()
         {
-            var configIn = new JeRequestDelayConfig()
+            var configIn = new JeRequestDelayConfig
             {
                 id = "test1",
                 Delay = 100
