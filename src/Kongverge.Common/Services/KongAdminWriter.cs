@@ -87,9 +87,9 @@ namespace Kongverge.Common.Services
             return KongAction.Failure<KongService>();
         }
 
-        public async Task<KongAction<KongService>> DeleteService(KongService service)
+        public async Task<KongAction<string>> DeleteService(string serviceId)
         {
-            var requestUri = $"/services/{service.Id}";
+            var requestUri = $"/services/{serviceId}";
 
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
             try
@@ -97,9 +97,11 @@ namespace Kongverge.Common.Services
                 var response = await HttpClient.SendAsync(request).ConfigureAwait(false);
 
                 if (response.StatusCode == HttpStatusCode.NoContent)
-                    return KongAction.Success(service);
-                else
-                    return KongAction.Failure<KongService>();
+                {
+                    return KongAction.Success(serviceId);
+                }
+
+                return KongAction.Failure<string>();
             }
             catch (Exception e)
             {
@@ -143,14 +145,14 @@ namespace Kongverge.Common.Services
         public async Task<KongAction<IEnumerable<KongRoute>>> DeleteRoutes(KongService service)
         {
             IEnumerable<KongRoute> routes = await GetRoutes(service.Name).ConfigureAwait(false);
-            await Task.WhenAll(routes.Select(DeleteRoute)).ConfigureAwait(false);
+            await Task.WhenAll(routes.Select(r => DeleteRoute(r.Id))).ConfigureAwait(false);
 
             return KongAction.Success(routes);
         }
 
-        public async Task<bool> DeleteRoute(KongRoute route)
+        public async Task<bool> DeleteRoute(string routeId)
         {
-            var requestUri = $"/routes/{route.Id}";
+            var requestUri = $"/routes/{routeId}";
 
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
             try

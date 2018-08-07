@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Xunit;
 using AutoFixture;
 using Kongverge.Common.Plugins;
-using System.Linq;
 using Kongverge.KongPlugin;
 using KongVerge.Tests.Serialization;
 using Kongverge.Common;
@@ -76,7 +75,10 @@ namespace KongVerge.Tests.Workflow
         public async Task ConvergeRoutes_WillRemoveExcessRoutes()
         {
             var system = new KongvergeWorkflowSut();
-            var route1 = new KongRoute();
+            var route1 = new KongRoute
+            {
+                Id = Guid.NewGuid().ToString()
+            };
 
             var service = new KongService
             {
@@ -90,7 +92,7 @@ namespace KongVerge.Tests.Workflow
 
             await system.Sut.ConvergeRoutes(service, routes);
 
-            system.KongWriter.Verify(k => k.DeleteRoute(route1), Times.Once());
+            system.KongWriter.Verify(k => k.DeleteRoute(route1.Id), Times.Once());
         }
 
         [Fact]

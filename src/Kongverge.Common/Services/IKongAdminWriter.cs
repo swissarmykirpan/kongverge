@@ -11,7 +11,7 @@ namespace Kongverge.Common.Services
 
         Task<KongAction<KongService>> UpdateService(KongService service);
 
-        Task<KongAction<KongService>> DeleteService(KongService service);
+        Task<KongAction<string>> DeleteService(string serviceId);
 
         Task<KongAction<KongRoute>> AddRoute(KongService service, KongRoute route);
 
@@ -19,7 +19,7 @@ namespace Kongverge.Common.Services
 
         Task<KongPluginResponse> UpsertPlugin(PluginBody plugin);
 
-        Task<bool> DeleteRoute(KongRoute route);
+        Task<bool> DeleteRoute(string routeId);
 
         Task<bool> DeletePlugin(string pluginId);
     }
