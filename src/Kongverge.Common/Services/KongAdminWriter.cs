@@ -99,7 +99,6 @@ namespace Kongverge.Common.Services
                 if (response.StatusCode == HttpStatusCode.NoContent)
                 {
                     return KongAction.Success(serviceId);
-
                 }
 
                 return KongAction.Failure<string>();
