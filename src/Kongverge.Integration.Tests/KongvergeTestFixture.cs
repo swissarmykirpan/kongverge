@@ -31,7 +31,7 @@ namespace Kongverge.Integration.Tests
         {
             foreach (var service in CleanUp)
             {
-                KongAdminWriter.DeleteService(service).Wait();
+                KongAdminWriter.DeleteService(service.Id).Wait();
             }
         }
     }

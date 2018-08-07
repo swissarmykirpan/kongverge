@@ -61,7 +61,7 @@ namespace Kongverge.Integration.Tests
         {
             var service = await AddTestService();
 
-            var deleteAction = await _fixture.KongAdminWriter.DeleteService(service);
+            var deleteAction = await _fixture.KongAdminWriter.DeleteService(service.Id);
 
             deleteAction.Succeeded.Should().BeTrue();
             await _fixture.KongAdminReader.HasNoServiceWithId(service.Id);
