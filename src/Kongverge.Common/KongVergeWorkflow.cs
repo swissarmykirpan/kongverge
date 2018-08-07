@@ -97,7 +97,7 @@ namespace Kongverge.Common
             return processedFiles;
         }
 
-        public async Task ProcessFile(IEnumerable<KongService> existingServices, KongDataFile data)
+        private async Task ProcessFile(IEnumerable<KongService> existingServices, KongDataFile data)
         {
             var existingService = existingServices.SingleOrDefault(x => x.Name == data.Service.Name);
 
@@ -142,7 +142,7 @@ namespace Kongverge.Common
             }
         }
 
-        public Task ConvergePlugins(KongService result)
+        private Task ConvergePlugins(KongService result)
         {
             return ConvergePlugins(result, ExtendibleKongObject.Empty);
         }
@@ -206,7 +206,7 @@ namespace Kongverge.Common
             }
         }
 
-        public static bool ServiceHasChanged(KongService existingService, KongService newService)
+        private static bool ServiceHasChanged(KongService existingService, KongService newService)
         {
             if (!existingService.Equals(newService))
             {

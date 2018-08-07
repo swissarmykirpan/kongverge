@@ -12,7 +12,7 @@ namespace KongVerge.Tests.Serialization
 {
     public class PluginConverterTests
     {
-        public class ExtendibleTestObject : ExtendibleKongObject
+        private class ExtendibleTestObject : ExtendibleKongObject
         {
             protected override PluginBody DoDecoratePluginBody(PluginBody body)
             {
