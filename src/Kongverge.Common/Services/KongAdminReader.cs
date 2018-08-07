@@ -72,7 +72,7 @@ namespace Kongverge.Common.Services
             return configurationResult;
         }
 
-        public async Task<List<KongService>> GetServices()
+        public async Task<IReadOnlyCollection<KongService>> GetServices()
         {
             var services = new List<KongService>();
 
@@ -99,7 +99,7 @@ namespace Kongverge.Common.Services
 
             services = await PopulateServiceRoutes(services).ConfigureAwait(false);
             await PopulatePluginInfo(services).ConfigureAwait(false);
-            return services;
+            return services.AsReadOnly();
         }
 
         private async Task PopulatePluginInfo(List<KongService> services)

@@ -1,3 +1,4 @@
+using System;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
 using Kongverge.Common.Services;
@@ -66,7 +67,7 @@ namespace KongVerge.Tests.Workflow
                 }
             };
 
-            await system.Sut.ConvergeRoutes(service, Enumerable.Empty<KongRoute>());
+            await system.Sut.ConvergeRoutes(service, Array.Empty<KongRoute>());
 
             system.KongWriter.Verify(k => k.AddRoute(service, route1), Times.Once());
         }
@@ -287,7 +288,7 @@ namespace KongVerge.Tests.Workflow
 
         private static KongvergeWorkflowSut SetupExecute_WithNoServiceChanges(GlobalConfig clusterConfig, GlobalConfig fileConfig)
         {
-            var files = new List<KongDataFile>();
+            IReadOnlyCollection<KongDataFile> files = Array.Empty<KongDataFile>();
 
             var system = new KongvergeWorkflowSut();
 

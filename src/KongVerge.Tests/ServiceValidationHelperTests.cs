@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
 using Xunit;
@@ -15,9 +14,9 @@ namespace KongVerge.Tests
             {
                 Service = new KongService
                 {
-                    Routes = new List<KongRoute>()
+                    Routes = new[]
                     {
-                        new KongRoute()
+                        new KongRoute
                         {
                             Paths = null
                         }
