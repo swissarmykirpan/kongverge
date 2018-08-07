@@ -55,9 +55,9 @@ namespace Kongverge.Services
             return Task.FromResult(true);
         }
 
-        public Task<bool> DeleteRoute(KongRoute route)
+        public Task<bool> DeleteRoute(string routeId)
         {
-            Log.Information("Deleting route {id}", route.Id);
+            Log.Information("Deleting route {id}", routeId);
             return Task.FromResult(true);
         }
 
@@ -77,10 +77,10 @@ namespace Kongverge.Services
             return Task.FromResult(KongAction.Success(routes));
         }
 
-        public Task<KongAction<KongService>> DeleteService(KongService service)
+        public Task<KongAction<string>> DeleteService(string serviceId)
         {
-            Log.Information("Deleting service {name}", service.Name);
-            return Task.FromResult(KongAction.Success(service));
+            Log.Information("Deleting service {id}", serviceId);
+            return Task.FromResult(KongAction.Success(serviceId));
         }
 
         public Task<KongAction<KongService>> UpdateService(KongService service)
