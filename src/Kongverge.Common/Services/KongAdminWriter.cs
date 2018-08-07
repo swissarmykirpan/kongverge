@@ -146,14 +146,14 @@ namespace Kongverge.Common.Services
         public async Task<KongAction<IEnumerable<KongRoute>>> DeleteRoutes(KongService service)
         {
             IEnumerable<KongRoute> routes = await GetRoutes(service.Name).ConfigureAwait(false);
-            await Task.WhenAll(routes.Select(DeleteRoute)).ConfigureAwait(false);
+            await Task.WhenAll(routes.Select(r => DeleteRoute(r.Id))).ConfigureAwait(false);
 
             return KongAction.Success(routes);
         }
 
-        public async Task<bool> DeleteRoute(KongRoute route)
+        public async Task<bool> DeleteRoute(string routeId)
         {
-            var requestUri = $"/routes/{route.Id}";
+            var requestUri = $"/routes/{routeId}";
 
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
             try

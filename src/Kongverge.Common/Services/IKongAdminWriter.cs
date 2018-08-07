@@ -19,7 +19,7 @@ namespace Kongverge.Common.Services
 
         Task<KongPluginResponse> UpsertPlugin(PluginBody plugin);
 
-        Task<bool> DeleteRoute(KongRoute route);
+        Task<bool> DeleteRoute(string routeId);
 
         Task<bool> DeletePlugin(string pluginId);
     }

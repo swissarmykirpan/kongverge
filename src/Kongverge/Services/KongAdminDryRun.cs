@@ -55,9 +55,9 @@ namespace Kongverge.Services
             return Task.FromResult(true);
         }
 
-        public Task<bool> DeleteRoute(KongRoute route)
+        public Task<bool> DeleteRoute(string routeId)
         {
-            Log.Information("Deleting route {id}", route.Id);
+            Log.Information("Deleting route {id}", routeId);
             return Task.FromResult(true);
         }
 
