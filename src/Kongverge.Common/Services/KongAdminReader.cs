@@ -16,10 +16,10 @@ namespace Kongverge.Common.Services
 {
     public class KongAdminReader : IKongAdminReader
     {
+        private const string ConfigurationRoute = "/";
         private const string ServicesRoute = "/services";
         private const string RoutesRoute = "/routes";
         private const string PluginsRoute = "/plugins";
-        private const string ConfigurationRoute = "/";
 
         private readonly Settings _configuration;
         protected readonly HttpClient HttpClient;
@@ -116,28 +116,44 @@ namespace Kongverge.Common.Services
             response.EnsureSuccessStatusCode();
 
             var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var serviceResult = JsonConvert.DeserializeObject<KongService>(value);
+            var service = JsonConvert.DeserializeObject<KongService>(value);
 
-            return serviceResult;
+            var plugins = await GetServicePlugins(serviceId);
+            service.Extensions = TranslateToConfig(plugins);
+
+            service.Routes = await GetRoutes(service.Name);
+
+            return service;
         }
 
-        public async Task<IReadOnlyCollection<PluginBody>> GetServicePlugins(string serviceId)
+        private async Task<IReadOnlyCollection<PluginBody>> GetServicePlugins(string serviceId)
         {
+            var allPlugins = new List<PluginBody>();
+            var lastPage = false;
             var requestUri = $"{PluginsRoute}?service_id={serviceId}";
-            var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
-            if (response.StatusCode == HttpStatusCode.NotFound)
+
+            do
             {
-                return null;
-            }
+                var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+                response.EnsureSuccessStatusCode();
 
-            var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var serviceResult = JsonConvert.DeserializeObject<PluginsResponse>(value);
+                var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var pluginsResult = JsonConvert.DeserializeObject<PluginsResponse>(value);
 
-            return serviceResult.Data.ToList();
+                allPlugins.AddRange(pluginsResult.Data);
+                if (pluginsResult.Next == null)
+                {
+                    lastPage = true;
+                }
+                else
+                {
+                    requestUri = pluginsResult.Next;
+                }
+            } while (!lastPage);
+
+            return allPlugins;
         }
-
 
         private async Task PopulatePluginInfo(List<KongService> services)
         {

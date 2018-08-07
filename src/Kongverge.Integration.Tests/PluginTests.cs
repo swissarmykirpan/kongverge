@@ -25,10 +25,10 @@ namespace Kongverge.Integration.Tests
             kongAction.Succeeded.Should().BeTrue();
 
             var serviceId = kongAction.Result.Id;
-            var plugins = await _fixture.KongAdminReader.GetServicePlugins(serviceId);
+            var serviceRead = await _fixture.KongAdminReader.GetService(serviceId);
 
-            plugins.Should().NotBeNull();
-            plugins.Should().BeEmpty();
+            serviceRead.Extensions.Should().NotBeNull();
+            serviceRead.Extensions.Should().BeEmpty();
         }
     }
 }
