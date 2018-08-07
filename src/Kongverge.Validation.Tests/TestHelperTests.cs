@@ -22,7 +22,7 @@ namespace Kongverge.Validation.Tests
         {
             if (testTracker == null) testTracker = new TestTracker();
             var testFileHelper = new Mock<ITestFileHelper>();
-            var config = new Settings(){Admin = new Admin(){Host = "localhost"}};
+            var config = new Settings { Admin = new Admin { Host = "localhost" } };
             var settings = Options.Create(config);
             return new TestHelper(testTracker, testFileHelper.Object, settings);
         }

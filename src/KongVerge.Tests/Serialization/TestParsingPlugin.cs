@@ -13,7 +13,7 @@ namespace KongVerge.Tests.Serialization
 
         protected override TestKongConfig DoCreateConfigObject(PluginBody pluginBody)
         {
-            return new TestKongConfig()
+            return new TestKongConfig
             {
                 Value = pluginBody.config.Values.First().ToString()
             };
@@ -38,7 +38,7 @@ namespace KongVerge.Tests.Serialization
 
         protected override OtherTestKongConfig DoCreateConfigObject(PluginBody pluginBody)
         {
-            return new OtherTestKongConfig()
+            return new OtherTestKongConfig
             {
                 Value = pluginBody.config.Values.OfType<int>().First()
             };
@@ -63,7 +63,7 @@ namespace KongVerge.Tests.Serialization
 
         protected override NestedTestKongConfig DoCreateConfigObject(PluginBody pluginBody)
         {
-            return new NestedTestKongConfig()
+            return new NestedTestKongConfig
             {
                 Value = pluginBody.config.Values.OfType<int>().First(),
                 Nested = pluginBody.config.Values.OfType<TestKongConfig>().First()

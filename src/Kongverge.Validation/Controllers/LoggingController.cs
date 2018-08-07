@@ -29,7 +29,7 @@ namespace Kongverge.Validation.Controllers
                 try
                 {
                     var result = await reader.ReadToEndAsync();
-                    var logEntry = JsonConvert.DeserializeObject<HttpLogEntry>(result, new JsonSerializerSettings(){NullValueHandling  = NullValueHandling.Ignore, MissingMemberHandling = MissingMemberHandling.Ignore });
+                    var logEntry = JsonConvert.DeserializeObject<HttpLogEntry>(result, new JsonSerializerSettings { NullValueHandling  = NullValueHandling.Ignore, MissingMemberHandling = MissingMemberHandling.Ignore });
 
                     if (!logEntry.request.headers.ContainsKey("test-id") || string.IsNullOrWhiteSpace(logEntry.request.headers["test-id"]) ||!_testHelper.Tests.TestResultTasks.ContainsKey(logEntry.request.headers["test-id"])) return "";
 

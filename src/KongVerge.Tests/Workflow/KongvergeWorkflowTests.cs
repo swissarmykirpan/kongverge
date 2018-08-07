@@ -149,12 +149,12 @@ namespace KongVerge.Tests.Workflow
             var plugin1 = _fixture.Create<TestKongConfig>();
             var body1 = _fixture.Create<PluginBody>();
 
-            var service = new KongService()
+            var service = new KongService
             {
                 Extensions = new List<IKongPluginConfig> { plugin2 }
             };
 
-            var targetService = new KongService()
+            var targetService = new KongService
             {
                 Extensions = new List<IKongPluginConfig> { plugin1 }
             };
@@ -263,9 +263,10 @@ namespace KongVerge.Tests.Workflow
         {
             var plugin = _fixture.Create<TestKongConfig>();
 
-            var clusterConfig = new GlobalConfig()
+            var clusterConfig = new GlobalConfig
             {
-                Extensions = new List<IKongPluginConfig>(){
+                Extensions = new List<IKongPluginConfig>
+                {
                     plugin
                 }
             };
