@@ -30,16 +30,6 @@ namespace Kongverge.Integration.Tests
             return this;
         }
 
-        public ServiceBuilder WithPlugin(IKongPluginConfig plugin)
-        {
-            if (_service.Extensions == null)
-            {
-                _service.Extensions = new List<IKongPluginConfig>();
-            }
-            _service.Extensions.Add(plugin);
-            return this;
-        }
-
         public KongService Build()
         {
             return _service;
