@@ -277,7 +277,7 @@ namespace KongVerge.Tests.Workflow
 
             var body = _fixture.Create<PluginBody>();
 
-            KongvergeWorkflowSut system = SetupExecute_WithNoServiceChanges(clusterConfig, fileConfig);
+            var system = SetupExecute_WithNoServiceChanges(clusterConfig, fileConfig);
 
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin)).Returns(body);
 

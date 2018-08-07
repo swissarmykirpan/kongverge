@@ -104,7 +104,7 @@ namespace Kongverge.Common.Services
 
         private async Task PopulatePluginInfo(List<KongService> services)
         {
-            List<PluginBody> plugins = await GetAllPlugins();
+            var plugins = await GetAllPlugins();
 
             GroupPlugins(services, plugins);
         }
@@ -234,7 +234,7 @@ namespace Kongverge.Common.Services
         {
             try
             {
-                List<PluginBody> plugins = await GetAllPlugins();
+                var plugins = await GetAllPlugins();
 
                 var globalPlugins = plugins.Where(p => null == (p.consumer_id ?? p.service_id ?? p.route_id));
 
