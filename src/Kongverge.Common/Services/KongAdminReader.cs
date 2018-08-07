@@ -28,7 +28,10 @@ namespace Kongverge.Common.Services
         {
             _configuration = configuration.Value;
             HttpClient = httpClient;
-            HttpClient.BaseAddress = new Uri($"http://{_configuration.Admin.Host}:{_configuration.Admin.Port}");
+            if (HttpClient.BaseAddress == null)
+            {
+                HttpClient.BaseAddress = new Uri($"http://{_configuration.Admin.Host}:{_configuration.Admin.Port}");
+            }
 
             _settings = new JsonSerializerSettings
             {
