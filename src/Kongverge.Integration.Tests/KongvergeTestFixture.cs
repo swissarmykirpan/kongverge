@@ -12,7 +12,9 @@ namespace Kongverge.Integration.Tests
     {
         private readonly ServiceProvider _serviceProvider;
         public IDataFileHelper DataFileHelper => _serviceProvider.GetService<IDataFileHelper>();
-        public IKongAdminWriter KongAdminService => _serviceProvider.GetService<IKongAdminWriter>();
+        public IKongAdminWriter KongAdminWriter => _serviceProvider.GetService<IKongAdminWriter>();
+        public IKongAdminReader KongAdminReader => _serviceProvider.GetService<IKongAdminReader>();
+
         public Settings Settings => _serviceProvider.GetRequiredService<IOptions<Settings>>().Value;
 
         public IList<KongService> CleanUp { get; }
@@ -29,7 +31,7 @@ namespace Kongverge.Integration.Tests
         {
             foreach (var service in CleanUp)
             {
-                KongAdminService.DeleteService(service).Wait();
+                KongAdminWriter.DeleteService(service).Wait();
             }
         }
     }
