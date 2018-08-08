@@ -9,6 +9,10 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
         }
 
+        protected RequestTransformerAdvancedPlugin(string section) : base(section)
+        {
+        }
+
         public override string PluginName => "request-transformer-advanced";
 
         protected override RequestTransformerAdvancedConfig DoCreateConfigObject(PluginBody pluginBody)
