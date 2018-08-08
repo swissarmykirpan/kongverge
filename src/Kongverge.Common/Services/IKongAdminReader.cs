@@ -9,7 +9,10 @@ namespace Kongverge.Common.Services
     {
         Task<bool> KongIsReachable();
 
+        Task<KongConfiguration> GetConfiguration();
+
         Task<IReadOnlyCollection<KongService>> GetServices();
+        Task<KongService> GetService(string serviceId);
 
         Task<KongAction<GlobalConfig>> GetGlobalConfig();
     }

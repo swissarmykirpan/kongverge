@@ -16,9 +16,11 @@ namespace Kongverge.Common.Services
 {
     public class KongAdminReader : IKongAdminReader
     {
-        private const string ServicesRoute = "/services/";
-        private const string RoutesRoute = "/routes";
         private const string ConfigurationRoute = "/";
+        private const string ServicesRoute = "/services";
+        private const string RoutesRoute = "/routes";
+        private const string PluginsRoute = "/plugins";
+
         private readonly Settings _configuration;
         protected readonly HttpClient HttpClient;
         private readonly JsonSerializerSettings _settings;
@@ -102,6 +104,57 @@ namespace Kongverge.Common.Services
             return services.AsReadOnly();
         }
 
+        public async Task<KongService> GetService(string serviceId)
+        {
+            var requestUri = $"{ServicesRoute}/{serviceId}";
+            var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var service = JsonConvert.DeserializeObject<KongService>(value);
+
+            var plugins = await GetServicePlugins(serviceId);
+            service.Extensions = TranslateToConfig(plugins);
+
+            service.Routes = await GetRoutes(service.Name);
+
+            return service;
+        }
+
+        private async Task<IReadOnlyCollection<PluginBody>> GetServicePlugins(string serviceId)
+        {
+            var allPlugins = new List<PluginBody>();
+            var lastPage = false;
+            var requestUri = $"{PluginsRoute}?service_id={serviceId}";
+
+            do
+            {
+                var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
+
+                response.EnsureSuccessStatusCode();
+
+                var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var pluginsResult = JsonConvert.DeserializeObject<PluginsResponse>(value);
+
+                allPlugins.AddRange(pluginsResult.Data);
+                if (pluginsResult.Next == null)
+                {
+                    lastPage = true;
+                }
+                else
+                {
+                    requestUri = pluginsResult.Next;
+                }
+            } while (!lastPage);
+
+            return allPlugins;
+        }
+
         private async Task PopulatePluginInfo(List<KongService> services)
         {
             var plugins = await GetAllPlugins();
@@ -113,7 +166,7 @@ namespace Kongverge.Common.Services
         {
             var plugins = new List<PluginBody>();
             var lastPage = false;
-            var requestUri = "/plugins";
+            var requestUri = PluginsRoute;
             do
             {
                 var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
