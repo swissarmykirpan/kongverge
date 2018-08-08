@@ -30,9 +30,9 @@ namespace Kongverge.Common.Helpers
                 return existingValue;
             }
 
-            if (extendibleObject.Extensions == null)
+            if (extendibleObject.Plugins == null)
             {
-                extendibleObject.Extensions = new List<IKongPluginConfig>();
+                extendibleObject.Plugins = new List<IKongPluginConfig>();
             }
 
             // All Aboard the Hack Train!!
@@ -56,7 +56,7 @@ namespace Kongverge.Common.Helpers
 
                 if (token != null)
                 {
-                    extendibleObject.Extensions.Add(token.ToObject(parser.KongObjectType) as IKongPluginConfig);
+                    extendibleObject.Plugins.Add(token.ToObject(parser.KongObjectType) as IKongPluginConfig);
                 }
             }
 
@@ -69,12 +69,12 @@ namespace Kongverge.Common.Helpers
             var token = JObject.FromObject(value);
 
             var extendible = value as ExtendibleKongObject;
-            token.Remove(nameof(extendible.Extensions));
+            token.Remove(nameof(extendible.Plugins));
 
             foreach (var plugin in _parsers)
             {
-                if (extendible.Extensions == null) continue;
-                foreach (var extension in extendible.Extensions.Where(e => e.GetType() == plugin.KongObjectType))
+                if (extendible.Plugins == null) continue;
+                foreach (var extension in extendible.Plugins.Where(e => e.GetType() == plugin.KongObjectType))
                 {
                     token.AddFirst(new JProperty(plugin.SectionName, JToken.FromObject(extension)));
                 }
