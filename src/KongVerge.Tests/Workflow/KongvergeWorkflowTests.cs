@@ -103,7 +103,7 @@ namespace KongVerge.Tests.Workflow
 
             var service = new KongService
             {
-                Extensions = new List<IKongPluginConfig>
+                Plugins = new List<IKongPluginConfig>
                 { plugin1, plugin2 }
             };
 
@@ -129,7 +129,7 @@ namespace KongVerge.Tests.Workflow
 
             var targetService = new KongService
             {
-                Extensions = new List<IKongPluginConfig>
+                Plugins = new List<IKongPluginConfig>
                 { plugin1, plugin2 }
             };
 
@@ -153,12 +153,12 @@ namespace KongVerge.Tests.Workflow
 
             var service = new KongService
             {
-                Extensions = new List<IKongPluginConfig> { plugin2 }
+                Plugins = new List<IKongPluginConfig> { plugin2 }
             };
 
             var targetService = new KongService
             {
-                Extensions = new List<IKongPluginConfig> { plugin1 }
+                Plugins = new List<IKongPluginConfig> { plugin1 }
             };
 
             var system = new KongvergeWorkflowSut();
@@ -177,7 +177,7 @@ namespace KongVerge.Tests.Workflow
 
             var clusterConfig = new GlobalConfig
             {
-                Extensions = new List<IKongPluginConfig>
+                Plugins = new List<IKongPluginConfig>
                 {
                     plugin
                 }
@@ -185,7 +185,7 @@ namespace KongVerge.Tests.Workflow
 
             var fileConfig = new GlobalConfig
             {
-                Extensions = new List<IKongPluginConfig>
+                Plugins = new List<IKongPluginConfig>
                 {
                     plugin
                 }
@@ -205,12 +205,12 @@ namespace KongVerge.Tests.Workflow
 
             var clusterConfig = new GlobalConfig
             {
-                Extensions = new List<IKongPluginConfig>()
+                Plugins = new List<IKongPluginConfig>()
             };
 
             var fileConfig = new GlobalConfig
             {
-                Extensions = new List<IKongPluginConfig>
+                Plugins = new List<IKongPluginConfig>
                 {
                     plugin
                 }
@@ -235,7 +235,7 @@ namespace KongVerge.Tests.Workflow
 
             var clusterConfig = new GlobalConfig
             {
-                Extensions = new List<IKongPluginConfig>
+                Plugins = new List<IKongPluginConfig>
                 {
                     plugin2
                 }
@@ -243,7 +243,7 @@ namespace KongVerge.Tests.Workflow
 
             var fileConfig = new GlobalConfig
             {
-                Extensions = new List<IKongPluginConfig>
+                Plugins = new List<IKongPluginConfig>
                 {
                     plugin
                 }
@@ -267,7 +267,7 @@ namespace KongVerge.Tests.Workflow
 
             var clusterConfig = new GlobalConfig
             {
-                Extensions = new List<IKongPluginConfig>
+                Plugins = new List<IKongPluginConfig>
                 {
                     plugin
                 }
@@ -275,7 +275,7 @@ namespace KongVerge.Tests.Workflow
 
             var fileConfig = new GlobalConfig
             {
-                Extensions = new List<IKongPluginConfig>()
+                Plugins = new List<IKongPluginConfig>()
             };
 
             var body = _fixture.Create<PluginBody>();

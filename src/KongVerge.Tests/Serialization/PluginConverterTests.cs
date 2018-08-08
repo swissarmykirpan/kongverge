@@ -73,7 +73,7 @@ namespace KongVerge.Tests.Serialization
             var start =
                 new ExtendibleTestObject
                 {
-                    Extensions = new List<IKongPluginConfig>
+                    Plugins = new List<IKongPluginConfig>
                     {
                         testKongConfig
                     }
@@ -84,8 +84,8 @@ namespace KongVerge.Tests.Serialization
 
             result.Should().NotBeNull("Should deserialize something");
 
-            result.Extensions.Should().NotBeEmpty();
-            result.Extensions.Cast<TestKongConfig>().First().Should().BeEquivalentTo(testKongConfig);
+            result.Plugins.Should().NotBeEmpty();
+            result.Plugins.Cast<TestKongConfig>().First().Should().BeEquivalentTo(testKongConfig);
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace KongVerge.Tests.Serialization
             var start =
                 new ExtendibleTestObject
                 {
-                    Extensions = new List<IKongPluginConfig>
+                    Plugins = new List<IKongPluginConfig>
                     {
                         testKongConfig,
                         testKongConfig2
@@ -110,9 +110,9 @@ namespace KongVerge.Tests.Serialization
 
             result.Should().NotBeNull("Should deserialize something");
 
-            result.Extensions.Should().NotBeEmpty();
-            result.Extensions.OfType<TestKongConfig>().First().Should().BeEquivalentTo(testKongConfig);
-            result.Extensions.OfType<OtherTestKongConfig>().First().Should().BeEquivalentTo(testKongConfig2);
+            result.Plugins.Should().NotBeEmpty();
+            result.Plugins.OfType<TestKongConfig>().First().Should().BeEquivalentTo(testKongConfig);
+            result.Plugins.OfType<OtherTestKongConfig>().First().Should().BeEquivalentTo(testKongConfig2);
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace KongVerge.Tests.Serialization
             var start =
                 new ExtendibleTestObject
                 {
-                    Extensions = new List<IKongPluginConfig>
+                    Plugins = new List<IKongPluginConfig>
                     {
                         testKongConfig,
                     }
@@ -134,8 +134,8 @@ namespace KongVerge.Tests.Serialization
 
             result.Should().NotBeNull("Should deserialize something");
 
-            result.Extensions.Should().NotBeEmpty();
-            result.Extensions.OfType<NestedTestKongConfig>().First().Should().BeEquivalentTo(testKongConfig);
+            result.Plugins.Should().NotBeEmpty();
+            result.Plugins.OfType<NestedTestKongConfig>().First().Should().BeEquivalentTo(testKongConfig);
         }
     }
 }

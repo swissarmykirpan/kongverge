@@ -169,8 +169,8 @@ namespace Kongverge.Common
 
         public async Task ConvergePlugins(ExtendibleKongObject target, ExtendibleKongObject existing)
         {
-            var newSet = target?.Extensions?.ToDictionary(e => e.GetType()) ?? new Dictionary<Type, IKongPluginConfig>();
-            var existingSet = existing?.Extensions?.ToDictionary(t => t.GetType()) ?? new Dictionary<Type, IKongPluginConfig>();
+            var newSet = target?.Plugins?.ToDictionary(e => e.GetType()) ?? new Dictionary<Type, IKongPluginConfig>();
+            var existingSet = existing?.Plugins?.ToDictionary(t => t.GetType()) ?? new Dictionary<Type, IKongPluginConfig>();
 
             var changes = newSet.Keys.Union(existingSet.Keys)
                 .Select(key =>
