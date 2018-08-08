@@ -18,7 +18,7 @@ namespace Kongverge.Common.DTOs
             return string.IsNullOrEmpty(Id);
         }
 
-        public IList<IKongPluginConfig> Extensions { get; set; }
+        public IList<IKongPluginConfig> Plugins { get; set; }
 
         public override string ToString()
         {
@@ -29,7 +29,7 @@ namespace Kongverge.Common.DTOs
         {
             internal EmptyExtendibleKongObject()
             {
-                Extensions = new List<IKongPluginConfig>();
+                Plugins = new List<IKongPluginConfig>();
             }
 
             protected override PluginBody DoDecoratePluginBody(PluginBody body)

@@ -119,7 +119,7 @@ namespace Kongverge.Common.Services
             var service = JsonConvert.DeserializeObject<KongService>(value);
 
             var plugins = await GetServicePlugins(serviceId);
-            service.Extensions = TranslateToConfig(plugins);
+            service.Plugins = TranslateToConfig(plugins);
 
             service.Routes = await GetRoutes(service.Name);
 
@@ -203,14 +203,14 @@ namespace Kongverge.Common.Services
             {
                 if (serviceGroups.ContainsKey(service.Id))
                 {
-                    service.Extensions = TranslateToConfig(serviceGroups[service.Id]);
+                    service.Plugins = TranslateToConfig(serviceGroups[service.Id]);
                 }
 
                 foreach (var route in service.Routes ?? Enumerable.Empty<KongRoute>())
                 {
                     if (routeGroups.ContainsKey(route.Id))
                     {
-                        route.Extensions = TranslateToConfig(routeGroups[route.Id]);
+                        route.Plugins = TranslateToConfig(routeGroups[route.Id]);
                     }
                 }
             }
@@ -294,7 +294,7 @@ namespace Kongverge.Common.Services
                 return
                     KongAction.Success(new GlobalConfig
                     {
-                        Extensions = TranslateToConfig(globalPlugins)
+                        Plugins = TranslateToConfig(globalPlugins)
                     });
             }
             catch (Exception ex)
