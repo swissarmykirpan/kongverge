@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Kongverge.Common.DTOs;
+using Kongverge.KongPlugin;
 
 namespace Kongverge.Integration.Tests
 {
@@ -28,6 +29,16 @@ namespace Kongverge.Integration.Tests
             route.Protocols = new[] { "http" };
             route.Methods = new[] { "GET" };
             _service.Routes = new List<KongRoute> { route };
+            return this;
+        }
+
+        public ServiceBuilder WithPlugin(IKongPluginConfig plugin)
+        {
+            if (_service.Plugins == null)
+            {
+                _service.Plugins = new List<IKongPluginConfig>();
+            }
+            _service.Plugins.Add(plugin);
             return this;
         }
 

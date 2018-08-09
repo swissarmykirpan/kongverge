@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Kongverge.KongPlugin
 {
@@ -22,6 +24,31 @@ namespace Kongverge.KongPlugin
             }
 
             return 0;
+        }
+
+        public static int[] ReadConfigInts(this PluginBody pluginBody, string key)
+        {
+            if (pluginBody.config.ContainsKey(key))
+            {
+                var obj = pluginBody.config[key];
+
+                switch (obj)
+                {
+                    case int[] ints:
+                        return ints;
+
+                    case JArray jArray:
+                        return jArray.Select(v => (int) v).ToArray();
+
+                    case int value:
+                        return new [] { value };
+
+                    default:
+                        return new int[0];
+                }
+            }
+
+            return new int[0];
         }
 
         public static long ReadConfigLong(this PluginBody pluginBody, string key)

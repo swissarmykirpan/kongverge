@@ -32,6 +32,16 @@ namespace Kongverge.Services
             });
         }
 
+        public Task<KongPluginResponse> UpsertPlugin(KongService service, PluginBody plugin)
+        {
+            Log.Information("Adding service plugin {plugin}\n\tWith config {config}", plugin.name, plugin.config);
+            return Task.FromResult(new KongPluginResponse
+            {
+                Name = plugin.ToString(),
+                Id = Guid.NewGuid().ToString()
+            });
+        }
+
         public Task<KongAction<KongRoute>> AddRoute(KongService service, KongRoute route)
         {
             Log.Information(@"Adding Route
