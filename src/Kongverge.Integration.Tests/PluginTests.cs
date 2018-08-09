@@ -38,6 +38,7 @@ namespace Kongverge.Integration.Tests
         {
             var plugin = new RateLimitingConfig
             {
+                Identifier = "consumer",
                 Limit = new [] { 123 },
                 WindowSize = new [] { 3455 }
             };
@@ -46,9 +47,10 @@ namespace Kongverge.Integration.Tests
 
             var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
 
-            serviceReadFromKong.Should().NotBeNull();
-            serviceReadFromKong.Plugins.Should().NotBeNull();
-            serviceReadFromKong.Plugins.Should().HaveCount(1);
+            var pluginOut = ReadFirstPlugin<RateLimitingConfig>(serviceReadFromKong);
+
+            plugin.id = pluginOut.id;
+            pluginOut.Should().BeEquivalentTo(plugin);
         }
 
         [Fact]
@@ -63,9 +65,10 @@ namespace Kongverge.Integration.Tests
 
             var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
 
-            serviceReadFromKong.Should().NotBeNull();
-            serviceReadFromKong.Plugins.Should().NotBeNull();
-            serviceReadFromKong.Plugins.Should().HaveCount(1);
+            var pluginOut = ReadFirstPlugin<CorrelationIdConfig>(serviceReadFromKong);
+
+            plugin.id = pluginOut.id;
+            pluginOut.Should().BeEquivalentTo(plugin);
         }
 
         private async Task<KongAction<KongService>> AttachPluginToService(IKongPluginConfig plugin)
@@ -99,6 +102,16 @@ namespace Kongverge.Integration.Tests
             }
 
             return kongAction;
+        }
+
+        public T ReadFirstPlugin<T>(KongService service) where T : IKongPluginConfig
+        {
+            service.Should().NotBeNull();
+            service.Plugins.Should().NotBeNull();
+            service.Plugins.Should().HaveCount(1);
+            service.Plugins[0].Should().BeOfType<T>();
+
+            return (T)service.Plugins[0];
         }
     }
 }
