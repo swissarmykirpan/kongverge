@@ -71,6 +71,21 @@ namespace Kongverge.Integration.Tests
             pluginOut.Should().BeEquivalentTo(plugin);
         }
 
+        [Fact]
+        public async Task ServiceCanHaveKeyAuthenticationConfig()
+        {
+            var plugin = new KeyAuthenticationConfig();
+
+            var kongAction = await AttachPluginToService(plugin);
+
+            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
+
+            var pluginOut = ReadFirstPlugin<KeyAuthenticationConfig>(serviceReadFromKong);
+
+            plugin.id = pluginOut.id;
+            pluginOut.Should().BeEquivalentTo(plugin);
+        }
+
         private async Task<KongAction<KongService>> AttachPluginToService(IKongPluginConfig plugin)
         {
             var service = new ServiceBuilder()

@@ -16,6 +16,32 @@ namespace Kongverge.KongPlugin
             return string.Empty;
         }
 
+        public static string[] ReadConfigStrings(this PluginBody pluginBody, string key)
+        {
+            if (pluginBody.config.ContainsKey(key))
+            {
+                var obj = pluginBody.config[key];
+
+                switch (obj)
+                {
+                    case string[] values:
+                        return values;
+
+                    case JArray jArray:
+                        return jArray.Select(v => v.ToString()).ToArray();
+
+                    case string value:
+                        return new[] { value };
+
+                    default:
+                        return new string[0];
+                }
+            }
+
+            return new string[0];
+        }
+
+
         public static int ReadConfigInt(this PluginBody pluginBody, string key)
         {
             if (pluginBody.config.ContainsKey(key))
