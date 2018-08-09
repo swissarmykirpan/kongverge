@@ -31,7 +31,7 @@ namespace Kongverge.KongPlugin
                         return jArray.Select(v => v.ToString()).ToArray();
 
                     case string value:
-                        return new[] { value };
+                        return value.Split(',').ToArray();
 
                     default:
                         return new string[0];
