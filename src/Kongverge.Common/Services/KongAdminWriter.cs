@@ -123,7 +123,13 @@ namespace Kongverge.Common.Services
             try
             {
                 var result = await HttpClient.PostAsync($"/services/{service.Id ?? service.Name}/routes", content).ConfigureAwait(false);
-                if (result.StatusCode == HttpStatusCode.Created)
+                if (result.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    var errorMessage = await result.Content.ReadAsStringAsync();
+                    Log.Information("Failed to add route {route} : {errorMessage}", route, errorMessage);
+                    return KongAction.Failure<KongRoute>();
+                }
+                else if (result.StatusCode == HttpStatusCode.Created)
                 {
                     var addedRoute = JsonConvert.DeserializeObject<KongRoute>(await result.Content.ReadAsStringAsync().ConfigureAwait(false));
 
