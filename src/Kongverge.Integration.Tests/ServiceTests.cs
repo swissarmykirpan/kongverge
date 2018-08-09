@@ -111,6 +111,5 @@ namespace Kongverge.Integration.Tests
 
             return kongAction;
         }
-
     }
 }
