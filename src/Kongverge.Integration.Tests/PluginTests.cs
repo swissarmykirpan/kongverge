@@ -3,6 +3,7 @@ using FluentAssertions;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Plugins.BuiltIn;
 using Kongverge.Common.Services;
+using Kongverge.KongPlugin;
 using Xunit;
 
 namespace Kongverge.Integration.Tests
@@ -41,6 +42,34 @@ namespace Kongverge.Integration.Tests
                 WindowSize = new [] { 3455 }
             };
 
+            var kongAction = await AttachPluginToService(plugin);
+
+            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
+
+            serviceReadFromKong.Should().NotBeNull();
+            serviceReadFromKong.Plugins.Should().NotBeNull();
+            serviceReadFromKong.Plugins.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public async Task ServiceCanHaveCorrelationIdPlugin()
+        {
+            var plugin = new CorrelationIdConfig
+            {
+                Header = "test1"
+            };
+
+            var kongAction = await AttachPluginToService(plugin);
+
+            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
+
+            serviceReadFromKong.Should().NotBeNull();
+            serviceReadFromKong.Plugins.Should().NotBeNull();
+            serviceReadFromKong.Plugins.Should().HaveCount(1);
+        }
+
+        private async Task<KongAction<KongService>> AttachPluginToService(IKongPluginConfig plugin)
+        {
             var service = new ServiceBuilder()
                 .AddDefaultTestService()
                 .WithPlugin(plugin)
@@ -50,12 +79,7 @@ namespace Kongverge.Integration.Tests
             _fixture.CleanUp.Add(service);
             kongAction.Succeeded.Should().BeTrue();
             kongAction.Result.Id.Should().NotBeNullOrEmpty();
-
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
-
-            serviceReadFromKong.Should().NotBeNull();
-            serviceReadFromKong.Plugins.Should().NotBeNull();
-            serviceReadFromKong.Plugins.Should().HaveCount(1);
+            return kongAction;
         }
 
         private async Task<KongAction<KongService>> AddServiceAndPlugins(KongService service)
