@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Kongverge.KongPlugin;
 
 namespace Kongverge.Common.Plugins.BuiltIn
@@ -13,11 +14,9 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         protected override KeyAuthenticationConfig DoCreateConfigObject(PluginBody pluginBody)
         {
-            var keyNames = pluginBody.ReadConfigString("key_names");
-
             return new KeyAuthenticationConfig
             {
-                KeyNames = new HashSet<string>(keyNames.Split(',')),
+                KeyNames = pluginBody.ReadConfigStrings("key_names").ToHashSet(),
                 KeyInBody = pluginBody.ReadConfigBool("key_in_body"),
                 Anonymous = pluginBody.ReadConfigString("anonymous"),
                 RunOnPreflight = pluginBody.ReadConfigBool("run_on_preflight"),

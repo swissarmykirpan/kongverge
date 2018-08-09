@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
+using Kongverge.Common.Plugins;
 using Kongverge.Common.Services;
+using Kongverge.KongPlugin;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -18,6 +20,7 @@ namespace Kongverge.Integration.Tests
         public Settings Settings => _serviceProvider.GetRequiredService<IOptions<Settings>>().Value;
 
         public IList<KongService> CleanUp { get; }
+        public IKongPluginCollection PluginCollection => new KongPluginCollection(_serviceProvider.GetServices<IKongPlugin>());
 
         public KongvergeTestFixture()
         {
