@@ -1,17 +1,22 @@
-using System.Collections.Generic;
+
 using FluentAssertions;
 using Kongverge.Common.Plugins.BuiltIn;
 using Xunit;
 
 namespace Kongverge.Common.Tests
 {
-    public class KeyAuthenticationPluginTests
+    public class RateLimitingPluginPluginTests
     {
         [Fact]
         public void RoundTripFromConfigWithNoFields()
         {
-            var configIn = new KeyAuthenticationConfig();
-            var plugin = new KeyAuthenticationPlugin();
+            var configIn = new RateLimitingConfig
+            {
+                Limit = new int[0],
+                WindowSize = new int[0]
+            };
+
+            var plugin = new RateLimitingPlugin();
 
             var configOut = PluginHelpers.RoundTripFromConfig(plugin, configIn);
 
@@ -21,16 +26,14 @@ namespace Kongverge.Common.Tests
         [Fact]
         public void RoundTripFromConfigWithAllFields()
         {
-            var configIn = new KeyAuthenticationConfig
+            var configIn = new RateLimitingConfig
             {
                 id = "corr_id",
-                Anonymous = "nobody",
-                HideCredentials = true,
-                KeyInBody = true,
-                RunOnPreflight = true,
-                KeyNames = new HashSet<string> { "foo", "bar", "fish" }
+                Identifier = "rat rat rat",
+                Limit = new[] { 42 },
+                WindowSize = new[] { 1234 }
             };
-            var plugin = new KeyAuthenticationPlugin();
+            var plugin = new RateLimitingPlugin();
 
             var configOut = PluginHelpers.RoundTripFromConfig(plugin, configIn);
 
@@ -40,7 +43,7 @@ namespace Kongverge.Common.Tests
         [Fact]
         public void RoundTripFromBodyWithNoData()
         {
-            PluginHelpers.RoundTripFromBodyTest(new KeyAuthenticationPlugin());
+            PluginHelpers.RoundTripFromBodyTest(new RateLimitingPlugin());
         }
     }
 }
