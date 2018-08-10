@@ -86,6 +86,26 @@ namespace Kongverge.Integration.Tests
             pluginOut.Should().BeEquivalentTo(plugin);
         }
 
+        [Fact]
+        public async Task ServiceCanHaveRequestTerminationPlugin()
+        {
+            var plugin = new RequestTerminationConfig
+            {
+                StatusCode = 501,
+                Message = "test term"
+            };
+
+            var kongAction = await AttachPluginToService(plugin);
+
+            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
+
+            var pluginOut = ReadFirstPlugin<RequestTerminationConfig>(serviceReadFromKong);
+
+            plugin.id = pluginOut.id;
+            pluginOut.Should().BeEquivalentTo(plugin);
+        }
+
+
         private async Task<KongAction<KongService>> AttachPluginToService(IKongPluginConfig plugin)
         {
             var service = new ServiceBuilder()
