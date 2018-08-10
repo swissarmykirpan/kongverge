@@ -37,31 +37,33 @@ namespace Kongverge.Common.Services
             try
             {
                 var response = await HttpClient.PostAsync("/services/", content).ConfigureAwait(false);
+                var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
                 if (response.StatusCode == HttpStatusCode.BadRequest)
                 {
-                    var errorMessage = await response.Content.ReadAsStringAsync();
-                    Log.Information("Failed to add service {service} : {errorMessage}", service, errorMessage);
-                    return KongAction.Failure<KongService>();
+                    Log.Information("Failed to add service {service} : {errorMessage}", service, responseBody);
+                    return KongAction.Failure<KongService>(response.StatusCode, responseBody);
                 }
 
                 var success = response.StatusCode == HttpStatusCode.Created;
                 if (success)
                 {
-                    var apiservice = JsonConvert.DeserializeObject<KongService>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                    var apiservice = JsonConvert.DeserializeObject<KongService>(responseBody);
 
                     // Populate the Id from Kong, because we don't have it.
                     service.MergeFromService(apiservice);
 
-                    return KongAction.Success(service);
+                    return KongAction.Success(response.StatusCode, service);
                 }
+
+                return KongAction.Failure<KongService>(response.StatusCode, responseBody);
+
             }
             catch (Exception e)
             {
                 Log.Error(e, e.Message);
                 throw;
             }
-
-            return KongAction.Failure<KongService>();
         }
 
         public async Task<KongAction<KongService>> UpdateService(KongService service)
@@ -77,27 +79,32 @@ namespace Kongverge.Common.Services
             service.Routes = routes;
             service.Plugins = plugins;
 
-            var request = new HttpRequestMessage(HttpMethod.Patch, requestUri) { Content = content };
+            var request = new HttpRequestMessage(HttpMethod.Patch, requestUri)
+            {
+                Content = content
+            };
 
             try
             {
                 var response = await HttpClient.SendAsync(request).ConfigureAwait(false);
+                var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    var updated = JsonConvert.DeserializeObject<KongService>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                    var updated = JsonConvert.DeserializeObject<KongService>(responseBody);
 
                     service.MergeFromService(updated);
 
-                    return KongAction.Success(service);
+                    return KongAction.Success(response.StatusCode, service);
                 }
+
+                return KongAction.Failure<KongService>(response.StatusCode, responseBody);
             }
             catch (Exception e)
             {
                 Log.Error(e, e.Message);
                 throw;
             }
-
-            return KongAction.Failure<KongService>();
         }
 
         public async Task<KongAction<string>> DeleteService(string serviceId)
@@ -114,7 +121,8 @@ namespace Kongverge.Common.Services
                     return KongAction.Success(serviceId);
                 }
 
-                return KongAction.Failure<string>();
+                var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                return KongAction.Failure<string>(response.StatusCode, responseBody);
             }
             catch (Exception e)
             {
@@ -136,29 +144,30 @@ namespace Kongverge.Common.Services
             try
             {
                 var result = await HttpClient.PostAsync($"/services/{service.Id ?? service.Name}/routes", content).ConfigureAwait(false);
+                var responseBody = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+
                 if (result.StatusCode == HttpStatusCode.BadRequest)
                 {
-                    var errorMessage = await result.Content.ReadAsStringAsync();
-                    Log.Information("Failed to add route {route} : {errorMessage}", route, errorMessage);
-                    return KongAction.Failure<KongRoute>();
+                    Log.Information("Failed to add route {route} : {errorMessage}", route, responseBody);
+                    return KongAction.Failure<KongRoute>(result.StatusCode, responseBody);
                 }
                 if (result.StatusCode == HttpStatusCode.Created)
                 {
-                    var addedRoute = JsonConvert.DeserializeObject<KongRoute>(await result.Content.ReadAsStringAsync().ConfigureAwait(false));
+                    var addedRoute = JsonConvert.DeserializeObject<KongRoute>(responseBody);
 
                     route.MergeFromService(addedRoute);
 
                     Log.Information("Added route {route}", addedRoute);
-                    return KongAction.Success(route);
+                    return KongAction.Success(result.StatusCode, route);
                 }
+
+                return KongAction.Failure<KongRoute>(result.StatusCode, responseBody);
             }
             catch (Exception e)
             {
                 Log.Error(e, e.Message);
                 throw;
             }
-
-            return KongAction.Failure<KongRoute>();
         }
 
         public async Task<KongAction<IEnumerable<KongRoute>>> DeleteRoutes(KongService service)
@@ -202,14 +211,14 @@ namespace Kongverge.Common.Services
 Error was:
 {content}", plugin.name, plugin.service_id ?? plugin.consumer_id ?? plugin.route_id, responseBody);
 
-                    return KongAction.Failure<KongPluginResponse>();
+                    return KongAction.Failure<KongPluginResponse>(response.StatusCode, responseBody);
                 }
 
                 var pluginResponse = JsonConvert.DeserializeObject<KongPluginResponse>(responseBody);
 
                 Log.Information("Successfully added plugin {name} to route {id}", plugin.name, plugin.consumer_id ?? plugin.service_id ?? plugin.route_id);
 
-                return KongAction.Success(pluginResponse);
+                return KongAction.Success(response.StatusCode, pluginResponse);
             }
             catch (Exception e)
             {
