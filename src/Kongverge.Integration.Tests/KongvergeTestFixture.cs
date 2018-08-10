@@ -18,9 +18,7 @@ namespace Kongverge.Integration.Tests
         public IDataFileHelper DataFileHelper => _serviceProvider.GetService<IDataFileHelper>();
         public IKongAdminWriter KongAdminWriter => _serviceProvider.GetService<IKongAdminWriter>();
         public IKongAdminReader KongAdminReader => _serviceProvider.GetService<IKongAdminReader>();
-
         public Settings Settings => _serviceProvider.GetRequiredService<IOptions<Settings>>().Value;
-
         public IList<KongService> CleanUp { get; }
         public IKongPluginCollection PluginCollection => new KongPluginCollection(_serviceProvider.GetServices<IKongPlugin>());
 
@@ -45,7 +43,6 @@ namespace Kongverge.Integration.Tests
 
                 await KongAdminWriter.DeleteService(service.Id);
             }
-
         }
 
         public void Dispose()
