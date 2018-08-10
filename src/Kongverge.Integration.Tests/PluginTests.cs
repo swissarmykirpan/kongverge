@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Plugins.BuiltIn;
-using Kongverge.Common.Services;
 using Kongverge.KongPlugin;
 using Xunit;
 
@@ -21,12 +20,9 @@ namespace Kongverge.Integration.Tests
         public async Task DefaultServiceHasNoPlugins()
         {
             var service = new ServiceBuilder().AddDefaultTestService().Build();
-            var kongAction = await AddServiceAndPlugins(service);
-            _fixture.CleanUp.Add(service);
-            kongAction.ShouldSucceed();
-            kongAction.Result.Id.Should().NotBeNullOrEmpty();
+            var kongServiceAdded = await AddServiceAndPlugins(service);
 
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
+            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
 
             serviceReadFromKong.Should().NotBeNull();
             serviceReadFromKong.Plugins.Should().NotBeNull();
@@ -43,9 +39,9 @@ namespace Kongverge.Integration.Tests
                 WindowSize = new [] { 3455 }
             };
 
-            var kongAction = await AttachPluginToService(plugin);
+            var kongServiceAdded = await AttachPluginToService(plugin);
 
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
+            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
 
             var pluginOut = ReadFirstPlugin<RateLimitingConfig>(serviceReadFromKong);
 
@@ -61,9 +57,9 @@ namespace Kongverge.Integration.Tests
                 Header = "test1"
             };
 
-            var kongAction = await AttachPluginToService(plugin);
+            var kongServiceAdded = await AttachPluginToService(plugin);
 
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
+            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
 
             var pluginOut = ReadFirstPlugin<CorrelationIdConfig>(serviceReadFromKong);
 
@@ -76,9 +72,9 @@ namespace Kongverge.Integration.Tests
         {
             var plugin = new KeyAuthenticationConfig();
 
-            var kongAction = await AttachPluginToService(plugin);
+            var kongServiceAdded = await AttachPluginToService(plugin);
 
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
+            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
 
             var pluginOut = ReadFirstPlugin<KeyAuthenticationConfig>(serviceReadFromKong);
 
@@ -95,9 +91,9 @@ namespace Kongverge.Integration.Tests
                 Message = "test term"
             };
 
-            var kongAction = await AttachPluginToService(plugin);
+            var kongServiceAdded = await AttachPluginToService(plugin);
 
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
+            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
 
             var pluginOut = ReadFirstPlugin<RequestTerminationConfig>(serviceReadFromKong);
 
@@ -106,24 +102,22 @@ namespace Kongverge.Integration.Tests
         }
 
 
-        private async Task<KongAction<KongService>> AttachPluginToService(IKongPluginConfig plugin)
+        private async Task<KongService> AttachPluginToService(IKongPluginConfig plugin)
         {
             var service = new ServiceBuilder()
                 .AddDefaultTestService()
                 .WithPlugin(plugin)
                 .Build();
 
-            var kongAction = await AddServiceAndPlugins(service);
-            _fixture.CleanUp.Add(service);
-            kongAction.ShouldSucceed();
-            kongAction.Result.Id.Should().NotBeNullOrEmpty();
-            return kongAction;
+            return await AddServiceAndPlugins(service);
         }
 
-        private async Task<KongAction<KongService>> AddServiceAndPlugins(KongService service)
+        private async Task<KongService> AddServiceAndPlugins(KongService service)
         {
-            var kongAction = await _fixture.KongAdminWriter.AddService(service);
-            kongAction.ShouldSucceed();
+            var addServiceResult = await _fixture.KongAdminWriter.AddService(service);
+            addServiceResult.Should().NotBeNull();
+            addServiceResult.ShouldSucceed();
+            addServiceResult.Result.Id.Should().NotBeNullOrEmpty();
 
             if (service.Plugins != null)
             {
@@ -134,10 +128,12 @@ namespace Kongverge.Integration.Tests
                     var pluginResult = await _fixture.KongAdminWriter.UpsertPlugin(content);
                     pluginResult.Should().NotBeNull();
                     pluginResult.ShouldSucceed();
+                    pluginResult.Result.Id.Should().NotBeNullOrEmpty();
                 }
             }
 
-            return kongAction;
+            _fixture.CleanUp.Add(service);
+            return addServiceResult.Result;
         }
 
         public T ReadFirstPlugin<T>(KongService service) where T : IKongPluginConfig
