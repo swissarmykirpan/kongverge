@@ -72,7 +72,7 @@ namespace Kongverge.Integration.Tests
         }
 
         [Fact]
-        public async Task ServiceCanHaveKeyAuthenticationConfig()
+        public async Task ServiceCanHaveKeyAuthenticationPlugin()
         {
             var plugin = new KeyAuthenticationConfig();
 
