@@ -31,7 +31,7 @@ namespace Kongverge.Integration.Tests
             var service = new ServiceBuilder().AddDefaultTestService().Build();
             var kongAction = await _fixture.KongAdminWriter.AddService(service);
             _fixture.CleanUp.Add(service);
-            kongAction.Succeeded.Should().BeTrue();
+            kongAction.ShouldSucceed();
             kongAction.Result.Id.Should().NotBeNullOrEmpty();
 
             await _fixture.KongAdminReader.HasServiceWithId(kongAction.Result.Id);
@@ -49,7 +49,7 @@ namespace Kongverge.Integration.Tests
             var kongAction = await AddServiceAndRoutes(serviceToAdd);
             _fixture.CleanUp.Add(serviceToAdd);
 
-            kongAction.Succeeded.Should().BeTrue();
+            kongAction.ShouldSucceed();
             var service = kongAction.Result;
             service.Id.Should().NotBeNullOrEmpty();
 
@@ -81,7 +81,7 @@ namespace Kongverge.Integration.Tests
 
             var deleteAction = await _fixture.KongAdminWriter.DeleteService(service.Id);
 
-            deleteAction.Succeeded.Should().BeTrue();
+            deleteAction.ShouldSucceed();
             await _fixture.KongAdminReader.HasNoServiceWithId(service.Id);
         }
 
@@ -90,7 +90,7 @@ namespace Kongverge.Integration.Tests
             var service = new ServiceBuilder().AddDefaultTestService().Build();
             var addAction = await _fixture.KongAdminWriter.AddService(service);
 
-            addAction.Succeeded.Should().BeTrue();
+            addAction.ShouldSucceed();
             addAction.Result.Id.Should().NotBeNullOrEmpty();
 
             await _fixture.KongAdminReader.HasServiceWithId(service.Id);
@@ -101,12 +101,12 @@ namespace Kongverge.Integration.Tests
         private async Task<KongAction<KongService>> AddServiceAndRoutes(KongService service)
         {
             var kongAction = await _fixture.KongAdminWriter.AddService(service);
-            kongAction.Succeeded.Should().BeTrue();
+            kongAction.ShouldSucceed();
 
             foreach (var route in service.Routes)
             {
                 var routeResult = await _fixture.KongAdminWriter.AddRoute(service, route);
-                routeResult.Succeeded.Should().BeTrue();
+                routeResult.ShouldSucceed();
             }
 
             return kongAction;

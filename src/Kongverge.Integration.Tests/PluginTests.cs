@@ -23,7 +23,7 @@ namespace Kongverge.Integration.Tests
             var service = new ServiceBuilder().AddDefaultTestService().Build();
             var kongAction = await AddServiceAndPlugins(service);
             _fixture.CleanUp.Add(service);
-            kongAction.Succeeded.Should().BeTrue();
+            kongAction.ShouldSucceed();
             kongAction.Result.Id.Should().NotBeNullOrEmpty();
 
             var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
@@ -95,7 +95,7 @@ namespace Kongverge.Integration.Tests
 
             var kongAction = await AddServiceAndPlugins(service);
             _fixture.CleanUp.Add(service);
-            kongAction.Succeeded.Should().BeTrue();
+            kongAction.ShouldSucceed();
             kongAction.Result.Id.Should().NotBeNullOrEmpty();
             return kongAction;
         }
@@ -103,7 +103,7 @@ namespace Kongverge.Integration.Tests
         private async Task<KongAction<KongService>> AddServiceAndPlugins(KongService service)
         {
             var kongAction = await _fixture.KongAdminWriter.AddService(service);
-            kongAction.Succeeded.Should().BeTrue();
+            kongAction.ShouldSucceed();
 
             if (service.Plugins != null)
             {
@@ -113,7 +113,7 @@ namespace Kongverge.Integration.Tests
                     content.service_id = service.Id;
                     var pluginResult = await _fixture.KongAdminWriter.UpsertPlugin(content);
                     pluginResult.Should().NotBeNull();
-                    pluginResult.Succeeded.Should().BeTrue();
+                    pluginResult.ShouldSucceed();
                 }
             }
 
