@@ -34,7 +34,8 @@ namespace KongVerge.Tests
             _fakeHttpMessageHandler.Setup(f => f.Send(It.IsAny<HttpRequestMessage>()))
                 .Returns(new HttpResponseMessage
                 {
-                    StatusCode = HttpStatusCode.OK
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent("")
                 });
 
             var kongPluginCollection = new Mock<IKongPluginCollection>();
@@ -55,7 +56,8 @@ namespace KongVerge.Tests
             _fakeHttpMessageHandler.Setup(f => f.Send(It.IsAny<HttpRequestMessage>()))
                 .Returns(new HttpResponseMessage
                 {
-                    StatusCode = HttpStatusCode.BadGateway
+                    StatusCode = HttpStatusCode.BadGateway,
+                    Content = new StringContent("")
                 });
 
             var kongPluginCollection = new Mock<IKongPluginCollection>();
@@ -146,6 +148,7 @@ namespace KongVerge.Tests
             var successResponse = new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
+                Content = new StringContent("")
             };
 
             _fakeHttpMessageHandler.Setup(f => f.Send(It.IsAny<HttpRequestMessage>()))
