@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
 using Kongverge.Common.Plugins;
@@ -16,9 +18,7 @@ namespace Kongverge.Integration.Tests
         public IDataFileHelper DataFileHelper => _serviceProvider.GetService<IDataFileHelper>();
         public IKongAdminWriter KongAdminWriter => _serviceProvider.GetService<IKongAdminWriter>();
         public IKongAdminReader KongAdminReader => _serviceProvider.GetService<IKongAdminReader>();
-
         public Settings Settings => _serviceProvider.GetRequiredService<IOptions<Settings>>().Value;
-
         public IList<KongService> CleanUp { get; }
         public IKongPluginCollection PluginCollection => new KongPluginCollection(_serviceProvider.GetServices<IKongPlugin>());
 
@@ -28,6 +28,21 @@ namespace Kongverge.Integration.Tests
             ServiceRegistration.AddServices(services);
             _serviceProvider = services.BuildServiceProvider();
             CleanUp = new List<KongService>();
+            DeleteExistingTestServices().Wait();
+        }
+
+        private async Task DeleteExistingTestServices()
+        {
+            var services = await KongAdminReader.GetServices();
+            foreach (var service in services.Where(s => s.Name.StartsWith("testservice_")))
+            {
+                foreach (var route in service.Routes)
+                {
+                    await KongAdminWriter.DeleteRoute(route.Id);
+                }
+
+                await KongAdminWriter.DeleteService(service.Id);
+            }
         }
 
         public void Dispose()
