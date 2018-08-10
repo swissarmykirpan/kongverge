@@ -9,9 +9,11 @@ namespace Kongverge.Integration.Tests
     {
         private readonly KongService _service = new KongService();
 
-        public ServiceBuilder AddDefaultTestService()
+        public ServiceBuilder AddDefaultTestService(string testIdentifier = null)
         {
-            _service.Name = $"testservice_{Guid.NewGuid().ToString()}";
+            _service.Name = string.IsNullOrWhiteSpace(testIdentifier) ?
+                $"testservice_{Guid.NewGuid().ToString()}" :
+                $"testservice_{testIdentifier}_{Guid.NewGuid().ToString()}";
             _service.Host = "www.example.com";
             _service.Port = 80;
             return this;
