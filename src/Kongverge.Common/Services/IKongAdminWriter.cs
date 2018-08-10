@@ -17,7 +17,7 @@ namespace Kongverge.Common.Services
 
         Task<KongAction<IEnumerable<KongRoute>>> DeleteRoutes(KongService service);
 
-        Task<KongPluginResponse> UpsertPlugin(PluginBody plugin);
+        Task<KongAction<KongPluginResponse>> UpsertPlugin(PluginBody plugin);
 
         Task<bool> DeleteRoute(string routeId);
 

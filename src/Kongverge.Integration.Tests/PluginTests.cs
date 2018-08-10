@@ -113,6 +113,7 @@ namespace Kongverge.Integration.Tests
                     content.service_id = service.Id;
                     var pluginResult = await _fixture.KongAdminWriter.UpsertPlugin(content);
                     pluginResult.Should().NotBeNull();
+                    pluginResult.Succeeded.Should().BeTrue();
                 }
             }
 

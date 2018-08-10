@@ -22,14 +22,16 @@ namespace Kongverge.Services
         {
         }
 
-        public Task<KongPluginResponse> UpsertPlugin(PluginBody plugin)
+        public Task<KongAction<KongPluginResponse>> UpsertPlugin(PluginBody plugin)
         {
             Log.Information("Adding plugin {plugin}\n\tWith config {config}", plugin.name, plugin.config);
-            return Task.FromResult(new KongPluginResponse
+            var response = new KongPluginResponse
             {
                 Name = plugin.ToString(),
                 Id = Guid.NewGuid().ToString()
-            });
+            };
+
+            return Task.FromResult(KongAction.Success(response));
         }
 
         public Task<KongAction<KongRoute>> AddRoute(KongService service, KongRoute route)

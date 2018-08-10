@@ -186,7 +186,7 @@ namespace Kongverge.Common.Services
             }
         }
 
-        public async Task<KongPluginResponse> UpsertPlugin(PluginBody plugin)
+        public async Task<KongAction<KongPluginResponse>> UpsertPlugin(PluginBody plugin)
         {
             var content = KongJsonConvert.Serialize(plugin);
 
@@ -202,14 +202,14 @@ namespace Kongverge.Common.Services
 Error was:
 {content}", plugin.name, plugin.service_id ?? plugin.consumer_id ?? plugin.route_id, responseBody);
 
-                    return new KongPluginResponse();
+                    return KongAction.Failure<KongPluginResponse>();
                 }
 
                 var pluginResponse = JsonConvert.DeserializeObject<KongPluginResponse>(responseBody);
 
                 Log.Information("Successfully added plugin {name} to route {id}", plugin.name, plugin.consumer_id ?? plugin.service_id ?? plugin.route_id);
 
-                return pluginResponse;
+                return KongAction.Success(pluginResponse);
             }
             catch (Exception e)
             {
