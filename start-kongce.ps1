@@ -12,11 +12,11 @@ if ($dockerOut -match $kongdb_name) {
 }
 
 Write-Host "Starting clean DB server"
-docker run -d --name kong-ce-database -p 5432:5432 -e "POSTGRES_USER=kong" -e "POSTGRES_DB=kong" postgres:9.5
+docker run -d --name $kongdb_name -p 5432:5432 -e "POSTGRES_USER=kong" -e "POSTGRES_DB=kong" postgres:9.5
 Start-Sleep -s 10
 
 Write-Host "Running DB migrations"
-docker run --name kong-migrations --rm --link kong-ce-database:kong-ce-database -e "KONG_DATABASE=postgres" -e "KONG_PG_HOST=$kongdb_name"  kong kong migrations up
+docker run --name kong-migrations --rm --link ${kongdb_name}:$kongdb_name -e "KONG_DATABASE=postgres" -e "KONG_PG_HOST=$kongdb_name"  kong kong migrations up
 
 
 $dockerOut = docker ps -a -f "ancestor=kong" | Select-String 'kong '
