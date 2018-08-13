@@ -6,7 +6,7 @@ namespace Kongverge.Common.Plugins.Custom
     public class JeRequestDelayConfig : IKongPluginConfig
     {
         [JsonProperty("delay")]
-        public int Delay { get; set; }
+        public long Delay { get; set; }
 
         public bool IsExactMatch(IKongPluginConfig other)
         {

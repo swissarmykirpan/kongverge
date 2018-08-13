@@ -32,5 +32,24 @@ namespace Kongverge.Integration.Tests
             plugin.id = pluginOut.id;
             pluginOut.Should().BeEquivalentTo(plugin);
         }
+
+
+        [Fact]
+        public async Task ServiceCanHaveJeRequestDelayPlugin()
+        {
+            var plugin = new JeRequestDelayConfig
+            {
+                Delay = 123
+            };
+
+            var kongAction = await _fixture.AttachPluginToService(plugin);
+
+            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Id);
+
+            var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin<JeRequestDelayConfig>();
+
+            plugin.id = pluginOut.id;
+            pluginOut.Should().BeEquivalentTo(plugin);
+        }
     }
 }
