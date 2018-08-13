@@ -46,7 +46,19 @@ namespace Kongverge.KongPlugin
         {
             if (pluginBody.config.ContainsKey(key))
             {
-                return (int)pluginBody.config[key];
+                var obj = pluginBody.config[key];
+
+                switch (obj)
+                {
+                    case long lValue:
+                        return (int) lValue;
+
+                    case int value:
+                        return value;
+
+                    default:
+                        return 0;
+                }
             }
 
             return 0;
