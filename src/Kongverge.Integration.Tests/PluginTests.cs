@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Plugins.BuiltIn;
+using Kongverge.Common.Plugins.Custom;
 using Kongverge.Common.Services;
 using Kongverge.KongPlugin;
 using Xunit;
@@ -34,26 +35,6 @@ namespace Kongverge.Integration.Tests
         }
 
         [Fact]
-        public async Task ServiceCanHaveRateLimitingPlugin()
-        {
-            var plugin = new RateLimitingConfig
-            {
-                Identifier = "consumer",
-                Limit = new [] { 123 },
-                WindowSize = new [] { 3455 }
-            };
-
-            var kongAction = await AttachPluginToService(plugin);
-
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
-
-            var pluginOut = ReadFirstPlugin<RateLimitingConfig>(serviceReadFromKong);
-
-            plugin.id = pluginOut.id;
-            pluginOut.Should().BeEquivalentTo(plugin);
-        }
-
-        [Fact]
         public async Task ServiceCanHaveCorrelationIdPlugin()
         {
             var plugin = new CorrelationIdConfig
@@ -81,6 +62,64 @@ namespace Kongverge.Integration.Tests
             var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
 
             var pluginOut = ReadFirstPlugin<KeyAuthenticationConfig>(serviceReadFromKong);
+
+            plugin.id = pluginOut.id;
+            pluginOut.Should().BeEquivalentTo(plugin);
+        }
+
+        [Fact]
+        public async Task ServiceCanHaveRateLimitingPlugin()
+        {
+            var plugin = new RateLimitingConfig
+            {
+                Identifier = "consumer",
+                Limit = new[] { 123 },
+                WindowSize = new[] { 3455 }
+            };
+
+            var kongAction = await AttachPluginToService(plugin);
+
+            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
+
+            var pluginOut = ReadFirstPlugin<RateLimitingConfig>(serviceReadFromKong);
+
+            plugin.id = pluginOut.id;
+            pluginOut.Should().BeEquivalentTo(plugin);
+        }
+
+        [Fact]
+        public async Task ServiceCanHaveRequestTerminationPlugin()
+        {
+            var plugin = new RequestTerminationConfig
+            {
+                Message = "halt",
+                StatusCode = 400
+            };
+
+            var kongAction = await AttachPluginToService(plugin);
+
+            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
+
+            var pluginOut = ReadFirstPlugin<RequestTerminationConfig>(serviceReadFromKong);
+
+            plugin.id = pluginOut.id;
+            pluginOut.Should().BeEquivalentTo(plugin);
+        }
+
+        [Fact]
+        public async Task ServiceCanHaveJeJustSayingDefaultsPlugin()
+        {
+            var plugin = new JeJustSayingDefaultsConfig
+            {
+                RaisingComponent = "testFeature",
+                Tenant = "BW"
+            };
+
+            var kongAction = await AttachPluginToService(plugin);
+
+            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
+
+            var pluginOut = ReadFirstPlugin<JeJustSayingDefaultsConfig>(serviceReadFromKong);
 
             plugin.id = pluginOut.id;
             pluginOut.Should().BeEquivalentTo(plugin);
