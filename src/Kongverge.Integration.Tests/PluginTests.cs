@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Plugins.BuiltIn;
+using Kongverge.Common.Plugins.Custom;
 using Kongverge.Common.Services;
 using Kongverge.KongPlugin;
 using Xunit;
@@ -100,6 +101,25 @@ namespace Kongverge.Integration.Tests
             var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
 
             var pluginOut = ReadFirstPlugin<RequestTerminationConfig>(serviceReadFromKong);
+
+            plugin.id = pluginOut.id;
+            pluginOut.Should().BeEquivalentTo(plugin);
+        }
+
+        [Fact]
+        public async Task ServiceCanHaveJeJustSayingDefaultsPlugin()
+        {
+            var plugin = new JeJustSayingDefaultsConfig
+            {
+                RaisingComponent = "testFeature",
+                Tenant = "BW"
+            };
+
+            var kongAction = await AttachPluginToService(plugin);
+
+            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Result.Id);
+
+            var pluginOut = ReadFirstPlugin<JeJustSayingDefaultsConfig>(serviceReadFromKong);
 
             plugin.id = pluginOut.id;
             pluginOut.Should().BeEquivalentTo(plugin);
