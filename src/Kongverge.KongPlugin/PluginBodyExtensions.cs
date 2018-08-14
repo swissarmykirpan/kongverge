@@ -17,11 +17,6 @@ namespace Kongverge.KongPlugin
             return pluginBody.config.ReadStrings(key);
         }
 
-        public static string[] ReadConfigStringArray(this PluginBody pluginBody, string key)
-        {
-            return pluginBody.config.ReadStrings(key);
-        }
-
         public static int ReadConfigInt(this PluginBody pluginBody, string key)
         {
             return pluginBody.config.ReadInt(key);
