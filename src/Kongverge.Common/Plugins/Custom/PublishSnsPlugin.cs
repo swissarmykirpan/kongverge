@@ -9,7 +9,7 @@ namespace Kongverge.Common.Plugins.Custom
         {
         }
 
-        public override string PluginName => "publish-sns";
+        public override string PluginName => "je-publish-sns";
 
         protected  override PublishSnsConfig DoCreateConfigObject(PluginBody pluginBody)
         {
