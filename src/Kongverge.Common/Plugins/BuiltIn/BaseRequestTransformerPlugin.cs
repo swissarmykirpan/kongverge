@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Kongverge.KongPlugin;
+using Newtonsoft.Json.Linq;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {
@@ -11,74 +12,67 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         protected override T DoCreateConfigObject(PluginBody pluginBody)
         {
+            var httpMethod = pluginBody.ReadConfigString("http_method");
+
+            var removeData = pluginBody.config.SubProperties("remove");
+            var renameData = pluginBody.config.SubProperties("rename");
+            var addData = pluginBody.config.SubProperties("add");
+            var appendData = pluginBody.config.SubProperties("append");
+
+            var replaceData = pluginBody.config.SubProperties("replace");
+            var replaceConfig = new RequestTransformerAdvancedTransformReplace
+            {
+                Uri = replaceData.ReadString("uri"),
+                QueryString = replaceData.ReadStringSet("querystring"),
+                Headers = replaceData.ReadStringSet("headers"),
+                Body = replaceData.ReadStringSet("body")
+            };
+
             return new T
             {
-                HttpMethod = pluginBody.ReadConfigString("http_method"),
+                HttpMethod = httpMethod,
+                Remove = ReadSection(removeData),
+                Replace = replaceConfig,
+                Rename = ReadSection(renameData),
+                Add = ReadSection(addData),
+                Append = ReadSection(appendData)
+            };
+        }
 
-                Remove = new RequestTransformerAdvancedTransformBase
-                {
-                    Headers = new HashSet<string>(pluginBody.ReadConfigStringArray("remove.headers")),
-                    QueryString = new HashSet<string>(pluginBody.ReadConfigStringArray("remove.querystring")),
-                    Body = new HashSet<string>(pluginBody.ReadConfigStringArray("remove.body"))
-                },
+        private static RequestTransformerAdvancedTransformBase ReadSection(IDictionary<string, object> section)
+        {
+            return new RequestTransformerAdvancedTransformBase
+            {
+                Headers = section.ReadStringSet("headers"),
+                QueryString = section.ReadStringSet("querystring"),
+                Body = section.ReadStringSet("body")
+            };
+        }
 
-                Replace = new RequestTransformerAdvancedTransformReplace
-                {
-                    Headers = new HashSet<string>(pluginBody.ReadConfigStringArray("replace.headers")),
-                    QueryString = new HashSet<string>(pluginBody.ReadConfigStringArray("replace.querystring")),
-                    Body = new HashSet<string>(pluginBody.ReadConfigStringArray("replace.body")),
-                    Uri = pluginBody.ReadConfigString("replace.uri")
-                },
-
-                Rename = new RequestTransformerAdvancedTransformBase
-                {
-                    Headers = new HashSet<string>(pluginBody.ReadConfigStringArray("rename.headers")),
-                    QueryString = new HashSet<string>(pluginBody.ReadConfigStringArray("rename.querystring")),
-                    Body = new HashSet<string>(pluginBody.ReadConfigStringArray("rename.body"))
-                },
-
-                Add = new RequestTransformerAdvancedTransformBase
-                {
-                    Headers = new HashSet<string>(pluginBody.ReadConfigStringArray("add.headers")),
-                    QueryString = new HashSet<string>(pluginBody.ReadConfigStringArray("add.querystring")),
-                    Body = new HashSet<string>(pluginBody.ReadConfigStringArray("add.body"))
-                },
-
-                Append = new RequestTransformerAdvancedTransformBase
-                {
-                    Headers = new HashSet<string>(pluginBody.ReadConfigStringArray("append.headers")),
-                    QueryString = new HashSet<string>(pluginBody.ReadConfigStringArray("append.querystring")),
-                    Body = new HashSet<string>(pluginBody.ReadConfigStringArray("append.body"))
-                }
+        private static JObject WriteSection(RequestTransformerAdvancedTransformBase section)
+        {
+            return new JObject
+            {
+                {"headers", string.Join(',', section.Headers)},
+                {"querystring", string.Join(',', section.QueryString)},
+                {"body", string.Join(',', section.Body)}
             };
         }
 
         protected override PluginBody DoCreatePluginBody(T target)
         {
+            var replace = WriteSection(target.Replace);
+            replace.Add("uri", target.Replace.Uri);
+
             return new PluginBody(PluginName, new Dictionary<string, object>
             {
                 { "http_method", target.HttpMethod },
 
-                { "remove.headers", string.Join(',', target.Remove.Headers) },
-                { "remove.querystring", string.Join(',', target.Remove.QueryString) },
-                { "remove.body", string.Join(',', target.Remove.Body) },
-
-                { "replace.headers", string.Join(',', target.Replace.Headers) },
-                { "replace.querystring", string.Join(',', target.Replace.QueryString) },
-                { "replace.body", string.Join(',', target.Replace.Body) },
-                { "replace.uri", target.Replace.Uri },
-
-                { "rename.headers", string.Join(',', target.Rename.Headers) },
-                { "rename.querystring", string.Join(',', target.Rename.QueryString) },
-                { "rename.body", string.Join(',', target.Rename.Body) },
-
-                { "add.headers", string.Join(',', target.Add.Headers) },
-                { "add.querystring", string.Join(',', target.Add.QueryString) },
-                { "add.body", string.Join(',', target.Add.Body) },
-
-                { "append.headers", string.Join(',', target.Append.Headers) },
-                { "append.querystring", string.Join(',', target.Append.QueryString) },
-                { "append.body", string.Join(',', target.Append.Body) },
+                { "remove", WriteSection(target.Remove) },
+                { "replace", replace },
+                { "rename", WriteSection(target.Rename) },
+                { "add", WriteSection(target.Add) },
+                { "append", WriteSection(target.Append) }
             });
         }
     }
