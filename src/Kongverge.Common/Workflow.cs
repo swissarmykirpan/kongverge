@@ -26,7 +26,7 @@ namespace Kongverge.Common
             var reachable = await KongReader.KongIsReachable().ConfigureAwait(false);
             if (!reachable)
             {
-                return ExitWithCode.Return(ExitCodes.HostUnreachable);
+                return ExitWithCode.Return(ExitCode.HostUnreachable);
             }
 
             try

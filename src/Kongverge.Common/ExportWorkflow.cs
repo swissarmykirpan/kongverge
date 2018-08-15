@@ -25,7 +25,7 @@ namespace Kongverge.Common
 
             //Write Output Files
             _fileHelper.WriteConfigFiles(existingServices);
-            return ExitWithCode.Return(ExitCodes.Success);
+            return ExitWithCode.Return(ExitCode.Success);
         }
     }
 }
