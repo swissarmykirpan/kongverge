@@ -5,7 +5,7 @@ namespace Kongverge.Common.Plugins.Custom
 {
     public class JeRequestDelayPlugin : KongPluginBase<JeRequestDelayConfig>
     {
-        public JeRequestDelayPlugin() : base("request-delay")
+        public JeRequestDelayPlugin() : base("je-request-delay")
         {
         }
 

@@ -5,7 +5,7 @@ namespace Kongverge.Common.Plugins.Custom
 {
     public class JePublishSnsPlugin : KongPluginBase<JePublishSnsConfig>
     {
-        public JePublishSnsPlugin() : base("publish-sns")
+        public JePublishSnsPlugin() : base("je-publish-sns")
         {
         }
 
