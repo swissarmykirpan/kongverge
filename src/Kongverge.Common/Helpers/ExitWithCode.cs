@@ -3,7 +3,7 @@ using System;
 
 namespace Kongverge.Common.Helpers
 {
-    public enum ExitCodes
+    public enum ExitCode
     {
         Success = 0,
         HostUnreachable,
@@ -13,27 +13,27 @@ namespace Kongverge.Common.Helpers
     }
     public class ExitWithCode
     {
-        public static int Return(ExitCodes exitCode)
+        public static int Return(ExitCode exitCode)
         {
             switch (exitCode)
             {
-                case ExitCodes.Success:
+                case ExitCode.Success:
                     Log.Information("Finished");
                     break;
 
-                case ExitCodes.InvalidPort:
+                case ExitCode.InvalidPort:
                     Log.Error("Invalid port specified");
                     break;
 
-                case ExitCodes.HostUnreachable:
+                case ExitCode.HostUnreachable:
                     Log.Error("Specified host unreachable");
                     break;
 
-                case ExitCodes.InputFolderUnreachable:
+                case ExitCode.InputFolderUnreachable:
                     Log.Error("Unable to access input folder");
                     break;
 
-                case ExitCodes.IncompatibleArguments:
+                case ExitCode.IncompatibleArguments:
                     Log.Error("Incompatible command line arguments");
                     break;
 
@@ -41,7 +41,7 @@ namespace Kongverge.Common.Helpers
                     throw new ArgumentOutOfRangeException(nameof(exitCode), exitCode, null);
             }
 
-            return  (int) exitCode;
+            return  (int)exitCode;
         }
     }
 }

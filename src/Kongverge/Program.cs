@@ -70,7 +70,7 @@ namespace Kongverge
                         || port > MaxPort
                         || port < MinPort)
                     {
-                        return ExitWithCode.Return(ExitCodes.InvalidPort);
+                        return ExitWithCode.Return(ExitCode.InvalidPort);
                     }
                     configuration.Admin.Port = port;
                 }
@@ -78,7 +78,7 @@ namespace Kongverge
                 configuration.DryRun = dryrunOption.HasValue();
                 if (inputFolderOption.HasValue() && outputFolderOption.HasValue())
                 {
-                    return ExitWithCode.Return(ExitCodes.IncompatibleArguments);
+                    return ExitWithCode.Return(ExitCode.IncompatibleArguments);
                 }
 
                 if (inputFolderOption.HasValue())
