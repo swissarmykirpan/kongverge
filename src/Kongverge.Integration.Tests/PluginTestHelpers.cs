@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
+using FluentAssertions.Equivalency;
+using FluentAssertions.Execution;
 using Kongverge.Common.DTOs;
 using Kongverge.KongPlugin;
 
@@ -59,8 +61,24 @@ namespace Kongverge.Integration.Tests
 
             var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin<T>();
 
-            plugin.id = pluginOut.id;
-            pluginOut.Should().BeEquivalentTo(plugin);
+            pluginOut.Should()
+                .BeEquivalentTo(plugin, opt => opt
+                    .Excluding(p => p.id)
+                    .Using<string>(CompareStringsWithoutNull).WhenTypeIs<string>());
+        }
+
+        /// <summary>
+        /// Treat null string and empty string as equivalent
+        /// </summary>
+        /// <param name="ctx"></param>
+        private static void CompareStringsWithoutNull(IAssertionContext<string> ctx)
+        {
+            var equal = (ctx.Subject ?? string.Empty).Equals(ctx.Expectation ?? string.Empty);
+
+            Execute.Assertion
+                .BecauseOf(ctx.Because, ctx.BecauseArgs)
+                .ForCondition(equal)
+                .FailWith("Expected {context:string} to be {0}{reason}, but found {1}", ctx.Subject, ctx.Expectation);
         }
     }
 }

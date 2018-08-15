@@ -14,7 +14,6 @@ namespace Kongverge.Integration.Tests
             _fixture = kongvergeTestFixture;
         }
 
-
         [Fact]
         public async Task ServiceCanHaveRequestTransformerAdvancedPluginWithMinimalConfig()
         {
@@ -30,9 +29,61 @@ namespace Kongverge.Integration.Tests
             await _fixture.ShouldRoundTripPlugInToKong(plugin);
         }
 
+        [Fact]
+        public async Task ServiceCanHaveRequestTransformerAdvancedPluginWithAddSection()
+        {
+            var plugin = new RequestTransformerAdvancedConfig
+            {
+                HttpMethod = "GET",
+                Add = new RequestTransformerAdvancedTransformBase
+                {
+                    Headers = new HashSet<string> { "header1:value1", "header2:Value2", "header3:value3" },
+                    QueryString = new HashSet<string> { "param_a:valueb", "param_b:value_d" },
+                    Body = new HashSet<string> { "key1:value1" }
+                }
+            };
 
-        [Fact(Skip = "This does not work yet. Will be next.")]
-        public async Task ServiceCanHaveRequestTransformerAdvancedPluginWithFullConfig()
+            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+        }
+
+        [Fact]
+        public async Task ServiceCanHaveRequestTransformerAdvancedPluginWithAppendSection()
+        {
+            var plugin = new RequestTransformerAdvancedConfig
+            {
+                HttpMethod = "GET",
+                Append = new RequestTransformerAdvancedTransformBase
+                {
+                    Headers = new HashSet<string> { "header1:value1", "header2:Value2", "header3:value3" },
+                    QueryString = new HashSet<string> { "param_a:valueb", "param_b:value_d" },
+                    Body = new HashSet<string> { "key1:value1" }
+                }
+            };
+
+            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+        }
+
+
+        [Fact]
+        public async Task ServiceCanHaveRequestTransformerAdvancedPluginWithRemoveSection()
+        {
+            var plugin = new RequestTransformerAdvancedConfig
+            {
+                HttpMethod = "GET",
+                Remove = new RequestTransformerAdvancedTransformBase
+                {
+                    Headers = new HashSet<string> { "header1", "header2", "header3" },
+                    QueryString = new HashSet<string> { "param_a", "param_b" },
+                    Body = new HashSet<string> { "key1" }
+                }
+            };
+
+            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+        }
+
+
+        [Fact]
+        public async Task ServiceCanHaveRequestTransformerAdvancedPluginWithReplaceSection()
         {
             var plugin = new RequestTransformerAdvancedConfig
             {
@@ -40,33 +91,26 @@ namespace Kongverge.Integration.Tests
                 Replace = new RequestTransformerAdvancedTransformReplace
                 {
                     Uri = "/foo/bar",
-                    Headers = new HashSet<string> { "foo1", "bar2" },
-                    QueryString = new HashSet<string> { "aa", "bb" },
-                    Body = new HashSet<string> { "11", "22" }
-                },
-                Add = new RequestTransformerAdvancedTransformBase
-                {
-                    Headers = new HashSet<string> { "foo", "bar" },
-                    QueryString = new HashSet<string> { "a", "b" },
-                    Body = new HashSet<string> { "1", "2" }
-                },
-                Remove =new RequestTransformerAdvancedTransformBase
-                {
-                    Headers = new HashSet<string> { "Remove_a", "Remove_b" },
-                    QueryString = new HashSet<string> { "Remove_c", "Remove_d" },
-                    Body = new HashSet<string> { "Remove_e", "Remove_f" }
-                },
+                    Headers = new HashSet<string> { "header1:value1", "header2:Value2", "header3:value3" },
+                    QueryString = new HashSet<string> { "param_a:valueb", "param_b:value_d" },
+                    Body = new HashSet<string> { "key1:value1" }
+                }
+            };
+
+            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+        }
+
+        [Fact]
+        public async Task ServiceCanHaveRequestTransformerAdvancedPluginWithRenameSection()
+        {
+            var plugin = new RequestTransformerAdvancedConfig
+            {
+                HttpMethod = "GET",
                 Rename = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new HashSet<string> { "Rename_a", "Rename_b" },
-                    QueryString = new HashSet<string> { "Rename_c", "Rename_d" },
-                    Body = new HashSet<string> { "Rename_e", "Rename_f" }
-                },
-                Append = new RequestTransformerAdvancedTransformBase
-                {
-                    Headers = new HashSet<string> { "Append_a", "Append_b" },
-                    QueryString = new HashSet<string> { "Append_c", "Append_d" },
-                    Body = new HashSet<string> { "Append_e", "Append_f" }
+                    Headers = new HashSet<string> { "header1:value1", "header2:Value2", "header3:value3" },
+                    QueryString = new HashSet<string> { "param_a:valueb", "param_b:value_d" },
+                    Body = new HashSet<string> { "key1:value1" }
                 }
             };
 
