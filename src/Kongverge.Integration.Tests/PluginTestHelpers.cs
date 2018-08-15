@@ -50,5 +50,17 @@ namespace Kongverge.Integration.Tests
 
             return (T)service.Plugins[0];
         }
+
+        public static async Task ShouldRoundTripPlugInToKong<T>(this KongvergeTestFixture fixture, T plugin) where T : IKongPluginConfig
+        {
+            var kongServiceAdded = await fixture.AttachPluginToService(plugin);
+
+            var serviceReadFromKong = await fixture.KongAdminReader.GetService(kongServiceAdded.Id);
+
+            var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin<T>();
+
+            plugin.id = pluginOut.id;
+            pluginOut.Should().BeEquivalentTo(plugin);
+        }
     }
 }
