@@ -45,7 +45,7 @@ namespace Kongverge.Common.Tests
                 { "generator", "uuid" }
             });
 
-            bodyOut.ReadConfigString("generator").Should().Be("uuid");
+            bodyOut.config.ReadString("generator").Should().Be("uuid");
         }
     }
 }

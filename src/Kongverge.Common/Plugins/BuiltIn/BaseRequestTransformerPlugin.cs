@@ -12,7 +12,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         protected override T DoCreateConfigObject(PluginBody pluginBody)
         {
-            var httpMethod = pluginBody.ReadConfigString("http_method");
+            var httpMethod = pluginBody.config.ReadString("http_method");
 
             var addData = pluginBody.config.SubProperties("add");
             var appendData = pluginBody.config.SubProperties("append");
