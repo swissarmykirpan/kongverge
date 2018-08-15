@@ -1,18 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="bin\Debug\netcoreapp2.1\data\**" />
-    <EmbeddedResource Remove="bin\Debug\netcoreapp2.1\data\**" />
-    <None Remove="bin\Debug\netcoreapp2.1\data\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="data\global.json" />
-    <None Remove="data\healthcheck.json" />
-  </ItemGroup>
-  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="data\global.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -32,16 +26,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kongverge.Common\Kongverge.Common.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="data\test.yml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="bin\Debug\netcoreapp2.0\data\healthcheck.yml" />
   </ItemGroup>
 </Project>
