@@ -5,17 +5,19 @@ namespace Kongverge.KongPlugin
     public abstract class KongPluginBase<TConfig> : IKongPlugin
         where TConfig : IKongPluginConfig
     {
-        protected KongPluginBase(string section)
+        protected KongPluginBase(string name)
         {
-            SectionName = section;
-            PluginName = section;
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Plugin name cannot be null or whitespace.");
+
+            PluginName = name;
         }
 
-        public string SectionName { get; }
+        public string PluginName { get; }
+
+        public virtual string SectionName => PluginName;
 
         public Type KongObjectType => typeof(TConfig);
-
-        public virtual string PluginName { get; set; }
 
         public IKongPluginConfig CreateConfigObject(PluginBody pluginBody)
         {

@@ -9,8 +9,6 @@ namespace Kongverge.Common.Plugins.Custom
         {
         }
 
-        public override string PluginName => "je-request-delay";
-
         protected override JeRequestDelayConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new JeRequestDelayConfig
