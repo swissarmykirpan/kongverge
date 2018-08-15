@@ -5,40 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Kongverge.KongPlugin
 {
-    public static class PluginBodyExtensions
-    {
-        public static string ReadConfigString(this PluginBody pluginBody, string key)
-        {
-            return pluginBody.config.ReadString(key);
-        }
-
-        public static string[] ReadConfigStrings(this PluginBody pluginBody, string key)
-        {
-            return pluginBody.config.ReadStrings(key);
-        }
-
-        public static int ReadConfigInt(this PluginBody pluginBody, string key)
-        {
-            return pluginBody.config.ReadInt(key);
-        }
-
-        public static int[] ReadConfigInts(this PluginBody pluginBody, string key)
-        {
-            return pluginBody.config.ReadInts(key);
-        }
-
-        public static long ReadConfigLong(this PluginBody pluginBody, string key)
-        {
-            return pluginBody.config.ReadLong(key);
-        }
-
-        public static bool ReadConfigBool(this PluginBody pluginBody, string key)
-        {
-            return pluginBody.config.ReadBool(key);
-        }
-    }
-
-    public static class ObjectDictionaryExtensions
+    public static class ConfigReadExtensions
     {
         public static int ReadInt(this IDictionary<string, object> values, string key)
         {

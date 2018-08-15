@@ -16,8 +16,8 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             return new RequestTerminationConfig
             {
-                Message = pluginBody.ReadConfigString("message"),
-                StatusCode = pluginBody.ReadConfigLong("status_code")
+                Message = pluginBody.config.ReadString("message"),
+                StatusCode = pluginBody.config.ReadLong("status_code")
             };
         }
 
