@@ -6,11 +6,11 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
     public class RequestTerminationPlugin : KongPluginBase<RequestTerminationConfig>
     {
-        public RequestTerminationPlugin() : base("terminate")
+        public RequestTerminationPlugin() : base("request-termination")
         {
         }
 
-        public override string PluginName => "request-termination";
+        public override string SectionName => "terminate";
 
         protected override RequestTerminationConfig DoCreateConfigObject(PluginBody pluginBody)
         {

@@ -6,7 +6,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
 {
     public abstract class BaseRequestTransformerPlugin<T> : KongPluginBase<T> where T : IRequestTransformerConfig, new()
     {
-        protected BaseRequestTransformerPlugin(string section) : base(section)
+        protected BaseRequestTransformerPlugin(string name) : base(name)
         {
         }
 

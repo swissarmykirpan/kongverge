@@ -10,8 +10,6 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
         }
 
-        public override string PluginName => "key-auth";
-
         protected override KeyAuthenticationConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new KeyAuthenticationConfig

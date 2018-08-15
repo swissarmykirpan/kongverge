@@ -9,8 +9,6 @@ namespace Kongverge.Common.Plugins.Custom
         {
         }
 
-        public override string PluginName => "je-justsaying-defaults";
-
         protected override JeJustSayingDefaultsConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new JeJustSayingDefaultsConfig
