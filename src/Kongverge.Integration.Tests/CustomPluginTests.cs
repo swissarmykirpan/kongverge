@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using FluentAssertions;
 using Kongverge.Common.Plugins.Custom;
 using Xunit;
 
@@ -23,14 +22,7 @@ namespace Kongverge.Integration.Tests
                 Tenant = "BW"
             };
 
-            var kongAction = await _fixture.AttachPluginToService(plugin);
-
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Id);
-
-            var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin<JeJustSayingDefaultsConfig>();
-
-            plugin.id = pluginOut.id;
-            pluginOut.Should().BeEquivalentTo(plugin);
+            await _fixture.ShouldRoundTripPlugInToKong(plugin);
         }
 
 
@@ -42,14 +34,7 @@ namespace Kongverge.Integration.Tests
                 Delay = 123
             };
 
-            var kongAction = await _fixture.AttachPluginToService(plugin);
-
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Id);
-
-            var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin<JeRequestDelayConfig>();
-
-            plugin.id = pluginOut.id;
-            pluginOut.Should().BeEquivalentTo(plugin);
+            await _fixture.ShouldRoundTripPlugInToKong(plugin);
         }
 
         [Fact]
@@ -65,14 +50,7 @@ namespace Kongverge.Integration.Tests
                 Timeout = 3456
             };
 
-            var kongAction = await _fixture.AttachPluginToService(plugin);
-
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Id);
-
-            var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin<JeTcpLogConfig>();
-
-            plugin.id = pluginOut.id;
-            pluginOut.Should().BeEquivalentTo(plugin);
+            await _fixture.ShouldRoundTripPlugInToKong(plugin);
         }
 
         [Fact]
@@ -87,14 +65,7 @@ namespace Kongverge.Integration.Tests
                 Timeout = 3456
             };
 
-            var kongAction = await _fixture.AttachPluginToService(plugin);
-
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongAction.Id);
-
-            var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin<JeUdpLogConfig>();
-
-            plugin.id = pluginOut.id;
-            pluginOut.Should().BeEquivalentTo(plugin);
+            await _fixture.ShouldRoundTripPlugInToKong(plugin);
         }
     }
 }
