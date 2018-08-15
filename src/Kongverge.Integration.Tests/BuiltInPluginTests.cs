@@ -36,14 +36,7 @@ namespace Kongverge.Integration.Tests
                 Header = "test1"
             };
 
-            var kongServiceAdded = await _fixture.AttachPluginToService(plugin);
-
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
-
-            var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin<CorrelationIdConfig>();
-
-            plugin.id = pluginOut.id;
-            pluginOut.Should().BeEquivalentTo(plugin);
+            await _fixture.ShouldRoundTripPlugInToKong(plugin);
         }
 
         [Fact]
@@ -51,14 +44,7 @@ namespace Kongverge.Integration.Tests
         {
             var plugin = new KeyAuthenticationConfig();
 
-            var kongServiceAdded = await _fixture.AttachPluginToService(plugin);
-
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
-
-            var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin<KeyAuthenticationConfig>();
-
-            plugin.id = pluginOut.id;
-            pluginOut.Should().BeEquivalentTo(plugin);
+            await _fixture.ShouldRoundTripPlugInToKong(plugin);
         }
 
         [Fact]
@@ -71,14 +57,7 @@ namespace Kongverge.Integration.Tests
                 WindowSize = new [] { 3455 }
             };
 
-            var kongServiceAdded = await _fixture.AttachPluginToService(plugin);
-
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
-
-            var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin<RateLimitingConfig>();
-
-            plugin.id = pluginOut.id;
-            pluginOut.Should().BeEquivalentTo(plugin);
+            await _fixture.ShouldRoundTripPlugInToKong(plugin);
         }
 
         [Fact]
@@ -90,14 +69,7 @@ namespace Kongverge.Integration.Tests
                 Message = "test term"
             };
 
-            var kongServiceAdded = await _fixture.AttachPluginToService(plugin);
-
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
-
-            var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin<RequestTerminationConfig>();
-
-            plugin.id = pluginOut.id;
-            pluginOut.Should().BeEquivalentTo(plugin);
+            await _fixture.ShouldRoundTripPlugInToKong(plugin);
         }
 
         [Fact]
@@ -112,18 +84,11 @@ namespace Kongverge.Integration.Tests
                 }
             };
 
-            var kongServiceAdded = await _fixture.AttachPluginToService(plugin);
-
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
-
-            var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin<RequestTransformerAdvancedConfig>();
-
-            plugin.id = pluginOut.id;
-            pluginOut.Should().BeEquivalentTo(plugin);
+            await _fixture.ShouldRoundTripPlugInToKong(plugin);
         }
 
 
-       [Fact(Skip = "This does not work yet. Will be next.")]
+        [Fact(Skip = "This does not work yet. Will be next.")]
         public async Task ServiceCanHaveRequestTransformerAdvancedPluginWithFullConfig()
         {
             var plugin = new RequestTransformerAdvancedConfig
@@ -162,15 +127,7 @@ namespace Kongverge.Integration.Tests
                 }
             };
 
-            var kongServiceAdded = await _fixture.AttachPluginToService(plugin);
-
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
-
-            var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin<RequestTransformerAdvancedConfig>();
-
-            plugin.id = pluginOut.id;
-            pluginOut.Should().BeEquivalentTo(plugin);
+            await _fixture.ShouldRoundTripPlugInToKong(plugin);
         }
-
     }
 }
