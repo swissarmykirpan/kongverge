@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using FluentAssertions;
 using Kongverge.Common.Plugins.Custom;
 using Xunit;
 
