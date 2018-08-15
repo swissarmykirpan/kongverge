@@ -14,34 +14,30 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             var httpMethod = pluginBody.ReadConfigString("http_method");
 
-            var removeData = pluginBody.config.SubProperties("remove");
-            var renameData = pluginBody.config.SubProperties("rename");
             var addData = pluginBody.config.SubProperties("add");
             var appendData = pluginBody.config.SubProperties("append");
-
+            var removeData = pluginBody.config.SubProperties("remove");
+            var renameData = pluginBody.config.SubProperties("rename");
             var replaceData = pluginBody.config.SubProperties("replace");
-            var replaceConfig = new RequestTransformerAdvancedTransformReplace
-            {
-                Uri = replaceData.ReadString("uri"),
-                QueryString = replaceData.ReadStringSet("querystring"),
-                Headers = replaceData.ReadStringSet("headers"),
-                Body = replaceData.ReadStringSet("body")
-            };
+
+            var replaceConfig = ReadSection<RequestTransformerAdvancedTransformReplace>(replaceData);
+            replaceConfig.Uri = replaceData.ReadString("uri");
 
             return new T
             {
                 HttpMethod = httpMethod,
-                Remove = ReadSection(removeData),
+                Remove = ReadSection<RequestTransformerAdvancedTransformBase>(removeData),
                 Replace = replaceConfig,
-                Rename = ReadSection(renameData),
-                Add = ReadSection(addData),
-                Append = ReadSection(appendData)
+                Rename = ReadSection<RequestTransformerAdvancedTransformBase>(renameData),
+                Add = ReadSection<RequestTransformerAdvancedTransformBase>(addData),
+                Append = ReadSection<RequestTransformerAdvancedTransformBase>(appendData)
             };
         }
 
-        private static RequestTransformerAdvancedTransformBase ReadSection(IDictionary<string, object> section)
+        private static C ReadSection<C>(IDictionary<string, object> section)
+            where C: RequestTransformerAdvancedTransformBase, new()
         {
-            return new RequestTransformerAdvancedTransformBase
+            return new C
             {
                 Headers = section.ReadStringSet("headers"),
                 QueryString = section.ReadStringSet("querystring"),
@@ -53,9 +49,9 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             return new JObject
             {
-                {"headers", string.Join(',', section.Headers)},
-                {"querystring", string.Join(',', section.QueryString)},
-                {"body", string.Join(',', section.Body)}
+                {"headers", section.Headers.ToCommaSeperatedString()},
+                {"querystring", section.QueryString.ToCommaSeperatedString()},
+                {"body",  section.Body.ToCommaSeperatedString()}
             };
         }
 
@@ -68,11 +64,11 @@ namespace Kongverge.Common.Plugins.BuiltIn
             {
                 { "http_method", target.HttpMethod },
 
-                { "remove", WriteSection(target.Remove) },
-                { "replace", replace },
-                { "rename", WriteSection(target.Rename) },
                 { "add", WriteSection(target.Add) },
-                { "append", WriteSection(target.Append) }
+                { "append", WriteSection(target.Append) },
+                { "remove", WriteSection(target.Remove) },
+                { "rename", WriteSection(target.Rename) },
+                { "replace", replace }
             });
         }
     }

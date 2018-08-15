@@ -123,8 +123,8 @@ namespace Kongverge.Integration.Tests
         }
 
 
-        // this is not  fact yet. More of an aspiration. [Fact]
-        private async Task ServiceCanHaveRequestTransformerAdvancedPluginWithFullConfig()
+       [Fact(Skip = "This does not work yet. Will be next.")]
+        public async Task ServiceCanHaveRequestTransformerAdvancedPluginWithFullConfig()
         {
             var plugin = new RequestTransformerAdvancedConfig
             {

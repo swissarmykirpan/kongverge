@@ -179,13 +179,20 @@ namespace Kongverge.KongPlugin
             }
 
             var obj = values[key];
-            if (!(obj is JObject))
+
+            switch (obj)
             {
-                return new Dictionary<string, object>();
+                case JObject jObject:
+                    return jObject.ToObject<Dictionary<string, object>>();
 
+                default:
+                    return new Dictionary<string, object>();
             }
+        }
 
-            return (obj as JObject).ToObject<Dictionary<string, object>>();
+        public static string ToCommaSeperatedString(this IEnumerable<string> strings)
+        {
+            return string.Join(",", strings);
         }
     }
 }

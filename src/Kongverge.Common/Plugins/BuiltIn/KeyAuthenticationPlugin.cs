@@ -28,7 +28,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             return new PluginBody(PluginName, new Dictionary<string, object>
             {
-                { "key_names", string.Join(',', target.KeyNames)},
+                { "key_names", target.KeyNames.ToCommaSeperatedString()},
                 { "key_in_body", target.KeyInBody.ToString().ToLower()},
                 { "anonymous", target.Anonymous},
                 { "run_on_preflight", target.RunOnPreflight.ToString().ToLower()},
