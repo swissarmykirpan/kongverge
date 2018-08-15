@@ -14,7 +14,6 @@ namespace Kongverge.Integration.Tests
             _fixture = kongvergeTestFixture;
         }
 
-
         [Fact]
         public async Task ServiceCanHaveRequestTransformerAdvancedPluginWithMinimalConfig()
         {
@@ -36,10 +35,6 @@ namespace Kongverge.Integration.Tests
             var plugin = new RequestTransformerAdvancedConfig
             {
                 HttpMethod = "GET",
-                Replace = new RequestTransformerAdvancedTransformReplace
-                {
-                    Uri = "/foo/bar",
-                },
                 Add = new RequestTransformerAdvancedTransformBase
                 {
                     Headers = new HashSet<string> { "header1:value1", "header2:Value2", "header3:value3" },
@@ -57,10 +52,6 @@ namespace Kongverge.Integration.Tests
             var plugin = new RequestTransformerAdvancedConfig
             {
                 HttpMethod = "GET",
-                Replace = new RequestTransformerAdvancedTransformReplace
-                {
-                    Uri = "/foo/bar",
-                },
                 Append = new RequestTransformerAdvancedTransformBase
                 {
                     Headers = new HashSet<string> { "header1:value1", "header2:Value2", "header3:value3" },
@@ -79,10 +70,6 @@ namespace Kongverge.Integration.Tests
             var plugin = new RequestTransformerAdvancedConfig
             {
                 HttpMethod = "GET",
-                Replace = new RequestTransformerAdvancedTransformReplace
-                {
-                    Uri = "/foo/bar",
-                },
                 Remove = new RequestTransformerAdvancedTransformBase
                 {
                     Headers = new HashSet<string> { "header1", "header2", "header3" },
@@ -119,10 +106,6 @@ namespace Kongverge.Integration.Tests
             var plugin = new RequestTransformerAdvancedConfig
             {
                 HttpMethod = "GET",
-                Replace = new RequestTransformerAdvancedTransformReplace
-                {
-                    Uri = "/foo/bar",
-                },
                 Rename = new RequestTransformerAdvancedTransformBase
                 {
                     Headers = new HashSet<string> { "header1:value1", "header2:Value2", "header3:value3" },
