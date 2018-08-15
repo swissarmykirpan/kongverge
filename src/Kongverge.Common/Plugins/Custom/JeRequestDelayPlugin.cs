@@ -15,7 +15,7 @@ namespace Kongverge.Common.Plugins.Custom
         {
             return new JeRequestDelayConfig
             {
-                Delay = pluginBody.ReadConfigInt("delay")
+                Delay = pluginBody.config.ReadInt("delay")
             };
         }
 

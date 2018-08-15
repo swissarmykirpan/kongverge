@@ -15,8 +15,8 @@ namespace Kongverge.Common.Plugins.Custom
         {
             return new JeJustSayingDefaultsConfig
             {
-                RaisingComponent = pluginBody.ReadConfigString("raisingcomponent"),
-                Tenant = pluginBody.ReadConfigString("tenant")
+                RaisingComponent = pluginBody.config.ReadString("raisingcomponent"),
+                Tenant = pluginBody.config.ReadString("tenant")
             };
         }
 

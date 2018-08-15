@@ -49,9 +49,9 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             return new CorrelationIdConfig
             {
-                Template = ParseTemplate(pluginBody.ReadConfigString("generator")),
-                EchoDownstream = pluginBody.ReadConfigBool("echo_downstream"),
-                Header = pluginBody.ReadConfigString("header_name")
+                Template = ParseTemplate(pluginBody.config.ReadString("generator")),
+                EchoDownstream = pluginBody.config.ReadBool("echo_downstream"),
+                Header = pluginBody.config.ReadString("header_name")
             };
         }
 

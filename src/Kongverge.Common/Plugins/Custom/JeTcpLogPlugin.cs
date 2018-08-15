@@ -15,12 +15,12 @@ namespace Kongverge.Common.Plugins.Custom
         {
             return new JeTcpLogConfig
             {
-                Timeout = pluginBody.ReadConfigInt("timeout"),
-                KeepAlive = pluginBody.ReadConfigInt("keepalive"),
-                Host = pluginBody.ReadConfigString("host"),
-                Port = pluginBody.ReadConfigInt("port"),
-                LogBody = pluginBody.ReadConfigBool("log_body"),
-                MaxBodySize = pluginBody.ReadConfigInt("max_body_size")
+                Timeout = pluginBody.config.ReadInt("timeout"),
+                KeepAlive = pluginBody.config.ReadInt("keepalive"),
+                Host = pluginBody.config.ReadString("host"),
+                Port = pluginBody.config.ReadInt("port"),
+                LogBody = pluginBody.config.ReadBool("log_body"),
+                MaxBodySize = pluginBody.config.ReadInt("max_body_size")
             };
         }
 
