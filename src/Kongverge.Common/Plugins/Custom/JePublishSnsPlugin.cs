@@ -3,17 +3,17 @@ using Kongverge.KongPlugin;
 
 namespace Kongverge.Common.Plugins.Custom
 {
-    public class PublishSnsPlugin : KongPluginBase<PublishSnsConfig>
+    public class JePublishSnsPlugin : KongPluginBase<JePublishSnsConfig>
     {
-        public PublishSnsPlugin() : base("publish-sns")
+        public JePublishSnsPlugin() : base("publish-sns")
         {
         }
 
         public override string PluginName => "je-publish-sns";
 
-        protected  override PublishSnsConfig DoCreateConfigObject(PluginBody pluginBody)
+        protected override JePublishSnsConfig DoCreateConfigObject(PluginBody pluginBody)
         {
-            return new PublishSnsConfig
+            return new JePublishSnsConfig
             {
                 Timeout = pluginBody.config.ReadInt("timeout"),
                 KeepAlive = pluginBody.config.ReadInt("keepalive"),
@@ -27,7 +27,7 @@ namespace Kongverge.Common.Plugins.Custom
             };
         }
 
-        protected override PluginBody DoCreatePluginBody(PublishSnsConfig target)
+        protected override PluginBody DoCreatePluginBody(JePublishSnsConfig target)
         {
             var config = new Dictionary<string, object>
             {
