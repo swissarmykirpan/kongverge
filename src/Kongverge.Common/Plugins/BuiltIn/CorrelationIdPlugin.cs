@@ -7,11 +7,9 @@ namespace Kongverge.Common.Plugins.BuiltIn
 {
     public class CorrelationIdPlugin : KongPluginBase<CorrelationIdConfig>
     {
-        public CorrelationIdPlugin() : base("correlation")
+        public CorrelationIdPlugin() : base("correlation-id")
         {
         }
-
-        public override string PluginName => "correlation-id";
 
         public CorrelationIdGenerator ParseTemplate(object text)
         {

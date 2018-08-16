@@ -7,7 +7,5 @@ namespace Kongverge.Common.Plugins.Custom
         public JeRequestTransformerPlugin() : base("je-request-transformer")
         {
         }
-
-        public override string PluginName => "je-request-transformer";
     }
 }
