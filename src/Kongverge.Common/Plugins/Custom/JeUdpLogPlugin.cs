@@ -9,8 +9,6 @@ namespace Kongverge.Common.Plugins.Custom
         {
         }
 
-        public override string PluginName => "je-udp-log";
-
         protected override JeUdpLogConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new JeUdpLogConfig
