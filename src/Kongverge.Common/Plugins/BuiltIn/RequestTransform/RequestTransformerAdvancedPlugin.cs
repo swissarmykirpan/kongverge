@@ -1,4 +1,4 @@
-namespace Kongverge.Common.Plugins.Transform
+namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
 {
     public class RequestTransformerAdvancedPlugin : BaseRequestTransformerPlugin<RequestTransformerAdvancedConfig>
     {

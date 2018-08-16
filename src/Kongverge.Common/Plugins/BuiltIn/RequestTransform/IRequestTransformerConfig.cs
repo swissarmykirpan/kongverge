@@ -1,6 +1,6 @@
 using Kongverge.KongPlugin;
 
-namespace Kongverge.Common.Plugins.Transform
+namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
 {
     public interface IRequestTransformerConfig : IKongPluginConfig
     {

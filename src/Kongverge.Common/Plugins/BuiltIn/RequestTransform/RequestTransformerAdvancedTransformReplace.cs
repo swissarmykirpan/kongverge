@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Kongverge.Common.Plugins.Transform
+namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
 {
     public class RequestTransformerAdvancedTransformReplace : RequestTransformerAdvancedTransformBase
     {

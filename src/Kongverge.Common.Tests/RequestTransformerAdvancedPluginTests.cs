@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using FluentAssertions;
-using Kongverge.Common.Plugins.Transform;
+using Kongverge.Common.Plugins.BuiltIn.RequestTransform;
 using Xunit;
 
 namespace Kongverge.Common.Tests

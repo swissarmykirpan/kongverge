@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace Kongverge.Common.Plugins.Transform
+namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
 {
     public class RequestTransformerAdvancedTransformBase : IRequestTransformerAdvancedNestedConfig
     {
