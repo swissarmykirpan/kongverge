@@ -52,7 +52,7 @@ namespace Kongverge.Common.Helpers
 
             foreach (var parser in _parsers)
             {
-                var token = jobj.SelectToken(parser.SectionName);
+                var token = jobj.SelectToken(parser.PluginName);
 
                 if (token != null)
                 {
@@ -76,7 +76,7 @@ namespace Kongverge.Common.Helpers
                 if (extendible.Plugins == null) continue;
                 foreach (var extension in extendible.Plugins.Where(e => e.GetType() == plugin.KongObjectType))
                 {
-                    token.AddFirst(new JProperty(plugin.SectionName, JToken.FromObject(extension)));
+                    token.AddFirst(new JProperty(plugin.PluginName, JToken.FromObject(extension)));
                 }
             }
 

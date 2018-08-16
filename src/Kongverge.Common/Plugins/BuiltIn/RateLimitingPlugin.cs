@@ -9,8 +9,6 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
         }
 
-        public override string SectionName => "rate-limit";
-
         protected override RateLimitingConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new RateLimitingConfig
