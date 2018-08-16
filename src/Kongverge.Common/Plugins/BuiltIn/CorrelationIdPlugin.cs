@@ -11,8 +11,6 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
         }
 
-        public override string SectionName => "correlation";
-
         public CorrelationIdGenerator ParseTemplate(object text)
         {
             switch (text.ToString())
