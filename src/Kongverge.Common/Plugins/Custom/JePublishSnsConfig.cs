@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Kongverge.Common.Plugins.Custom
 {
-    public class PublishSnsConfig : IKongPluginConfig
+    public class JePublishSnsConfig : IKongPluginConfig
     {
         public int Timeout { get; set; }
 
@@ -31,7 +31,7 @@ namespace Kongverge.Common.Plugins.Custom
 
         public bool IsExactMatch(IKongPluginConfig other)
         {
-            if (other is PublishSnsConfig otherConfig)
+            if (other is JePublishSnsConfig otherConfig)
             {
                 return
                     (Timeout == otherConfig.Timeout) &&

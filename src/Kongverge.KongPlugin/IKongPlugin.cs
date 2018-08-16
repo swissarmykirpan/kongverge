@@ -4,8 +4,6 @@ namespace Kongverge.KongPlugin
 {
     public interface IKongPlugin
     {
-        string SectionName { get; }
-
         string PluginName { get; }
 
         Type KongObjectType { get; }

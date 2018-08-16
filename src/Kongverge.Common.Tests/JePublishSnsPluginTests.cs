@@ -4,13 +4,13 @@ using Xunit;
 
 namespace Kongverge.Common.Tests
 {
-    public class PublishSnsPluginTests
+    public class JePublishSnsPluginTests
     {
         [Fact]
         public void RoundTripFromConfigWithNoFields()
         {
-            var configIn = new PublishSnsConfig();
-            var plugin = new PublishSnsPlugin();
+            var configIn = new JePublishSnsConfig();
+            var plugin = new JePublishSnsPlugin();
 
             var configOut = PluginHelpers.RoundTripFromConfig(plugin, configIn);
 
@@ -20,7 +20,7 @@ namespace Kongverge.Common.Tests
         [Fact]
         public void RoundTripFromConfigWithAllFields()
         {
-            var configIn = new PublishSnsConfig
+            var configIn = new JePublishSnsConfig
             {
                 AccountId = 1234,
                 AwsKey = "aKey",
@@ -34,7 +34,7 @@ namespace Kongverge.Common.Tests
                 id = "test1"
             };
 
-            var plugin = new PublishSnsPlugin();
+            var plugin = new JePublishSnsPlugin();
 
             var configOut = PluginHelpers.RoundTripFromConfig(plugin, configIn);
 
@@ -44,7 +44,7 @@ namespace Kongverge.Common.Tests
         [Fact]
         public void RoundTripFromBodyWithNoData()
         {
-            PluginHelpers.RoundTripFromBodyTest(new PublishSnsPlugin());
+            PluginHelpers.RoundTripFromBodyTest(new JePublishSnsPlugin());
         }
     }
 }
