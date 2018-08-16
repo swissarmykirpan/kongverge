@@ -9,7 +9,7 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
         public string HttpMethod { get; set; }
 
         [JsonProperty("remove")]
-        public RequestTransformerAdvancedTransformBase Remove { get; set; } = new RequestTransformerAdvancedTransformBase();
+        public RequestTransformerAdvancedTransformRemove Remove { get; set; } = new RequestTransformerAdvancedTransformRemove();
 
         [JsonProperty("replace")]
         public RequestTransformerAdvancedTransformReplace Replace { get; set; } = new RequestTransformerAdvancedTransformReplace();
