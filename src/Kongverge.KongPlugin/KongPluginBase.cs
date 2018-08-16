@@ -15,15 +15,14 @@ namespace Kongverge.KongPlugin
 
         public string PluginName { get; }
 
-        public virtual string SectionName => PluginName;
-
         public Type KongObjectType => typeof(TConfig);
 
         public IKongPluginConfig CreateConfigObject(PluginBody pluginBody)
         {
             return DoCreateConfigObject(pluginBody);
         }
-
+        
+        // TODO: Can't we get rid of this method and add a type parameter to IKongPlugin instead?
         public PluginBody CreatePluginBody(IKongPluginConfig target)
         {
             var realTarget = (TConfig)target;
