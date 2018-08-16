@@ -40,7 +40,7 @@ namespace Kongverge.Common
             var success = _fileHelper.GetDataFiles(Configuration.InputFolder, out var dataFiles, out var newGlobalConfig);
             if (!success)
             {
-                return ExitWithCode.Return(ExitCodes.InputFolderUnreachable);
+                return ExitWithCode.Return(ExitCode.InputFolderUnreachable);
             }
 
             //Process Input Files
@@ -63,12 +63,12 @@ namespace Kongverge.Common
 
             if (missingServices.Count == 0)
             {
-                return ExitWithCode.Return(ExitCodes.Success);
+                return ExitWithCode.Return(ExitCode.Success);
             }
 
             await DeleteServicesMissingFromConfig(missingServices).ConfigureAwait(false);
 
-            return ExitWithCode.Return(ExitCodes.Success);
+            return ExitWithCode.Return(ExitCode.Success);
         }
 
         private async Task DeleteServicesMissingFromConfig(List<KongService> missingServices)
