@@ -22,7 +22,7 @@ namespace Kongverge.Integration.Tests
                 Tenant = "BW"
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
 
 
@@ -34,7 +34,7 @@ namespace Kongverge.Integration.Tests
                 Delay = 123
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace Kongverge.Integration.Tests
                 Timeout = 3456
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace Kongverge.Integration.Tests
                 Timeout = 3456
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
     }
 }

@@ -53,7 +53,7 @@ namespace Kongverge.Integration.Tests
             return (T)service.Plugins[0];
         }
 
-        public static async Task ShouldRoundTripPlugInToKong<T>(this KongvergeTestFixture fixture, T plugin) where T : IKongPluginConfig
+        public static async Task ShouldRoundTripPluginToKong<T>(this KongvergeTestFixture fixture, T plugin) where T : IKongPluginConfig
         {
             var kongServiceAdded = await fixture.AttachPluginToService(plugin);
 
