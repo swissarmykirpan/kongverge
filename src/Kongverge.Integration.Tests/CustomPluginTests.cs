@@ -25,7 +25,26 @@ namespace Kongverge.Integration.Tests
             await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
 
+        [Fact]
+        public async Task ServiceCanHaveJePublishSnsPlugin()
+        {
+            var plugin = new JePublishSnsConfig
+            {
+                AccountId = 123,
+                AwsKey = "AwsKey",
+                AwsRegion = "AwsRegion",
+                AwsSecret = "AwsSecret",
+                ConsulUrl = "ConsulUrl",
+                Environment = "Environment",
+                KeepAlive = 456,
+                id = "id",
+                Timeout = 789,
+                TopicName = "TopicName"
+            };
 
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
+        }
+        
         [Fact]
         public async Task ServiceCanHaveJeRequestDelayPlugin()
         {
