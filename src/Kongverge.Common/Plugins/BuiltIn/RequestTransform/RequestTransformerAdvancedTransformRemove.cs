@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using System.Linq;
 using Kongverge.KongPlugin;
 using Newtonsoft.Json;
 
 namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
 {
-    public class RequestTransformerAdvancedTransformBase : IRequestTransformerAdvancedNestedConfig
+    public class RequestTransformerAdvancedTransformRemove : IRequestTransformerAdvancedNestedConfig
     {
         [JsonProperty("headers")]
         public HashSet<string> Headers { get; set; } = new HashSet<string>();
@@ -18,7 +17,7 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
 
         public virtual bool IsExactMatch(IRequestTransformerAdvancedNestedConfig other)
         {
-            if (other is RequestTransformerAdvancedTransformBase otherConfig)
+            if (other is RequestTransformerAdvancedTransformRemove otherConfig)
             {
                 return
                     ConfigReadExtensions.SetsMatch(Headers, otherConfig.Headers) &&

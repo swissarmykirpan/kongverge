@@ -26,7 +26,7 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
             return new T
             {
                 HttpMethod = httpMethod,
-                Remove = ReadSection<RequestTransformerAdvancedTransformBase>(removeData),
+                Remove = ReadRemoveSection(removeData),
                 Replace = replaceConfig,
                 Rename = ReadSection<RequestTransformerAdvancedTransformBase>(renameData),
                 Add = ReadSection<RequestTransformerAdvancedTransformBase>(addData),
@@ -45,6 +45,30 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
             };
         }
 
+        private static RequestTransformerAdvancedTransformRemove ReadRemoveSection(IDictionary<string, object> section)
+        {
+            return new RequestTransformerAdvancedTransformRemove
+            {
+                Headers = section.ReadStringSet("headers"),
+                QueryString = section.ReadStringSet("querystring"),
+                Body = section.ReadStringSet("body")
+            };
+        }
+
+        protected override PluginBody DoCreatePluginBody(T target)
+        {
+            return new PluginBody(PluginName, new Dictionary<string, object>
+            {
+                { "http_method", target.HttpMethod },
+
+                { "add", WriteSection(target.Add) },
+                { "append", WriteSection(target.Append) },
+                { "remove", WriteRemoveSection(target.Remove) },
+                { "rename", WriteSection(target.Rename) },
+                { "replace", WriteReplaceSection(target.Replace) }
+            });
+        }
+
         private static JObject WriteSection(RequestTransformerAdvancedTransformBase section)
         {
             return new JObject
@@ -55,21 +79,25 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
             };
         }
 
-        protected override PluginBody DoCreatePluginBody(T target)
+        private static JObject WriteRemoveSection(RequestTransformerAdvancedTransformRemove section)
         {
-            var replace = WriteSection(target.Replace);
-            replace.Add("uri", target.Replace.Uri);
-
-            return new PluginBody(PluginName, new Dictionary<string, object>
+            return new JObject
             {
-                { "http_method", target.HttpMethod },
+                {"headers", section.Headers.ToCommaSeperatedString()},
+                {"querystring", section.QueryString.ToCommaSeperatedString()},
+                {"body",  section.Body.ToCommaSeperatedString()}
+            };
+        }
 
-                { "add", WriteSection(target.Add) },
-                { "append", WriteSection(target.Append) },
-                { "remove", WriteSection(target.Remove) },
-                { "rename", WriteSection(target.Rename) },
-                { "replace", replace }
-            });
+        private static JObject WriteReplaceSection(RequestTransformerAdvancedTransformReplace section)
+        {
+            return new JObject
+            {
+                { "uri", section.Uri },
+                {"headers", section.Headers.ToCommaSeperatedString()},
+                {"querystring", section.QueryString.ToCommaSeperatedString()},
+                {"body",  section.Body.ToCommaSeperatedString()}
+            };
         }
     }
 }

@@ -27,17 +27,17 @@ namespace Kongverge.Common.Tests
                 HttpMethod = "POST",
                 Add = new RequestTransformerAdvancedTransformBase
                 {
-                    Body = new HashSet<string> { "addbody1"},
-                    Headers = new HashSet<string> { "addheader1"},
-                    QueryString = new HashSet<string> { "addQueryString1"}
+                    Body = new HashSet<string> { "addbody1:value" },
+                    Headers = new HashSet<string> { "addheader1:value" },
+                    QueryString = new HashSet<string> { "addQueryString1:value" }
                 },
                 Append = new RequestTransformerAdvancedTransformBase
                 {
-                    Body = new HashSet<string> { "appendbody1" },
-                    Headers = new HashSet<string> { "appendHeader1" },
-                    QueryString = new HashSet<string> { "appendQueryString1" }
+                    Body = new HashSet<string> { "appendbody1:value" },
+                    Headers = new HashSet<string> { "appendHeader1:value" },
+                    QueryString = new HashSet<string> { "appendQueryString1:value" }
                 },
-                Remove = new RequestTransformerAdvancedTransformBase
+                Remove = new RequestTransformerAdvancedTransformRemove
                 {
                     Body = new HashSet<string> { "removebody1" },
                     Headers = new HashSet<string> { "removeHeader1" },
@@ -45,15 +45,15 @@ namespace Kongverge.Common.Tests
                 },
                 Rename = new RequestTransformerAdvancedTransformBase
                 {
-                    Body = new HashSet<string> { "renamebody1" },
-                    Headers = new HashSet<string> { "renameHeader1" },
-                    QueryString = new HashSet<string> { "renameQueryString1" }
+                    Body = new HashSet<string> { "renamebody1:value" },
+                    Headers = new HashSet<string> { "renameHeader1:value" },
+                    QueryString = new HashSet<string> { "renameQueryString1:value" }
                 },
                 Replace = new RequestTransformerAdvancedTransformReplace
                 {
-                    Body = new HashSet<string> { "replacebody1" },
-                    Headers = new HashSet<string> { "replaceHeader1" },
-                    QueryString = new HashSet<string> { "replaceQueryString1" },
+                    Body = new HashSet<string> { "replacebody1:value" },
+                    Headers = new HashSet<string> { "replaceHeader1:value" },
+                    QueryString = new HashSet<string> { "replaceQueryString1:value" },
                     Uri = "bob.com"
                 }
             };

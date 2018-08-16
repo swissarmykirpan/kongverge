@@ -70,7 +70,7 @@ namespace Kongverge.Integration.Tests
             var plugin = new RequestTransformerAdvancedConfig
             {
                 HttpMethod = "GET",
-                Remove = new RequestTransformerAdvancedTransformBase
+                Remove = new RequestTransformerAdvancedTransformRemove
                 {
                     Headers = new HashSet<string> { "header1", "header2", "header3" },
                     QueryString = new HashSet<string> { "param_a", "param_b" },
@@ -148,7 +148,7 @@ namespace Kongverge.Integration.Tests
                     QueryString = new HashSet<string> { "dparam_a:valueb", "param_b:value_d" },
                     Body = new HashSet<string> { "dkey1:value1" }
                 },
-                Remove = new RequestTransformerAdvancedTransformBase
+                Remove = new RequestTransformerAdvancedTransformRemove
                 {
                     Headers = new HashSet<string> { "eheader1", "header2", "header3" },
                     QueryString = new HashSet<string> { "eparam_a", "param_b" },
