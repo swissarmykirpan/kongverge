@@ -113,6 +113,20 @@ namespace Kongverge.KongPlugin
             return new HashSet<string>(stringValues);
         }
 
+        public static IDictionary<string, string> ReadStringMaps(this IDictionary<string, object> values, string key)
+        {
+            var stringValues = values.ReadStrings(key);
+            if (values == null)
+            {
+                return new Dictionary<string, string>();
+            }
+
+            return stringValues
+                .Select(value => value.Split(':'))
+                .ToDictionary(kv => kv[0], kv => kv.Length > 1 ? kv[1] : string.Empty);
+        }
+
+
         public static int[] ReadInts(this IDictionary<string, object> values, string key)
         {
             if (!values.ContainsKey(key))
@@ -160,6 +174,12 @@ namespace Kongverge.KongPlugin
         public static string ToCommaSeperatedString(this IEnumerable<string> strings)
         {
             return string.Join(",", strings);
+        }
+        public static string ToCommaSeperatedString(this IDictionary<string, string> stringMaps)
+        {
+            return stringMaps
+                .Select(kv => $"{kv.Key}:{kv.Value}")
+                .ToCommaSeperatedString();
         }
     }
 }
