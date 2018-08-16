@@ -26,7 +26,7 @@ namespace Kongverge.Integration.Tests
                 }
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace Kongverge.Integration.Tests
                 }
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace Kongverge.Integration.Tests
                 }
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
 
 
@@ -78,7 +78,7 @@ namespace Kongverge.Integration.Tests
                 }
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
 
 
@@ -97,7 +97,7 @@ namespace Kongverge.Integration.Tests
                 }
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
 
         [Fact]
@@ -114,7 +114,7 @@ namespace Kongverge.Integration.Tests
                 }
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
 
         [Fact]
@@ -156,7 +156,7 @@ namespace Kongverge.Integration.Tests
                 }
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
     }
 }

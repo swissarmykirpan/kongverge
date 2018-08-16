@@ -35,7 +35,7 @@ namespace Kongverge.Integration.Tests
                 Header = "test1"
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace Kongverge.Integration.Tests
         {
             var plugin = new KeyAuthenticationConfig();
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace Kongverge.Integration.Tests
                 WindowSize = new [] { 3455 }
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
 
         [Fact]
@@ -68,7 +68,7 @@ namespace Kongverge.Integration.Tests
                 Message = "test term"
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
     }
 }
