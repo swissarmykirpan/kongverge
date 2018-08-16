@@ -34,5 +34,7 @@ artifacts/
 .nyc_output/
 coverage/
 .dotnetcli/
+*.ncrunchsolution
 
 launchSettings.json
+
