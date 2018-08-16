@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Kongverge.Common.Plugins.BuiltIn;
+using Kongverge.Common.Plugins.BuiltIn.RequestTransform;
 using Xunit;
 
 namespace Kongverge.Integration.Tests
