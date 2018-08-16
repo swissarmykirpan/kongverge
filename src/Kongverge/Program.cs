@@ -20,73 +20,24 @@ namespace Kongverge
                 Name = "Kongverge",
                 Description = "Kong configuration convergence."
             };
-            app.HelpOption("-?|-h|--help");
 
-            var dryrunOption = app.Option("-t|--test",
-                "Perform dry run without updating Kong system",
-                CommandOptionType.NoValue);
-
-            var inputFolderOption = app.Option("-i|--input <inputFolder>",
-                "Folder for input data",
-                CommandOptionType.SingleValue);
-
-            var outputFolderOption = app.Option("-o|--output <outputFolder>",
-                "Folder to output data from host",
-                CommandOptionType.SingleValue);
-
-            var hostOption = app.Option("-H|--host <KongHostname>",
-                "Kong Admin host with which to communicate",
-                CommandOptionType.SingleValue);
-
-            var portOption = app.Option("-p|--port <KongAdminPort>",
-                "Kong Admin API port",
-                CommandOptionType.SingleValue);
+            var options = new Options(app);
 
             app.OnExecute(async () =>
             {
                 ServiceRegistration.CreateConsoleLogger();
+
+                if (!options.AreValid(out var exitCode))
+                {
+                    return ExitWithCode.Return(exitCode);
+                }
+
                 var services = new ServiceCollection();
                 ServiceRegistration.AddServices(services);
 
                 var serviceProvider = services.BuildServiceProvider();
 
-                #region Configuration Options
-
-                var configuration = serviceProvider.GetService<IOptions<Settings>>().Value;
-
-                if (hostOption.HasValue())
-                {
-                    configuration.Admin.Host = hostOption.Value();
-                }
-
-                if (outputFolderOption.HasValue())
-                {
-                    configuration.OutputFolder = outputFolderOption.Value();
-                }
-
-                if (portOption.HasValue())
-                {
-                    if (!int.TryParse(portOption.Value(), out var port)
-                        || port > MaxPort
-                        || port < MinPort)
-                    {
-                        return ExitWithCode.Return(ExitCodes.InvalidPort);
-                    }
-                    configuration.Admin.Port = port;
-                }
-
-                configuration.DryRun = dryrunOption.HasValue();
-                if (inputFolderOption.HasValue() && outputFolderOption.HasValue())
-                {
-                    return ExitWithCode.Return(ExitCodes.IncompatibleArguments);
-                }
-
-                if (inputFolderOption.HasValue())
-                {
-                    configuration.InputFolder = inputFolderOption.Value();
-                }
-
-                #endregion
+                options.Apply(serviceProvider);
 
                 var workflow = serviceProvider.GetService<Workflow>();
 
@@ -95,13 +46,97 @@ namespace Kongverge
                 return await workflow.Execute().ConfigureAwait(false);
             });
 
-            var returncode = app.Execute(args);
+            var returnCode = app.Execute(args);
 #if DEBUG
             Console.Write("Press a key to finish");
             Console.ReadKey();
 #endif
 
-            return returncode;
+            return returnCode;
+        }
+
+        private class Options
+        {
+            public Options(CommandLineApplication app)
+            {
+                app.HelpOption("-?|-h|--help");
+
+                DryRun = app.Option("-t|--test",
+                    "Perform dry run without updating Kong system",
+                    CommandOptionType.NoValue);
+
+                InputFolder = app.Option("-i|--input <inputFolder>",
+                    "Folder for input data",
+                    CommandOptionType.SingleValue);
+
+                OutputFolder = app.Option("-o|--output <outputFolder>",
+                    "Folder to output data from host",
+                    CommandOptionType.SingleValue);
+
+                Host = app.Option("-H|--host <KongHostname>",
+                    "Kong Admin host with which to communicate",
+                    CommandOptionType.SingleValue);
+
+                Port = app.Option("-p|--port <KongAdminPort>",
+                    "Kong Admin API port",
+                    CommandOptionType.SingleValue);
+            }
+
+            public CommandOption DryRun { get; }
+            public CommandOption InputFolder { get; }
+            public CommandOption OutputFolder { get; }
+            public CommandOption Host { get; }
+            public CommandOption Port { get; }
+
+            public bool AreValid(out ExitCode exitCode)
+            {
+                if (InputFolder.HasValue() && OutputFolder.HasValue())
+                {
+                    exitCode = ExitCode.IncompatibleArguments;
+                    return false;
+                }
+
+                if (Port.HasValue())
+                {
+                    if (!int.TryParse(Port.Value(), out var port)
+                        || port > MaxPort
+                        || port < MinPort)
+                    {
+                        exitCode = ExitCode.InvalidPort;
+                        return false;
+                    }
+                }
+
+                exitCode = ExitCode.Success;
+                return true;
+            }
+
+            public void Apply(IServiceProvider serviceProvider)
+            {
+                var settings = serviceProvider.GetService<IOptions<Settings>>().Value;
+
+                if (Host.HasValue())
+                {
+                    settings.Admin.Host = Host.Value();
+                }
+
+                if (OutputFolder.HasValue())
+                {
+                    settings.OutputFolder = OutputFolder.Value();
+                }
+
+                if (Port.HasValue())
+                {
+                    settings.Admin.Port = int.Parse(Port.Value());
+                }
+
+                settings.DryRun = DryRun.HasValue();
+
+                if (InputFolder.HasValue())
+                {
+                    settings.InputFolder = InputFolder.Value();
+                }
+            }
         }
     }
 }
