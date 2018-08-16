@@ -180,11 +180,10 @@ namespace Kongverge.KongPlugin
             return string.Join(",", strings);
         }
 
-        public static string ToCommaSeperatedString(this IDictionary<string, string> stringMaps)
+        public static IEnumerable<string> ToCommaSeperatedStrings(this IDictionary<string, string> stringMaps)
         {
             return stringMaps
-                .Select(kv => $"{kv.Key}:{kv.Value}")
-                .ToCommaSeperatedString();
+                .Select(kv => $"{kv.Key}:{kv.Value}");
         }
 
         public static bool SetsMatch<T>(ICollection<T> a, ICollection<T> b)
