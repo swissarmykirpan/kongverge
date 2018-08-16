@@ -1,7 +1,7 @@
 using Kongverge.KongPlugin;
 using Newtonsoft.Json;
 
-namespace Kongverge.Common.Plugins.BuiltIn
+namespace Kongverge.Common.Plugins.Transform
 {
     public abstract class BaseRequestTransformerConfig : IRequestTransformerConfig
     {
