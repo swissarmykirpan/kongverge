@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Kongverge.KongPlugin;
 using Newtonsoft.Json;
 
@@ -8,13 +7,13 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
     public class RequestTransformerAdvancedTransformBase : IRequestTransformerAdvancedNestedConfig
     {
         [JsonProperty("headers")]
-        public HashSet<string> Headers { get; set; } = new HashSet<string>();
+        public IDictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
 
         [JsonProperty("querystring")]
-        public HashSet<string> QueryString { get; set; } = new HashSet<string>();
+        public IDictionary<string, string> QueryString { get; set; } = new Dictionary<string, string>();
 
         [JsonProperty("body")]
-        public HashSet<string> Body { get; set; } = new HashSet<string>();
+        public IDictionary<string, string> Body { get; set; } = new Dictionary<string, string>();
 
         public virtual bool IsExactMatch(IRequestTransformerAdvancedNestedConfig other)
         {

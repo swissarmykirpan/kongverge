@@ -121,11 +121,15 @@ namespace Kongverge.KongPlugin
                 return new Dictionary<string, string>();
             }
 
-            return stringValues
+            return StringsToMaps(stringValues);
+        }
+
+        public static IDictionary<string, string> StringsToMaps(IEnumerable<string> values)
+        {
+            return values
                 .Select(value => value.Split(':'))
                 .ToDictionary(kv => kv[0], kv => kv.Length > 1 ? kv[1] : string.Empty);
         }
-
 
         public static int[] ReadInts(this IDictionary<string, object> values, string key)
         {

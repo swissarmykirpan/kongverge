@@ -39,9 +39,9 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
         {
             return new C
             {
-                Headers = section.ReadStringSet("headers"),
-                QueryString = section.ReadStringSet("querystring"),
-                Body = section.ReadStringSet("body")
+                Headers = section.ReadStringMaps("headers"),
+                QueryString = section.ReadStringMaps("querystring"),
+                Body = section.ReadStringMaps("body")
             };
         }
 
