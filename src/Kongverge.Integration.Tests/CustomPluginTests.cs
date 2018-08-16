@@ -22,10 +22,29 @@ namespace Kongverge.Integration.Tests
                 Tenant = "BW"
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
 
+        [Fact]
+        public async Task ServiceCanHaveJePublishSnsPlugin()
+        {
+            var plugin = new JePublishSnsConfig
+            {
+                AccountId = 123,
+                AwsKey = "AwsKey",
+                AwsRegion = "AwsRegion",
+                AwsSecret = "AwsSecret",
+                ConsulUrl = "ConsulUrl",
+                Environment = "Environment",
+                KeepAlive = 456,
+                id = "id",
+                Timeout = 789,
+                TopicName = "TopicName"
+            };
 
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
+        }
+        
         [Fact]
         public async Task ServiceCanHaveJeRequestDelayPlugin()
         {
@@ -34,7 +53,7 @@ namespace Kongverge.Integration.Tests
                 Delay = 123
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
 
         [Fact]
@@ -50,7 +69,7 @@ namespace Kongverge.Integration.Tests
                 Timeout = 3456
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
 
         [Fact]
@@ -65,7 +84,7 @@ namespace Kongverge.Integration.Tests
                 Timeout = 3456
             };
 
-            await _fixture.ShouldRoundTripPlugInToKong(plugin);
+            await _fixture.ShouldRoundTripPluginToKong(plugin);
         }
     }
 }
