@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Kongverge.KongPlugin;
 using Newtonsoft.Json.Linq;
 
-namespace Kongverge.Common.Plugins.BuiltIn
+namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
 {
     public abstract class BaseRequestTransformerPlugin<T> : KongPluginBase<T> where T : IRequestTransformerConfig, new()
     {

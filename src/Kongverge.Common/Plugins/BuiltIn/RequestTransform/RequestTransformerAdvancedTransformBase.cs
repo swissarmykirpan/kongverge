@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace Kongverge.Common.Plugins.BuiltIn
+namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
 {
     public class RequestTransformerAdvancedTransformBase : IRequestTransformerAdvancedNestedConfig
     {
@@ -19,17 +19,23 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             if (other is RequestTransformerAdvancedTransformBase otherConfig)
             {
-                return !Headers.Except(otherConfig.Headers)
-                           .Concat(otherConfig.Headers.Except(Headers)).Any()
-
-                       && !QueryString.Except(otherConfig.QueryString)
-                           .Concat(otherConfig.QueryString.Except(QueryString)).Any()
-
-                       && !Body.Except(otherConfig.Body)
-                           .Concat(otherConfig.Body.Except(Body)).Any();
+                return
+                    SetsMatch(Headers, otherConfig.Headers) &&
+                    SetsMatch(QueryString, otherConfig.QueryString) &&
+                    SetsMatch(Body, otherConfig.Body);
             }
 
             return false;
+        }
+
+        private static bool SetsMatch<T>(ICollection<T> a, ICollection<T> b)
+        {
+            if (a.Count != b.Count)
+            {
+                return false;
+            }
+
+            return !a.Except(b).Concat(b.Except(a)).Any();
         }
     }
 }
