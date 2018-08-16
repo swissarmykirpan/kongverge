@@ -10,8 +10,6 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
         }
 
-        public override string SectionName => "terminate";
-
         protected override RequestTerminationConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new RequestTerminationConfig
