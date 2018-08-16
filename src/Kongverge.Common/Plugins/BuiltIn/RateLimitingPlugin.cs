@@ -5,11 +5,9 @@ namespace Kongverge.Common.Plugins.BuiltIn
 {
     public class RateLimitingPlugin : KongPluginBase<RateLimitingConfig>
     {
-        public RateLimitingPlugin() : base("rate-limit")
+        public RateLimitingPlugin() : base("rate-limiting-advanced")
         {
         }
-
-        public override string PluginName => "rate-limiting-advanced";
 
         protected override RateLimitingConfig DoCreateConfigObject(PluginBody pluginBody)
         {
