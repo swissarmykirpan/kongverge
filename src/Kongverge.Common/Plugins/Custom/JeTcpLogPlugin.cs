@@ -9,8 +9,6 @@ namespace Kongverge.Common.Plugins.Custom
         {
         }
 
-        public override string PluginName => "je-tcp-log";
-
         protected override JeTcpLogConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new JeTcpLogConfig
