@@ -26,7 +26,7 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
             return new T
             {
                 HttpMethod = httpMethod,
-                Remove = ReadSection<RequestTransformerAdvancedTransformBase>(removeData),
+                Remove = ReadRemoveSection(removeData),
                 Replace = replaceConfig,
                 Rename = ReadSection<RequestTransformerAdvancedTransformBase>(renameData),
                 Add = ReadSection<RequestTransformerAdvancedTransformBase>(addData),
@@ -39,37 +39,65 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
         {
             return new C
             {
+                Headers = section.ReadStringMaps("headers"),
+                QueryString = section.ReadStringMaps("querystring"),
+                Body = section.ReadStringMaps("body")
+            };
+        }
+
+        private static RequestTransformerAdvancedTransformRemove ReadRemoveSection(IDictionary<string, object> section)
+        {
+            return new RequestTransformerAdvancedTransformRemove
+            {
                 Headers = section.ReadStringSet("headers"),
                 QueryString = section.ReadStringSet("querystring"),
                 Body = section.ReadStringSet("body")
             };
         }
 
-        private static JObject WriteSection(RequestTransformerAdvancedTransformBase section)
-        {
-            return new JObject
-            {
-                {"headers", section.Headers.ToCommaSeperatedString()},
-                {"querystring", section.QueryString.ToCommaSeperatedString()},
-                {"body",  section.Body.ToCommaSeperatedString()}
-            };
-        }
-
         protected override PluginBody DoCreatePluginBody(T target)
         {
-            var replace = WriteSection(target.Replace);
-            replace.Add("uri", target.Replace.Uri);
-
             return new PluginBody(PluginName, new Dictionary<string, object>
             {
                 { "http_method", target.HttpMethod },
 
                 { "add", WriteSection(target.Add) },
                 { "append", WriteSection(target.Append) },
-                { "remove", WriteSection(target.Remove) },
+                { "remove", WriteRemoveSection(target.Remove) },
                 { "rename", WriteSection(target.Rename) },
-                { "replace", replace }
+                { "replace", WriteReplaceSection(target.Replace) }
             });
+        }
+
+        private static JObject WriteSection(RequestTransformerAdvancedTransformBase section)
+        {
+            return new JObject
+            {
+                {"headers", new JArray(section.Headers.ToCommaSeperatedStrings())},
+                {"querystring", new JArray(section.QueryString.ToCommaSeperatedStrings())},
+                {"body",  new JArray(section.Body.ToCommaSeperatedStrings())}
+            };
+        }
+
+        private static JObject WriteRemoveSection(RequestTransformerAdvancedTransformRemove section)
+        {
+            return new JObject
+            {
+                {"headers", new JArray(section.Headers)},
+                {"querystring", new JArray(section.QueryString)},
+                {"body",  new JArray(section.Body)}
+            };
+        }
+
+        private static JObject WriteReplaceSection(RequestTransformerAdvancedTransformReplace section)
+        {
+            return new JObject
+            {
+                { "uri", section.Uri },
+                {"headers", new JArray(section.Headers.ToCommaSeperatedStrings())},
+                {"querystring", new JArray(section.QueryString.ToCommaSeperatedStrings())},
+                {"body",  new JArray(section.Body.ToCommaSeperatedStrings())}
+            };
         }
     }
 }

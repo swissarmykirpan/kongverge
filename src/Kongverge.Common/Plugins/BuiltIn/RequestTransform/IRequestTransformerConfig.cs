@@ -6,7 +6,7 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
     {
         string HttpMethod { get; set; }
 
-        RequestTransformerAdvancedTransformBase Remove { get; set; }
+        RequestTransformerAdvancedTransformRemove Remove { get; set; }
 
         RequestTransformerAdvancedTransformReplace Replace { get; set; }
 

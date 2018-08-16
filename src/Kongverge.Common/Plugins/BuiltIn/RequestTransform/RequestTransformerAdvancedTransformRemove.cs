@@ -4,20 +4,20 @@ using Newtonsoft.Json;
 
 namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
 {
-    public class RequestTransformerAdvancedTransformBase : IRequestTransformerAdvancedNestedConfig
+    public class RequestTransformerAdvancedTransformRemove : IRequestTransformerAdvancedNestedConfig
     {
         [JsonProperty("headers")]
-        public IDictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
+        public HashSet<string> Headers { get; set; } = new HashSet<string>();
 
         [JsonProperty("querystring")]
-        public IDictionary<string, string> QueryString { get; set; } = new Dictionary<string, string>();
+        public HashSet<string> QueryString { get; set; } = new HashSet<string>();
 
         [JsonProperty("body")]
-        public IDictionary<string, string> Body { get; set; } = new Dictionary<string, string>();
+        public HashSet<string> Body { get; set; } = new HashSet<string>();
 
         public virtual bool IsExactMatch(IRequestTransformerAdvancedNestedConfig other)
         {
-            if (other is RequestTransformerAdvancedTransformBase otherConfig)
+            if (other is RequestTransformerAdvancedTransformRemove otherConfig)
             {
                 return
                     ConfigReadExtensions.SetsMatch(Headers, otherConfig.Headers) &&

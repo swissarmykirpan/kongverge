@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Kongverge.Common.Plugins.BuiltIn.RequestTransform;
+using Kongverge.KongPlugin;
 using Xunit;
 
 namespace Kongverge.Integration.Tests
@@ -37,9 +38,9 @@ namespace Kongverge.Integration.Tests
                 HttpMethod = "GET",
                 Add = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new HashSet<string> { "header1:value1", "header2:Value2", "header3:value3" },
-                    QueryString = new HashSet<string> { "param_a:valueb", "param_b:value_d" },
-                    Body = new HashSet<string> { "key1:value1" }
+                    Headers = Maps("header1:value1", "header2:Value2", "header3:value3" ),
+                    QueryString = Maps("param_a:valueb", "param_b:value_d" ),
+                    Body = Maps("key1:value1" )
                 }
             };
 
@@ -54,9 +55,9 @@ namespace Kongverge.Integration.Tests
                 HttpMethod = "GET",
                 Append = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new HashSet<string> { "header1:value1", "header2:Value2", "header3:value3" },
-                    QueryString = new HashSet<string> { "param_a:valueb", "param_b:value_d" },
-                    Body = new HashSet<string> { "key1:value1" }
+                    Headers = Maps("header1:value1", "header2:Value2", "header3:value3" ),
+                    QueryString = Maps("param_a:valueb", "param_b:value_d" ),
+                    Body = Maps("key1:value1" )
                 }
             };
 
@@ -70,7 +71,7 @@ namespace Kongverge.Integration.Tests
             var plugin = new RequestTransformerAdvancedConfig
             {
                 HttpMethod = "GET",
-                Remove = new RequestTransformerAdvancedTransformBase
+                Remove = new RequestTransformerAdvancedTransformRemove
                 {
                     Headers = new HashSet<string> { "header1", "header2", "header3" },
                     QueryString = new HashSet<string> { "param_a", "param_b" },
@@ -91,9 +92,9 @@ namespace Kongverge.Integration.Tests
                 Replace = new RequestTransformerAdvancedTransformReplace
                 {
                     Uri = "/foo/bar",
-                    Headers = new HashSet<string> { "header1:value1", "header2:Value2", "header3:value3" },
-                    QueryString = new HashSet<string> { "param_a:valueb", "param_b:value_d" },
-                    Body = new HashSet<string> { "key1:value1" }
+                    Headers = Maps("header1:value1", "header2:Value2", "header3:value3" ),
+                    QueryString = Maps("param_a:valueb", "param_b:value_d" ),
+                    Body = Maps("key1:value1" )
                 }
             };
 
@@ -108,9 +109,9 @@ namespace Kongverge.Integration.Tests
                 HttpMethod = "GET",
                 Rename = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new HashSet<string> { "header1:value1", "header2:Value2", "header3:value3" },
-                    QueryString = new HashSet<string> { "param_a:valueb", "param_b:value_d" },
-                    Body = new HashSet<string> { "key1:value1" }
+                    Headers = Maps("header1:value1", "header2:Value2", "header3:value3" ),
+                    QueryString = Maps("param_a:valueb", "param_b:value_d" ),
+                    Body = Maps("key1:value1" )
                 }
             };
 
@@ -125,30 +126,30 @@ namespace Kongverge.Integration.Tests
                 HttpMethod = "GET",
                 Add = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new HashSet<string> { "aheader1:value1", "header2:Value2", "header3:value3" },
-                    QueryString = new HashSet<string> { "aparam_a:valueb", "param_b:value_d" },
-                    Body = new HashSet<string> { "akey1:value1" }
+                    Headers = Maps("aheader1:value1", "header2:Value2", "header3:value3" ),
+                    QueryString = Maps("aparam_a:valueb", "param_b:value_d" ),
+                    Body = Maps("akey1:value1" )
                 },
                 Append = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new HashSet<string> { "bheader1:value1", "header2:Value2", "header3:value3" },
-                    QueryString = new HashSet<string> { "bparam_a:valueb", "param_b:value_d" },
-                    Body = new HashSet<string> { "bkey1:value1" }
+                    Headers = Maps("bheader1:value1", "header2:Value2", "header3:value3" ),
+                    QueryString = Maps("bparam_a:valueb", "param_b:value_d" ),
+                    Body = Maps("bkey1:value1" )
                 },
                 Rename = new RequestTransformerAdvancedTransformBase
                 {
-                    Headers = new HashSet<string> { "cheader1:value1", "header2:Value2", "header3:value3" },
-                    QueryString = new HashSet<string> { "cparam_a:valueb", "param_b:value_d" },
-                    Body = new HashSet<string> { "ckey1:value1" }
+                    Headers = Maps("cheader1:value1", "header2:Value2", "header3:value3" ),
+                    QueryString = Maps("cparam_a:valueb", "param_b:value_d" ),
+                    Body = Maps("ckey1:value1" )
                 },
                 Replace = new RequestTransformerAdvancedTransformReplace
                 {
                     Uri = "/foo/bar",
-                    Headers = new HashSet<string> { "dheader1:value1", "header2:Value2", "header3:value3" },
-                    QueryString = new HashSet<string> { "dparam_a:valueb", "param_b:value_d" },
-                    Body = new HashSet<string> { "dkey1:value1" }
+                    Headers = Maps( "dheader1:value1", "header2:Value2", "header3:value3" ),
+                    QueryString = Maps( "dparam_a:valueb", "param_b:value_d" ),
+                    Body = Maps( "dkey1:value1" )
                 },
-                Remove = new RequestTransformerAdvancedTransformBase
+                Remove = new RequestTransformerAdvancedTransformRemove
                 {
                     Headers = new HashSet<string> { "eheader1", "header2", "header3" },
                     QueryString = new HashSet<string> { "eparam_a", "param_b" },
@@ -157,6 +158,11 @@ namespace Kongverge.Integration.Tests
             };
 
             await _fixture.ShouldRoundTripPluginToKong(plugin);
+        }
+
+        private static IDictionary<string, string> Maps(params string[] values)
+        {
+            return ConfigReadExtensions.StringsToMaps(values);
         }
     }
 }
