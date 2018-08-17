@@ -1,6 +1,8 @@
 using FluentAssertions;
 using Kongverge;
+using Kongverge.Common.DTOs;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace KongVerge.Tests
@@ -14,6 +16,9 @@ namespace KongVerge.Tests
             ServiceRegistration.AddServices(services);
 
             var serviceProvider = services.BuildServiceProvider();
+
+            var configuration = serviceProvider.GetService<IOptions<Settings>>().Value;
+            configuration.Admin.Host = "www.example.com";
 
             var workflow = serviceProvider.GetService<Kongverge.Common.Workflow>();
 
