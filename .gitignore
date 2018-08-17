@@ -36,3 +36,10 @@ coverage/
 .dotnetcli/
 
 launchSettings.json
+
+# NCrunch
+_NCrunch_*
+.*crunch*.local.xml
+nCrunchTemp_*
+*.ncrunchsolution
+*.ncrunchproject
