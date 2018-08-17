@@ -2,7 +2,7 @@ namespace Kongverge.Common.DTOs
 {
     public class Settings
     {
-        public Admin Admin { get; set; }
+        public Admin Admin { get; set; } = new Admin();
         public string InputFolder { get; set; }
         public bool DryRun { get; set; } = false;
         public string OutputFolder { get; set; }
