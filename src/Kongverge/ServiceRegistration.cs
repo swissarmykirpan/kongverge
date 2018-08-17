@@ -84,7 +84,7 @@ namespace Kongverge
 
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.json", true)
                 .AddEnvironmentVariables()
                 .Build();
             services.Configure<Settings>(set => configuration.Bind(set));
