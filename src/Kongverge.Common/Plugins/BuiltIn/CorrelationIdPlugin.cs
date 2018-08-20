@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
+using Kongverge.Common.Helpers;
 using Kongverge.KongPlugin;
-using Serilog;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {
@@ -11,43 +10,11 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
         }
 
-        public CorrelationIdGenerator ParseTemplate(object text)
-        {
-            switch (text.ToString())
-            {
-                case "uuid":
-                    return CorrelationIdGenerator.UUID;
-                case "tracker":
-                    return CorrelationIdGenerator.Tracker;
-                case "uuid#counter": //Cursed #
-                    return CorrelationIdGenerator.Counter;
-                default:
-                    Log.Error("Invalid value for template: {text}", text);
-                    throw new InvalidOperationException("Invalid value for template");
-            }
-        }
-
-        public string SerializeTemplate(CorrelationIdGenerator templ)
-        {
-            switch (templ)
-            {
-                case CorrelationIdGenerator.UUID:
-                    return "uuid";
-                case CorrelationIdGenerator.Tracker:
-                    return "tracker";
-                case CorrelationIdGenerator.Counter:
-                    return "uuid#counter"; //Cursed #
-                default:
-                    Log.Error("Unable to write json for template value: {value}", templ);
-                    throw new InvalidOperationException("Invalid value for template");
-            }
-        }
-
         protected override CorrelationIdConfig DoCreateConfigObject(PluginBody pluginBody)
         {
             return new CorrelationIdConfig
             {
-                Generator = ParseTemplate(pluginBody.config.ReadString("generator")),
+                Generator = pluginBody.config.ReadString("generator").FromJsonString<CorrelationIdGenerator>(),
                 EchoDownstream = pluginBody.config.ReadBool("echo_downstream"),
                 HeaderName = pluginBody.config.ReadString("header_name")
             };
@@ -58,7 +25,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
             return new PluginBody(PluginName, new Dictionary<string, object>
             {
                 { "echo_downstream", target.EchoDownstream },
-                { "generator", SerializeTemplate(target.Generator) },
+                { "generator", target.Generator.ToJsonString() },
                 { "header_name", target.HeaderName }
             });
         }

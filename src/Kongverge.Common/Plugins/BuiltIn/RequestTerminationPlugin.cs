@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net;
 using Kongverge.KongPlugin;
 
 namespace Kongverge.Common.Plugins.BuiltIn
@@ -15,7 +16,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
             return new RequestTerminationConfig
             {
                 Message = pluginBody.config.ReadString("message"),
-                StatusCode = pluginBody.config.ReadLong("status_code")
+                StatusCode = (HttpStatusCode)pluginBody.config.ReadInt("status_code")
             };
         }
 
@@ -23,8 +24,8 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             return new PluginBody(PluginName, new Dictionary<string, object>
             {
-                {"message", target.Message },
-                {"status_code", target.StatusCode }
+                { "message", target.Message },
+                { "status_code", (int)target.StatusCode }
             });
         }
     }

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Kongverge.Common.Helpers;
 using Kongverge.KongPlugin;
 
 namespace Kongverge.Common.Plugins.BuiltIn
@@ -13,7 +15,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             return new RateLimitingConfig
             {
-                Identifier = pluginBody.config.ReadString("identifier"),
+                Identifier = pluginBody.config.ReadString("identifier").FromJsonString<RateLimitingIdentifier>(),
                 Limit = pluginBody.config.ReadInts("limit"),
                 WindowSize = pluginBody.config.ReadInts("window_size")
             };
@@ -22,12 +24,12 @@ namespace Kongverge.Common.Plugins.BuiltIn
         protected override PluginBody DoCreatePluginBody(RateLimitingConfig target)
         {
             return new PluginBody(PluginName, new Dictionary<string, object>
-                    {
-                        {"limit", target.Limit },
-                        {"window_size", target.WindowSize },
-                        {"identifier", target.Identifier },
-                        {"sync_rate", 100 }
-                    });
+            {
+                { "limit", target.Limit },
+                { "window_size", target.WindowSize },
+                { "identifier", target.Identifier.ToJsonString() },
+                { "sync_rate", 100 }
+            });
         }
     }
 }
