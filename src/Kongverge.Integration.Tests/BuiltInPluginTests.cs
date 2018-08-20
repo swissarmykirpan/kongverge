@@ -1,75 +1,98 @@
-using System.Net;
-using System.Threading.Tasks;
-using FluentAssertions;
+using System.Collections.Generic;
+using FizzWare.NBuilder;
 using Kongverge.Common.Plugins.BuiltIn;
-using Xunit;
+using Kongverge.Common.Plugins.BuiltIn.RequestTransform;
+using Kongverge.Common.Tests.Plugins;
 
 namespace Kongverge.Integration.Tests
 {
-    public class BuiltInPluginTests : IClassFixture<KongvergeTestFixture>
+    public class CorrelationIdPluginTests : PluginTests<CorrelationIdConfig>
     {
-        private readonly KongvergeTestFixture _fixture;
-
-        public BuiltInPluginTests(KongvergeTestFixture kongvergeTestFixture)
+        public CorrelationIdPluginTests(KongvergeTestFixture kongvergeTestFixture) : base(kongvergeTestFixture)
         {
-            _fixture = kongvergeTestFixture;
+        }
+    }
+
+    public class KeyAuthenticationPluginTests : PluginTests<KeyAuthenticationConfig>
+    {
+        public KeyAuthenticationPluginTests(KongvergeTestFixture kongvergeTestFixture) : base(kongvergeTestFixture)
+        {
+        }
+    }
+
+    public class RateLimitingPluginTests : PluginTests<RateLimitingConfig>
+    {
+        public RateLimitingPluginTests(KongvergeTestFixture kongvergeTestFixture) : base(kongvergeTestFixture)
+        {
+        }
+    }
+
+    public class RequestTerminationPluginTests : PluginTests<RequestTerminationConfig>
+    {
+        public RequestTerminationPluginTests(KongvergeTestFixture kongvergeTestFixture) : base(kongvergeTestFixture)
+        {
+        }
+    }
+
+    public class RequestTransformerAdvancedPluginTests : RequestTransformerPluginTests<RequestTransformerAdvancedConfig>
+    {
+        public RequestTransformerAdvancedPluginTests(KongvergeTestFixture kongvergeTestFixture) : base(kongvergeTestFixture)
+        {
+        }
+    }
+
+    public abstract class RequestTransformerPluginTests<TPluginConfig> : PluginTests<TPluginConfig>
+        where TPluginConfig : BaseRequestTransformerConfig, new()
+    {
+        protected RequestTransformerPluginTests(KongvergeTestFixture kongvergeTestFixture) : base(kongvergeTestFixture)
+        {
         }
 
-        [Fact]
-        public async Task DefaultServiceHasNoPlugins()
+        protected override IEnumerable<TPluginConfig> Permutations
         {
-            var service = new ServiceBuilder().AddDefaultTestService().Build();
-            var kongServiceAdded = await _fixture.AddServiceAndPlugins(service);
-
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
-
-            serviceReadFromKong.Should().NotBeNull();
-            serviceReadFromKong.Plugins.Should().NotBeNull();
-            serviceReadFromKong.Plugins.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task ServiceCanHaveCorrelationIdPlugin()
-        {
-            var plugin = new CorrelationIdConfig
+            get
             {
-                HeaderName = "test1"
-            };
+                yield return Builder<TPluginConfig>
+                    .CreateNew()
+                    .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
+                    .With(x => x.Replace, Builder<RequestTransformerAdvancedTransformReplace>.CreateNew().Build())
+                    .Build();
 
-            await _fixture.ShouldRoundTripPluginToKong(plugin);
-        }
+                yield return Builder<TPluginConfig>
+                    .CreateNew()
+                    .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
+                    .With(x => x.Add, BuilderExtensions.RandomBaseConfig<RequestTransformerAdvancedTransformBase>())
+                    .Build();
 
-        [Fact]
-        public async Task ServiceCanHaveKeyAuthenticationPlugin()
-        {
-            var plugin = new KeyAuthenticationConfig();
+                yield return Builder<TPluginConfig>
+                    .CreateNew()
+                    .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
+                    .With(x => x.Append, BuilderExtensions.RandomBaseConfig<RequestTransformerAdvancedTransformBase>())
+                    .Build();
 
-            await _fixture.ShouldRoundTripPluginToKong(plugin);
-        }
+                yield return Builder<TPluginConfig>
+                    .CreateNew()
+                    .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
+                    .With(x => x.Remove, BuilderExtensions.RandomRemoveConfig())
+                    .Build();
 
-        [Fact]
-        public async Task ServiceCanHaveRateLimitingPlugin()
-        {
-            var plugin = new RateLimitingConfig
-            {
-                Identifier = RateLimitingIdentifier.Consumer,
-                Limit = new [] { 123 },
-                WindowSize = new [] { 3455 }
-            };
+                yield return Builder<TPluginConfig>
+                    .CreateNew()
+                    .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
+                    .With(x => x.Replace, BuilderExtensions.RandomBaseConfig<RequestTransformerAdvancedTransformReplace>())
+                    .Build();
 
-            await _fixture.ShouldRoundTripPluginToKong(plugin);
-        }
+                yield return Builder<TPluginConfig>
+                    .CreateNew()
+                    .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
+                    .With(x => x.Rename, BuilderExtensions.RandomBaseConfig<RequestTransformerAdvancedTransformBase>())
+                    .Build();
 
-        [Fact]
-        public async Task ServiceCanHaveRequestTerminationPlugin()
-        {
-            var plugin = new RequestTerminationConfig
-            {
-                StatusCode = HttpStatusCode.InternalServerError,
-                Message = "test term"
-            };
-
-            await _fixture.ShouldRoundTripPluginToKong(plugin);
+                yield return Builder<TPluginConfig>
+                    .CreateNew()
+                    .PopulateRequestTransformerConfig()
+                    .Build();
+            }
         }
     }
 }
