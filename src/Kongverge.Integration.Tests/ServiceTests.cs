@@ -18,11 +18,24 @@ namespace Kongverge.Integration.Tests
         }
 
         [Fact]
+        public async Task DefaultServiceHasNoPlugins()
+        {
+            var service = new ServiceBuilder().AddDefaultTestService().Build();
+            var kongServiceAdded = await _fixture.AddServiceAndPlugins(service);
+
+            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
+
+            serviceReadFromKong.Should().NotBeNull();
+            serviceReadFromKong.Plugins.Should().NotBeNull();
+            serviceReadFromKong.Plugins.Should().BeEmpty();
+        }
+
+        [Fact]
         public async Task UnknownServiceIsNotFound()
         {
             var noSuchId = Guid.NewGuid().ToString();
 
-            await _fixture.KongAdminReader.HasNoServiceWithId(noSuchId);
+            await _fixture.KongAdminReader.ShouldNotHaveServiceWithId(noSuchId);
         }
 
         [Fact]
@@ -34,7 +47,7 @@ namespace Kongverge.Integration.Tests
             kongAction.ShouldSucceed();
             kongAction.Result.Id.Should().NotBeNullOrEmpty();
 
-            await _fixture.KongAdminReader.HasServiceWithId(kongAction.Result.Id);
+            await _fixture.KongAdminReader.ShouldHaveServiceWithId(kongAction.Result.Id);
         }
 
         [Fact]
@@ -53,7 +66,7 @@ namespace Kongverge.Integration.Tests
             var service = kongAction.Result;
             service.Id.Should().NotBeNullOrEmpty();
 
-            await _fixture.KongAdminReader.HasServiceWithId(kongAction.Result.Id);
+            await _fixture.KongAdminReader.ShouldHaveServiceWithId(kongAction.Result.Id);
         }
 
         [Fact]
@@ -81,7 +94,7 @@ namespace Kongverge.Integration.Tests
             var deleteAction = await _fixture.KongAdminWriter.DeleteService(service.Id);
 
             deleteAction.ShouldSucceed();
-            await _fixture.KongAdminReader.HasNoServiceWithId(service.Id);
+            await _fixture.KongAdminReader.ShouldNotHaveServiceWithId(service.Id);
         }
 
         private async Task<KongService> AddTestService()
@@ -92,7 +105,7 @@ namespace Kongverge.Integration.Tests
             addAction.ShouldSucceed();
             addAction.Result.Id.Should().NotBeNullOrEmpty();
 
-            await _fixture.KongAdminReader.HasServiceWithId(service.Id);
+            await _fixture.KongAdminReader.ShouldHaveServiceWithId(service.Id);
 
             return addAction.Result;
         }

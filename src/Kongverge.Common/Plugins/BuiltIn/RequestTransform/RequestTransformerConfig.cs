@@ -3,25 +3,25 @@ using Newtonsoft.Json;
 
 namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
 {
-    public abstract class BaseRequestTransformerConfig : IRequestTransformerConfig
+    public abstract class RequestTransformerConfig : IRequestTransformerConfig
     {
         [JsonProperty("http_method")]
         public string HttpMethod { get; set; }
 
         [JsonProperty("remove")]
-        public RequestTransformerAdvancedTransformRemove Remove { get; set; } = new RequestTransformerAdvancedTransformRemove();
+        public AdvancedTransformRemove Remove { get; set; } = new AdvancedTransformRemove();
 
         [JsonProperty("replace")]
-        public RequestTransformerAdvancedTransformReplace Replace { get; set; } = new RequestTransformerAdvancedTransformReplace();
+        public AdvancedTransformReplace Replace { get; set; } = new AdvancedTransformReplace();
 
         [JsonProperty("rename")]
-        public RequestTransformerAdvancedTransformBase Rename { get; set; } = new RequestTransformerAdvancedTransformBase();
+        public AdvancedTransform Rename { get; set; } = new AdvancedTransform();
 
         [JsonProperty("add")]
-        public RequestTransformerAdvancedTransformBase Add { get; set; } = new RequestTransformerAdvancedTransformBase();
+        public AdvancedTransform Add { get; set; } = new AdvancedTransform();
 
         [JsonProperty("append")]
-        public RequestTransformerAdvancedTransformBase Append { get; set; } = new RequestTransformerAdvancedTransformBase();
+        public AdvancedTransform Append { get; set; } = new AdvancedTransform();
 
         public string id { get; set; }
 
@@ -41,17 +41,17 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
         }
 
         private static bool IsNestedConfigMatch(
-            IRequestTransformerAdvancedNestedConfig nestedConfig,
-            IRequestTransformerAdvancedNestedConfig otherNestedConfig)
+            IAdvancedTransform transform,
+            IAdvancedTransform otherTransform)
         {
-            if (nestedConfig == null && otherNestedConfig == null)
+            if (transform == null && otherTransform == null)
             {
                 return true;
             }
 
-            if (nestedConfig != null)
+            if (transform != null)
             {
-                return nestedConfig.IsExactMatch(otherNestedConfig);
+                return transform.IsExactMatch(otherTransform);
             }
 
             return false;

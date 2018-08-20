@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.4.1" />
+    <PackageReference Include="NBuilder" Version="6.0.0" />
     <PackageReference Include="NCrunch.Framework" Version="3.17.0" />
     <PackageReference Include="NSubstitute" Version="3.1.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
@@ -26,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Kongverge.Common.Tests\Kongverge.Common.Tests.csproj" />
     <ProjectReference Include="..\Kongverge\Kongverge.csproj" />
   </ItemGroup>
 
