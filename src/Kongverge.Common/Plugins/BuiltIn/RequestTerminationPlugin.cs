@@ -4,7 +4,6 @@ using Kongverge.KongPlugin;
 
 namespace Kongverge.Common.Plugins.BuiltIn
 {
-
     public class RequestTerminationPlugin : KongPluginBase<RequestTerminationConfig>
     {
         public RequestTerminationPlugin() : base("request-termination")
