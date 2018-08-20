@@ -6,10 +6,10 @@ namespace Kongverge.Common.Plugins.BuiltIn
     public class RateLimitingConfig : IKongPluginConfig
     {
         [JsonProperty("limit")]
-        public int[] Limit { get; set; }
+        public int[] Limit { get; set; } = new int[0];
 
         [JsonProperty("window_size")]
-        public int[] WindowSize { get; set; }
+        public int[] WindowSize { get; set; } = new int[0];
 
         [JsonProperty("identifier")]
         public string Identifier { get; set; }
