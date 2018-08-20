@@ -72,8 +72,7 @@ namespace Kongverge.Integration.Tests
             serviceReadFromKong.Routes.Should().HaveCount(1);
             serviceReadFromKong.Routes.First().Paths.Should().BeEquivalentTo(paths);
         }
-
-
+        
         [Fact]
         public async Task DeleteServiceWorksAsExpected()
         {

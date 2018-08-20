@@ -3,6 +3,7 @@ using System.Linq;
 using FizzWare.NBuilder;
 using FizzWare.NBuilder.Generators;
 using FluentAssertions;
+using Kongverge.Common.Helpers;
 using Kongverge.Common.Plugins.BuiltIn;
 using Kongverge.Common.Plugins.BuiltIn.RequestTransform;
 using Kongverge.KongPlugin;
@@ -13,12 +14,12 @@ namespace Kongverge.Common.Tests.Plugins
     {
         protected override Dictionary<string, object> EmptyConfig => new Dictionary<string, object>
         {
-            { "generator", "uuid" }
+            { "generator", default(CorrelationIdGenerator).ToJsonString() }
         };
 
         protected override void AssertEmptyConfig(Dictionary<string, object> config)
         {
-            config.ReadString("generator").Should().Be("uuid");
+            config.ReadString("generator").Should().Be(default(CorrelationIdGenerator).ToJsonString());
         }
     }
 
@@ -30,8 +31,18 @@ namespace Kongverge.Common.Tests.Plugins
         }
     }
 
-    public class RateLimitingPluginPluginTests : PluginTests<RateLimitingPlugin, RateLimitingConfig>
+    public class RateLimitingPluginTests : PluginTests<RateLimitingPlugin, RateLimitingConfig>
     {
+        protected override Dictionary<string, object> EmptyConfig => new Dictionary<string, object>
+        {
+            { "identifier", default(RateLimitingIdentifier).ToJsonString() }
+        };
+
+        protected override void AssertEmptyConfig(Dictionary<string, object> config)
+        {
+            config.ReadString("identifier").Should().Be(default(RateLimitingIdentifier).ToJsonString());
+        }
+
         protected override ISingleObjectBuilder<RateLimitingConfig> Populate(ISingleObjectBuilder<RateLimitingConfig> builder)
         {
             return builder
