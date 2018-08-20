@@ -11,12 +11,12 @@ namespace Kongverge.Common.Tests.Plugins
     public static class BuilderExtensions
     {
         public static ISingleObjectBuilder<T> PopulateRequestTransformerConfig<T>(this ISingleObjectBuilder<T> builder)
-            where T : BaseRequestTransformerConfig => builder
+            where T : RequestTransformerConfig => builder
             .With(x => x.HttpMethod, RandomHttpMethod())
-            .With(x => x.Add, RandomBaseConfig<RequestTransformerAdvancedTransformBase>())
-            .With(x => x.Append, RandomBaseConfig<RequestTransformerAdvancedTransformBase>())
-            .With(x => x.Rename, RandomBaseConfig<RequestTransformerAdvancedTransformBase>())
-            .With(x => x.Replace, RandomBaseConfig<RequestTransformerAdvancedTransformReplace>())
+            .With(x => x.Add, RandomBaseConfig<AdvancedTransform>())
+            .With(x => x.Append, RandomBaseConfig<AdvancedTransform>())
+            .With(x => x.Rename, RandomBaseConfig<AdvancedTransform>())
+            .With(x => x.Replace, RandomBaseConfig<AdvancedTransformReplace>())
             .With(x => x.Remove, RandomRemoveConfig());
 
         public static string RandomHttpMethod()
@@ -29,7 +29,7 @@ namespace Kongverge.Common.Tests.Plugins
             return methods[GetRandom.Int(0, methods.Length - 1)];
         }
 
-        public static TTransform RandomBaseConfig<TTransform>() where TTransform : RequestTransformerAdvancedTransformBase => Builder<TTransform>
+        public static TTransform RandomBaseConfig<TTransform>() where TTransform : AdvancedTransform => Builder<TTransform>
             .CreateNew()
             .With(x => x.Body, RandomDictionary())
             .With(x => x.Headers, RandomDictionary())
@@ -41,7 +41,7 @@ namespace Kongverge.Common.Tests.Plugins
             .Select(x => GetRandom.String(10))
             .ToDictionary(x => x, x => x.GetHashCode().ToString());
 
-        public static RequestTransformerAdvancedTransformRemove RandomRemoveConfig() => Builder<RequestTransformerAdvancedTransformRemove>
+        public static AdvancedTransformRemove RandomRemoveConfig() => Builder<AdvancedTransformRemove>
             .CreateNew()
             .With(x => x.Body, RandomHashSet())
             .With(x => x.Headers, RandomHashSet())

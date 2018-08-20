@@ -4,9 +4,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
 {
-    public abstract class BaseRequestTransformerPlugin<T> : KongPluginBase<T> where T : IRequestTransformerConfig, new()
+    public abstract class RequestTransformerPlugin<T> : KongPluginBase<T> where T : IRequestTransformerConfig, new()
     {
-        protected BaseRequestTransformerPlugin(string name) : base(name)
+        protected RequestTransformerPlugin(string name) : base(name)
         {
         }
 
@@ -20,7 +20,7 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
             var renameData = pluginBody.config.SubProperties("rename");
             var replaceData = pluginBody.config.SubProperties("replace");
 
-            var replaceConfig = ReadSection<RequestTransformerAdvancedTransformReplace>(replaceData);
+            var replaceConfig = ReadSection<AdvancedTransformReplace>(replaceData);
             replaceConfig.Uri = replaceData.ReadString("uri");
 
             return new T
@@ -28,14 +28,14 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
                 HttpMethod = httpMethod,
                 Remove = ReadRemoveSection(removeData),
                 Replace = replaceConfig,
-                Rename = ReadSection<RequestTransformerAdvancedTransformBase>(renameData),
-                Add = ReadSection<RequestTransformerAdvancedTransformBase>(addData),
-                Append = ReadSection<RequestTransformerAdvancedTransformBase>(appendData)
+                Rename = ReadSection<AdvancedTransform>(renameData),
+                Add = ReadSection<AdvancedTransform>(addData),
+                Append = ReadSection<AdvancedTransform>(appendData)
             };
         }
 
         private static C ReadSection<C>(IDictionary<string, object> section)
-            where C: RequestTransformerAdvancedTransformBase, new()
+            where C: AdvancedTransform, new()
         {
             return new C
             {
@@ -45,9 +45,9 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
             };
         }
 
-        private static RequestTransformerAdvancedTransformRemove ReadRemoveSection(IDictionary<string, object> section)
+        private static AdvancedTransformRemove ReadRemoveSection(IDictionary<string, object> section)
         {
-            return new RequestTransformerAdvancedTransformRemove
+            return new AdvancedTransformRemove
             {
                 Headers = section.ReadStringSet("headers"),
                 QueryString = section.ReadStringSet("querystring"),
@@ -69,7 +69,7 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
             });
         }
 
-        private static JObject WriteSection(RequestTransformerAdvancedTransformBase section)
+        private static JObject WriteSection(AdvancedTransform section)
         {
             return new JObject
             {
@@ -79,7 +79,7 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
             };
         }
 
-        private static JObject WriteRemoveSection(RequestTransformerAdvancedTransformRemove section)
+        private static JObject WriteRemoveSection(AdvancedTransformRemove section)
         {
             return new JObject
             {
@@ -89,7 +89,7 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
             };
         }
 
-        private static JObject WriteReplaceSection(RequestTransformerAdvancedTransformReplace section)
+        private static JObject WriteReplaceSection(AdvancedTransformReplace section)
         {
             return new JObject
             {

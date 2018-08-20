@@ -42,7 +42,7 @@ namespace Kongverge.Integration.Tests
     }
 
     public abstract class RequestTransformerPluginTests<TPluginConfig> : PluginTests<TPluginConfig>
-        where TPluginConfig : BaseRequestTransformerConfig, new()
+        where TPluginConfig : RequestTransformerConfig, new()
     {
         protected RequestTransformerPluginTests(KongvergeTestFixture kongvergeTestFixture) : base(kongvergeTestFixture)
         {
@@ -55,19 +55,19 @@ namespace Kongverge.Integration.Tests
                 yield return Builder<TPluginConfig>
                     .CreateNew()
                     .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
-                    .With(x => x.Replace, Builder<RequestTransformerAdvancedTransformReplace>.CreateNew().Build())
+                    .With(x => x.Replace, Builder<AdvancedTransformReplace>.CreateNew().Build())
                     .Build();
 
                 yield return Builder<TPluginConfig>
                     .CreateNew()
                     .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
-                    .With(x => x.Add, BuilderExtensions.RandomBaseConfig<RequestTransformerAdvancedTransformBase>())
+                    .With(x => x.Add, BuilderExtensions.RandomBaseConfig<AdvancedTransform>())
                     .Build();
 
                 yield return Builder<TPluginConfig>
                     .CreateNew()
                     .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
-                    .With(x => x.Append, BuilderExtensions.RandomBaseConfig<RequestTransformerAdvancedTransformBase>())
+                    .With(x => x.Append, BuilderExtensions.RandomBaseConfig<AdvancedTransform>())
                     .Build();
 
                 yield return Builder<TPluginConfig>
@@ -79,13 +79,13 @@ namespace Kongverge.Integration.Tests
                 yield return Builder<TPluginConfig>
                     .CreateNew()
                     .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
-                    .With(x => x.Replace, BuilderExtensions.RandomBaseConfig<RequestTransformerAdvancedTransformReplace>())
+                    .With(x => x.Replace, BuilderExtensions.RandomBaseConfig<AdvancedTransformReplace>())
                     .Build();
 
                 yield return Builder<TPluginConfig>
                     .CreateNew()
                     .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
-                    .With(x => x.Rename, BuilderExtensions.RandomBaseConfig<RequestTransformerAdvancedTransformBase>())
+                    .With(x => x.Rename, BuilderExtensions.RandomBaseConfig<AdvancedTransform>())
                     .Build();
 
                 yield return Builder<TPluginConfig>
