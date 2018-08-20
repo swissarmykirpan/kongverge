@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Kongverge.KongPlugin;
 using Newtonsoft.Json;
 
@@ -5,8 +6,12 @@ namespace Kongverge.Common.Plugins.BuiltIn
 {
     public enum CorrelationIdGenerator
     {
+        // This is the default, so it comes first
+        [Description("uuid#counter")]
+        // ReSharper disable once InconsistentNaming
+        UUIDCounter,
+        // ReSharper disable once InconsistentNaming
         UUID,
-        Counter,
         Tracker
     }
 

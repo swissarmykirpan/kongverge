@@ -27,9 +27,12 @@ namespace Kongverge.Integration.Tests
 
         public ServiceBuilder WithPaths(params string[] paths)
         {
-            var route = new KongRoute { Paths = paths };
-            route.Protocols = new[] { "http" };
-            route.Methods = new[] { "GET" };
+            var route = new KongRoute
+            {
+                Paths = paths,
+                Protocols = new[] { "http" },
+                Methods = new[] { "GET" }
+            };
             _service.Routes = new List<KongRoute> { route };
             return this;
         }
