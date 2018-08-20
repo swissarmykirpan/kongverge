@@ -25,9 +25,9 @@ namespace Kongverge.Common.Tests
             var configIn = new CorrelationIdConfig
             {
                 EchoDownstream = true,
-                Header = "hdr",
+                HeaderName = "hdr",
                 id = "someId",
-                Template = CorrelationIdGenerator.Counter
+                Generator = CorrelationIdGenerator.Counter
             };
             var plugin = new CorrelationIdPlugin();
 
