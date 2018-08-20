@@ -16,7 +16,7 @@ namespace Kongverge.Common.DTOs
         public string Host { get; set; }
 
         [JsonProperty("validate-host")]
-        public bool ValidateHost { get; set; } = true;
+        public bool ValidateHost { get; set; }
 
         [JsonProperty("port")]
         public int Port { get; set; } = 80;
