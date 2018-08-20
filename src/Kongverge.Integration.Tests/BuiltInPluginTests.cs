@@ -32,7 +32,7 @@ namespace Kongverge.Integration.Tests
         {
             var plugin = new CorrelationIdConfig
             {
-                Header = "test1"
+                HeaderName = "test1"
             };
 
             await _fixture.ShouldRoundTripPluginToKong(plugin);

@@ -12,10 +12,10 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
     public class CorrelationIdConfig : IKongPluginConfig
     {
-        [JsonProperty("header")]
-        public string Header { get; set; }
-        [JsonProperty("template")]
-        public CorrelationIdGenerator Template { get; set; }
+        [JsonProperty("header_name")]
+        public string HeaderName { get; set; }
+        [JsonProperty("generator")]
+        public CorrelationIdGenerator Generator { get; set; }
         public bool EchoDownstream { get; set; }
 
         public string id { get; set; }
@@ -24,9 +24,9 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             if (other is CorrelationIdConfig otherConfig)
             {
-                return Header == otherConfig.Header
-                       && Template == otherConfig.Template
-                       && EchoDownstream == otherConfig.EchoDownstream;
+                return HeaderName == otherConfig.HeaderName &&
+                       Generator == otherConfig.Generator &&
+                       EchoDownstream == otherConfig.EchoDownstream;
             }
 
             return false;
