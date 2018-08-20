@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using Kongverge.KongPlugin;
 
 namespace Kongverge.Common.Helpers
 {
@@ -10,15 +8,6 @@ namespace Kongverge.Common.Helpers
         public string Field { get; set; }
         public object Existing { get; set; }
         public object New { get; set; }
-    }
-
-    public static class MyEnumExtensions
-    {
-        public static string ToDescriptionString(this PluginBody val)
-        {
-            var attributes = (DescriptionAttribute[])val.GetType().GetField(val.ToString()).GetCustomAttributes(typeof(DescriptionAttribute), false);
-            return attributes.Length > 0 ? attributes[0].Description : string.Empty;
-        }
     }
 
     public static class Extensions
@@ -55,11 +44,6 @@ namespace Kongverge.Common.Helpers
             }
 
             return first.SequenceEqual(second);
-        }
-
-        public static IEnumerable<T> SafeIfNull<T>(this IEnumerable<T> sequence)
-        {
-            return sequence ?? Enumerable.Empty<T>();
         }
     }
 }
