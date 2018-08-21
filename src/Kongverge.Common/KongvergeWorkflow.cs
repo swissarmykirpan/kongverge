@@ -89,56 +89,56 @@ namespace Kongverge.Common
 
         private async Task ProcessServices(
             IReadOnlyCollection<KongService> existingServices,
-            IReadOnlyCollection<KongService> servicesFromFile)
+            IReadOnlyCollection<KongService> newServices)
         {
-            foreach (var service in servicesFromFile)
+            foreach (var service in newServices)
             {
                 await ProcessService(existingServices, service).ConfigureAwait(false);
             }
         }
 
-        private async Task ProcessService(IEnumerable<KongService> existingServices, KongService service)
+        private async Task ProcessService(IEnumerable<KongService> existingServices, KongService newService)
         {
-            var existingService = existingServices.SingleOrDefault(x => x.Name == service.Name);
+            var existingService = existingServices.SingleOrDefault(x => x.Name == newService.Name);
 
             if (existingService == null)
             {
-                Log.Information("\nAdding new service: \"{name}\"", service.Name);
+                Log.Information("\nAdding new service: \"{name}\"", newService.Name);
 
-                var valid = await ServiceValidationHelper.Validate(service).ConfigureAwait(false);
+                var valid = await ServiceValidationHelper.Validate(newService).ConfigureAwait(false);
 
                 if (!valid)
                 {
-                    Log.Information("Invalid Data File: {name}{ext}", service.Name, Settings.FileExtension);
+                    Log.Information("Invalid Data File: {name}{ext}", newService.Name, Settings.FileExtension);
                     return;
                 }
 
-                var serviceAdded = await _kongWriter.AddService(service).ConfigureAwait(false);
+                var serviceAdded = await _kongWriter.AddService(newService).ConfigureAwait(false);
 
                 if (serviceAdded.Succeeded)
                 {
-                    await ConvergePlugins(service, serviceAdded.Result).ConfigureAwait(false);
+                    await ConvergePlugins(newService, serviceAdded.Result).ConfigureAwait(false);
 
-                    await ConvergeRoutes(service, serviceAdded.Result).ConfigureAwait(false);
+                    await ConvergeRoutes(newService, serviceAdded.Result).ConfigureAwait(false);
                 }
             }
             else
             {
                 // TODO: Clean this up, its messy, but where else can we do this?
-                service.Id = existingService.Id;
+                newService.Id = existingService.Id;
 
-                await ConvergePlugins(service, existingService).ConfigureAwait(false);
+                await ConvergePlugins(newService, existingService).ConfigureAwait(false);
 
-                await ConvergeRoutes(service, existingService).ConfigureAwait(false);
+                await ConvergeRoutes(newService, existingService).ConfigureAwait(false);
 
-                if (!ServiceHasChanged(existingService, service))
+                if (!ServiceHasChanged(existingService, newService))
                 {
                     return;
                 }
 
-                Log.Information("Updating service: \"{name}\"", service.Name);
+                Log.Information("Updating service: \"{name}\"", newService.Name);
 
-                await _kongWriter.UpdateService(service).ConfigureAwait(false);
+                await _kongWriter.UpdateService(newService).ConfigureAwait(false);
             }
         }
 
