@@ -11,11 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Validation", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Common", "src\Kongverge.Common\Kongverge.Common.csproj", "{8DD88358-C5EF-4BA6-8A33-0E1EC3146197}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{677082D4-0DEE-4A66-AE56-6FCB704D2B2C}"
-	ProjectSection(SolutionItems) = preProject
-		.gitignore = .gitignore
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Validation.Tests", "src\Kongverge.Validation.Tests\Kongverge.Validation.Tests.csproj", "{B1BBBAA9-08FC-4F00-9E06-2970801A719A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7781A389-5975-4D1D-B53D-D121ED676A07}"
