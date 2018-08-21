@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27428.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge", "src\Kongverge\Kongverge.csproj", "{60D1F6AE-BC4C-46FA-B65C-1F315F8D5DAC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KongVerge.Tests", "src\KongVerge.Tests\KongVerge.Tests.csproj", "{DE16BF1F-3593-4099-B18F-4F4FBE8404CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Tests", "src\Kongverge.Tests\Kongverge.Tests.csproj", "{DE16BF1F-3593-4099-B18F-4F4FBE8404CC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Validation", "src\Kongverge.Validation\Kongverge.Validation.csproj", "{1A6B1A1F-9AB8-45BB-9C33-40B8F7D349DE}"
 EndProject
