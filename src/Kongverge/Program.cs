@@ -74,7 +74,7 @@ namespace Kongverge
                     "Folder to output data from host",
                     CommandOptionType.SingleValue);
 
-                Host = app.Option("-H|--host <KongHostname>",
+                Host = app.Option("-H|--host <KongAdminHostname>",
                     "Kong Admin host with which to communicate",
                     CommandOptionType.SingleValue);
 
