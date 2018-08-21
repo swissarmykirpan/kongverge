@@ -29,10 +29,10 @@ namespace Kongverge.Integration.Tests
             ServiceRegistration.AddServices(services);
             _serviceProvider = services.BuildServiceProvider();
             CleanUp = new List<KongService>();
-            DeleteExistingTestServices().Wait();
+            DeleteExistingTestServices().GetAwaiter().GetResult();
         }
 
-        private async Task DeleteExistingTestServices()
+        private async Task<bool> DeleteExistingTestServices()
         {
             var services = await KongAdminReader.GetServices();
             foreach (var service in services.Where(s => s.Name.StartsWith("testservice_")))
@@ -44,9 +44,11 @@ namespace Kongverge.Integration.Tests
 
                 await KongAdminWriter.DeleteService(service.Id);
             }
+
+            return true;
         }
 
-        public async Task<KongService> AddServiceAndPlugins(KongService service)
+        public async Task<KongService> AddServiceAndChildren(KongService service)
         {
             var addServiceResult = await KongAdminWriter.AddService(service);
             addServiceResult.Should().NotBeNull();
@@ -57,17 +59,43 @@ namespace Kongverge.Integration.Tests
             {
                 foreach (var plugin in service.Plugins)
                 {
-                    var content = PluginCollection.CreatePluginBody(plugin);
-                    content.service_id = service.Id;
-                    var pluginResult = await KongAdminWriter.UpsertPlugin(content);
-                    pluginResult.Should().NotBeNull();
-                    pluginResult.ShouldSucceed();
-                    pluginResult.Result.Id.Should().NotBeNullOrEmpty();
+                    var pluginBody = PluginCollection.CreatePluginBody(plugin);
+                    pluginBody.service_id = service.Id;
+
+                    await ShouldUpsertPlugin(pluginBody);
+                }
+            }
+
+            if (service.Routes != null)
+            {
+                foreach (var route in service.Routes)
+                {
+                    var addRouteResult = await KongAdminWriter.AddRoute(service, route);
+                    addRouteResult.ShouldSucceed();
+
+                    foreach (var plugin in route.Plugins)
+                    {
+                        var pluginBody = PluginCollection.CreatePluginBody(plugin);
+                        pluginBody.service_id = service.Id;
+                        pluginBody.route_id = route.Id;
+
+                        await ShouldUpsertPlugin(pluginBody);
+                    }
                 }
             }
 
             CleanUp.Add(service);
             return addServiceResult.Result;
+        }
+
+        private async Task<KongPluginResponse> ShouldUpsertPlugin(PluginBody pluginBody)
+        {
+            var pluginResult = await KongAdminWriter.UpsertPlugin(pluginBody);
+            pluginResult.Should().NotBeNull();
+            pluginResult.ShouldSucceed();
+            pluginResult.Result.Id.Should().NotBeNullOrEmpty();
+
+            return pluginResult.Result;
         }
 
         public void Dispose()

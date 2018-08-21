@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Kongverge.Common.DTOs;
 using Kongverge.KongPlugin;
 
@@ -19,13 +20,7 @@ namespace Kongverge.Integration.Tests
             return this;
         }
 
-        public ServiceBuilder WithHost(string host)
-        {
-            _service.Host = host;
-            return this;
-        }
-
-        public ServiceBuilder WithPaths(params string[] paths)
+        public ServiceBuilder WithRoutePaths(params string[] paths)
         {
             var route = new KongRoute
             {
@@ -33,7 +28,15 @@ namespace Kongverge.Integration.Tests
                 Protocols = new[] { "http" },
                 Methods = new[] { "GET" }
             };
-            _service.Routes = new List<KongRoute> { route };
+
+            if (_service.Routes == null)
+            {
+                _service.Routes = new List<KongRoute> { route };
+            }
+            else
+            {
+                _service.Routes = _service.Routes.Concat(new[] { route }).ToList();
+            }
             return this;
         }
 
@@ -44,6 +47,19 @@ namespace Kongverge.Integration.Tests
                 _service.Plugins = new List<IKongPluginConfig>();
             }
             _service.Plugins.Add(plugin);
+            return this;
+        }
+
+
+        public ServiceBuilder WithRoutePlugin(IKongPluginConfig plugin)
+        {
+            var route = _service.Routes.First();
+
+            if (route.Plugins == null)
+            {
+                route.Plugins = new List<IKongPluginConfig>();
+            }
+            route.Plugins.Add(plugin);
             return this;
         }
 
