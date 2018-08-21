@@ -123,14 +123,31 @@ namespace Kongverge.Common.Services
 
             service.Routes = await GetRoutes(service.Name);
 
+            foreach (var route in service.Routes)
+            {
+                var pluginsRead = await GetRoutePlugins(route.Id);
+                route.Plugins = TranslateToConfig(pluginsRead);
+            }
+
             return service;
         }
 
         private async Task<IReadOnlyCollection<PluginBody>> GetServicePlugins(string serviceId)
         {
+            var requestUri = $"{PluginsRoute}?service_id={serviceId}";
+            return await GetUriPlugins(requestUri);
+        }
+
+        private async Task<IReadOnlyCollection<PluginBody>> GetRoutePlugins(string routeId)
+        {
+            var requestUri = $"{PluginsRoute}?route_id={routeId}";
+            return await GetUriPlugins(requestUri);
+        }
+
+        private async Task<IReadOnlyCollection<PluginBody>> GetUriPlugins(string requestUri)
+        {
             var allPlugins = new List<PluginBody>();
             var lastPage = false;
-            var requestUri = $"{PluginsRoute}?service_id={serviceId}";
 
             do
             {
