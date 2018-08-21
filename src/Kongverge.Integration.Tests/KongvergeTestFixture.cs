@@ -29,10 +29,10 @@ namespace Kongverge.Integration.Tests
             ServiceRegistration.AddServices(services);
             _serviceProvider = services.BuildServiceProvider();
             CleanUp = new List<KongService>();
-            DeleteExistingTestServices().Wait();
+            DeleteExistingTestServices().GetAwaiter().GetResult();
         }
 
-        private async Task DeleteExistingTestServices()
+        private async Task<bool> DeleteExistingTestServices()
         {
             var services = await KongAdminReader.GetServices();
             foreach (var service in services.Where(s => s.Name.StartsWith("testservice_")))
@@ -44,6 +44,8 @@ namespace Kongverge.Integration.Tests
 
                 await KongAdminWriter.DeleteService(service.Id);
             }
+
+            return true;
         }
 
         public async Task<KongService> AddServiceAndChildren(KongService service)
