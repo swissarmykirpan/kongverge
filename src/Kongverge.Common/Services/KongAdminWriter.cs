@@ -79,7 +79,7 @@ namespace Kongverge.Common.Services
             service.Routes = routes;
             service.Plugins = plugins;
 
-            var request = new HttpRequestMessage(HttpMethod.Patch, requestUri)
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri)
             {
                 Content = content
             };
