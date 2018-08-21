@@ -71,7 +71,7 @@ namespace Kongverge.Common
             return ExitWithCode.Return(ExitCode.Success);
         }
 
-        private async Task DeleteServicesMissingFromConfig(List<KongService> missingServices)
+        private async Task DeleteServicesMissingFromConfig(IEnumerable<KongService> missingServices)
         {
             Log.Information("\nDeleting old services:");
             foreach (var service in missingServices)
@@ -117,9 +117,9 @@ namespace Kongverge.Common
 
                 if (serviceAdded.Succeeded)
                 {
-                    await ConvergePlugins(serviceAdded.Result).ConfigureAwait(false);
+                    await ConvergePlugins(data.Service, serviceAdded.Result).ConfigureAwait(false);
 
-                    await ConvergeRoutes(data.Service, data.Service.Routes).ConfigureAwait(false);
+                    await ConvergeRoutes(data.Service, serviceAdded.Result).ConfigureAwait(false);
                 }
             }
             else
@@ -129,7 +129,7 @@ namespace Kongverge.Common
 
                 await ConvergePlugins(data.Service, existingService).ConfigureAwait(false);
 
-                await ConvergeRoutes(data.Service, existingService.Routes).ConfigureAwait(false);
+                await ConvergeRoutes(data.Service, existingService).ConfigureAwait(false);
 
                 if (!ServiceHasChanged(existingService, data.Service))
                 {
@@ -142,21 +142,16 @@ namespace Kongverge.Common
             }
         }
 
-        private Task ConvergePlugins(KongService result)
+        public async Task ConvergeRoutes(KongService target, KongService existing)
         {
-            return ConvergePlugins(result, ExtendibleKongObject.Empty);
-        }
-
-        public async Task ConvergeRoutes(KongService service, IReadOnlyCollection<KongRoute> existingRoutes)
-        {
-            var toAdd = service.Routes.Except(existingRoutes);
-            var toRemove = existingRoutes.Except(service.Routes);
+            var toAdd = target.Routes.Except(existing.Routes);
+            var toRemove = existing.Routes.Except(target.Routes);
 
             await Task.WhenAll(toRemove.Select(r => _kongWriter.DeleteRoute(r.Id))).ConfigureAwait(false);
-            await Task.WhenAll(toAdd.Select(r => _kongWriter.AddRoute(service, r))).ConfigureAwait(false);
+            await Task.WhenAll(toAdd.Select(r => _kongWriter.AddRoute(target, r))).ConfigureAwait(false);
 
             var matchingRoutePairs =
-                service.Routes.Select(r => new ExtendibleKongObjectTargetPair(r, existingRoutes));
+                target.Routes.Select(r => new ExtendibleKongObjectTargetPair(r, existing.Routes));
 
             foreach (var routepair in matchingRoutePairs)
             {
@@ -213,10 +208,8 @@ namespace Kongverge.Common
                 ServiceValidationHelper.PrintDiff(existingService, newService);
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
     }
 }
