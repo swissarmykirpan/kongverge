@@ -21,7 +21,7 @@ namespace Kongverge.Integration.Tests
         public async Task DefaultServiceHasNoPlugins()
         {
             var service = new ServiceBuilder().AddDefaultTestService().Build();
-            var kongServiceAdded = await _fixture.AddServiceAndPlugins(service);
+            var kongServiceAdded = await _fixture.AddServiceAndChildren(service);
 
             var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
 
@@ -56,7 +56,7 @@ namespace Kongverge.Integration.Tests
             var paths = new[] {"/health/check", "/foo/bar"};
             var serviceToAdd = new ServiceBuilder()
                 .AddDefaultTestService()
-                .WithPaths(paths)
+                .WithRoutePaths(paths)
                 .Build();
 
             var kongAction = await AddServiceAndRoutes(serviceToAdd);
@@ -75,7 +75,7 @@ namespace Kongverge.Integration.Tests
             var paths = new[] { "/health/check", "/foo/bar" };
             var serviceToAdd = new ServiceBuilder()
                 .AddDefaultTestService()
-                .WithPaths(paths)
+                .WithRoutePaths(paths)
                 .Build();
 
             var kongAction = await AddServiceAndRoutes(serviceToAdd);

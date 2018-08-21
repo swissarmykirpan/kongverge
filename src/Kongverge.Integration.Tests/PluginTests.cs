@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -20,7 +21,7 @@ namespace Kongverge.Integration.Tests
         }
 
         [Fact]
-        public async Task ShouldRoundTripPluginToKong()
+        public async Task ShouldRoundTripServicePluginToKong()
         {
             foreach (var plugin in Permutations)
             {
@@ -29,7 +30,7 @@ namespace Kongverge.Integration.Tests
                     .WithPlugin(plugin)
                     .Build();
 
-                var kongServiceAdded = await _fixture.AddServiceAndPlugins(service);
+                var kongServiceAdded = await _fixture.AddServiceAndChildren(service);
 
                 var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
 
@@ -41,6 +42,33 @@ namespace Kongverge.Integration.Tests
                         .Using<string>(CompareStringsWithoutNull).WhenTypeIs<string>());
             }
         }
+
+        [Fact]
+        public async Task ShouldRoundTripRoutePluginToKong()
+        {
+            foreach (var plugin in Permutations)
+            {
+                var service = new ServiceBuilder()
+                    .AddDefaultTestService()
+                    .WithRoutePaths("/path/one", "/another/route")
+                    .WithRoutePlugin(plugin)
+                    .Build();
+
+                var kongServiceAdded = await _fixture.AddServiceAndChildren(service);
+
+                var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
+
+                serviceReadFromKong.Routes.Should().HaveCount(1);
+
+                var pluginOut = serviceReadFromKong.Routes.First().ShouldHaveOnePlugin<TPluginConfig>();
+
+                pluginOut.Should()
+                    .BeEquivalentTo(plugin, opt => opt
+                        .Excluding(p => p.id)
+                        .Using<string>(CompareStringsWithoutNull).WhenTypeIs<string>());
+            }
+        }
+
 
         protected virtual IEnumerable<TPluginConfig> Permutations
         {
