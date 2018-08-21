@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
 using Kongverge.Common.Plugins;
@@ -43,6 +44,30 @@ namespace Kongverge.Integration.Tests
 
                 await KongAdminWriter.DeleteService(service.Id);
             }
+        }
+
+        public async Task<KongService> AddServiceAndPlugins(KongService service)
+        {
+            var addServiceResult = await KongAdminWriter.AddService(service);
+            addServiceResult.Should().NotBeNull();
+            addServiceResult.ShouldSucceed();
+            addServiceResult.Result.Id.Should().NotBeNullOrEmpty();
+
+            if (service.Plugins != null)
+            {
+                foreach (var plugin in service.Plugins)
+                {
+                    var content = PluginCollection.CreatePluginBody(plugin);
+                    content.service_id = service.Id;
+                    var pluginResult = await KongAdminWriter.UpsertPlugin(content);
+                    pluginResult.Should().NotBeNull();
+                    pluginResult.ShouldSucceed();
+                    pluginResult.Result.Id.Should().NotBeNullOrEmpty();
+                }
+            }
+
+            CleanUp.Add(service);
+            return addServiceResult.Result;
         }
 
         public void Dispose()
