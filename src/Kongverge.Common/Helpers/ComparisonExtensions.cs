@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using Serilog;
 
 namespace Kongverge.Common.Helpers
 {
@@ -13,31 +10,8 @@ namespace Kongverge.Common.Helpers
         public object New { get; set; }
     }
 
-    public static class GenericExtensions
+    public static class ComparisonExtensions
     {
-        public static T FromJsonString<T>(this string value) where T : Enum
-        {
-            foreach (T enumValue in Enum.GetValues(typeof(T)))
-            {
-                if (string.Equals(value, enumValue.ToJsonString(), StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return enumValue;
-                }
-            }
-
-            var message = $"Invalid value for {typeof(T).Name} enum: '{value}'";
-            Log.Error(message);
-            throw new InvalidOperationException(message);
-        }
-
-        public static string ToJsonString<T>(this T value) where T : Enum
-        {
-            var attributes = (DescriptionAttribute[])typeof(T).GetField(value.ToString()).GetCustomAttributes(typeof(DescriptionAttribute), false);
-            return attributes.Length > 0
-                ? attributes[0].Description
-                : value.ToString().ToLowerInvariant();
-        }
-
         public static List<Variance> DetailedCompare<T>(this T val1, T val2)
         {
             var fi = val1.GetType().GetProperties();
@@ -70,11 +44,6 @@ namespace Kongverge.Common.Helpers
             }
 
             return first.SequenceEqual(second);
-        }
-
-        public static IEnumerable<T> SafeIfNull<T>(this IEnumerable<T> sequence)
-        {
-            return sequence ?? Enumerable.Empty<T>();
         }
     }
 }
