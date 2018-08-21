@@ -1,5 +1,6 @@
 using FizzWare.NBuilder;
 using Kongverge.Common.Plugins.Custom;
+using Kongverge.TestHelpers;
 
 namespace Kongverge.Common.Tests.Plugins
 {

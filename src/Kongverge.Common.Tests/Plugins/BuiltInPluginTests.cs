@@ -7,6 +7,7 @@ using Kongverge.Common.Helpers;
 using Kongverge.Common.Plugins.BuiltIn;
 using Kongverge.Common.Plugins.BuiltIn.RequestTransform;
 using Kongverge.KongPlugin;
+using Kongverge.TestHelpers;
 
 namespace Kongverge.Common.Tests.Plugins
 {
