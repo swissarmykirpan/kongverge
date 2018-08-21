@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Common.Tests", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Integration.Tests", "src\Kongverge.Integration.Tests\Kongverge.Integration.Tests.csproj", "{0A099441-1FCD-4105-AA68-6519C94E1E4B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kongverge.TestHelpers", "src\Kongverge.TestHelpers\Kongverge.TestHelpers.csproj", "{E3C727F6-2109-42C3-9BA3-CB2B5F66A87D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{0A099441-1FCD-4105-AA68-6519C94E1E4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A099441-1FCD-4105-AA68-6519C94E1E4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A099441-1FCD-4105-AA68-6519C94E1E4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3C727F6-2109-42C3-9BA3-CB2B5F66A87D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3C727F6-2109-42C3-9BA3-CB2B5F66A87D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3C727F6-2109-42C3-9BA3-CB2B5F66A87D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3C727F6-2109-42C3-9BA3-CB2B5F66A87D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,6 +74,7 @@ Global
 		{B1BBBAA9-08FC-4F00-9E06-2970801A719A} = {7781A389-5975-4D1D-B53D-D121ED676A07}
 		{1C5B085D-063C-4F9C-94F2-51C63AE6948B} = {7781A389-5975-4D1D-B53D-D121ED676A07}
 		{0A099441-1FCD-4105-AA68-6519C94E1E4B} = {7781A389-5975-4D1D-B53D-D121ED676A07}
+		{E3C727F6-2109-42C3-9BA3-CB2B5F66A87D} = {7781A389-5975-4D1D-B53D-D121ED676A07}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {434FBED9-7DD3-48E6-A059-2583D7C5917B}
