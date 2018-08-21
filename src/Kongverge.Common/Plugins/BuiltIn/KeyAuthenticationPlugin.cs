@@ -14,7 +14,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             return new KeyAuthenticationConfig
             {
-                KeyNames = pluginBody.config.ReadStrings("key_names").ToHashSet(),
+                KeyNames = new HashSet<string>(pluginBody.config.ReadStrings("key_names")),
                 KeyInBody = pluginBody.config.ReadBool("key_in_body"),
                 Anonymous = pluginBody.config.ReadString("anonymous"),
                 RunOnPreflight = pluginBody.config.ReadBool("run_on_preflight"),
