@@ -10,9 +10,7 @@ namespace KongVerge.Tests
         public void RoutePathsCannotBeEmpty()
         {
             //Arrange
-            var data = new KongDataFile
-            {
-                Service = new KongService
+            var data =new KongService
                 {
                     Routes = new[]
                     {
@@ -21,7 +19,6 @@ namespace KongVerge.Tests
                             Paths = null
                         }
                     }
-                }
             };
 
             //Act

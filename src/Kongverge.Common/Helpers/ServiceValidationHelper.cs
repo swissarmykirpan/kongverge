@@ -11,17 +11,17 @@ namespace Kongverge.Common.Helpers
 {
     public static class ServiceValidationHelper
     {
-        public static async Task<bool> HostIsReachable(KongDataFile data)
+        public static async Task<bool> HostIsReachable(KongService service)
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri($"http://{data.Service.Host}:{data.Service.Port}");
+                client.BaseAddress = new Uri($"http://{service.Host}:{service.Port}");
                 try
                 {
                     var response = await client.GetAsync("/");
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        Log.Error("Unable to contact host: {host}", data.Service.Host);
+                        Log.Error("Unable to contact host: {host}", service.Host);
                         return false;
                     }
                 }
@@ -29,7 +29,7 @@ namespace Kongverge.Common.Helpers
                 {
                     if (e.InnerException.GetType() == typeof(HttpRequestException))
                     {
-                        Log.Error("Unable to contact host: {host}", data.Service.Host);
+                        Log.Error("Unable to contact host: {host}", service.Host);
                         return false;
                     }
 
@@ -40,17 +40,17 @@ namespace Kongverge.Common.Helpers
             return true;
         }
 
-        public static bool RoutesAreValid(KongDataFile data)
+        public static bool RoutesAreValid(KongService service)
         {
-            return data.Service.Routes.All(x => x.Paths != null);
+            return service.Routes.All(x => x.Paths != null);
 
             //ToDo: Check if routes Clash
         }
 
-        public static async Task<bool> Validate(KongDataFile data)
+        public static async Task<bool> Validate(KongService service)
         {
-            var reachable = data.Service.ValidateHost==false || await HostIsReachable(data);
-            return reachable && RoutesAreValid(data);
+            var reachable = service.ValidateHost==false || await HostIsReachable(service);
+            return reachable && RoutesAreValid(service);
         }
 
         public static void PrintDiff(KongService existingService, KongService newService)
