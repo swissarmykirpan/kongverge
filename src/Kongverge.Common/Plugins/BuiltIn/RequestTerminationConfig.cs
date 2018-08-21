@@ -1,4 +1,3 @@
-using System.Net;
 using Kongverge.KongPlugin;
 using Newtonsoft.Json;
 
@@ -7,7 +6,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
     public class RequestTerminationConfig : IKongPluginConfig
     {
         [JsonProperty("status_code")]
-        public HttpStatusCode StatusCode { get; set; }
+        public long StatusCode { get; set; }
 
         [JsonProperty("message")]
         public string Message { get; set; }

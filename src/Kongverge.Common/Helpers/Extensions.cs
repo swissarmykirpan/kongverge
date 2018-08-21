@@ -43,11 +43,11 @@ namespace Kongverge.Common.Helpers
             var fi = val1.GetType().GetProperties();
 
             return fi.Select(f => new Variance
-                {
-                    Field = f.Name,
-                    Existing = f.GetValue(val1),
-                    New = f.GetValue(val2)
-                })
+            {
+                Field = f.Name,
+                Existing = f.GetValue(val1),
+                New = f.GetValue(val2)
+            })
                 .Where(v => v.Existing?.Equals(v.New) == false)
                 .ToList();
         }
@@ -70,11 +70,6 @@ namespace Kongverge.Common.Helpers
             }
 
             return first.SequenceEqual(second);
-        }
-
-        public static IEnumerable<T> SafeIfNull<T>(this IEnumerable<T> sequence)
-        {
-            return sequence ?? Enumerable.Empty<T>();
         }
     }
 }

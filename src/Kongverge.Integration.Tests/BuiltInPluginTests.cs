@@ -1,4 +1,3 @@
-using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Kongverge.Common.Plugins.BuiltIn;
@@ -52,7 +51,7 @@ namespace Kongverge.Integration.Tests
         {
             var plugin = new RateLimitingConfig
             {
-                Identifier = RateLimitingIdentifier.Consumer,
+                Identifier = "consumer",
                 Limit = new [] { 123 },
                 WindowSize = new [] { 3455 }
             };
@@ -65,7 +64,7 @@ namespace Kongverge.Integration.Tests
         {
             var plugin = new RequestTerminationConfig
             {
-                StatusCode = HttpStatusCode.InternalServerError,
+                StatusCode = 501,
                 Message = "test term"
             };
 

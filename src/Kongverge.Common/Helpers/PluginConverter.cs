@@ -73,7 +73,11 @@ namespace Kongverge.Common.Helpers
 
             foreach (var plugin in _parsers)
             {
-                if (extendible.Plugins == null) continue;
+                if (extendible.Plugins == null)
+                {
+                    continue;
+                }
+
                 foreach (var extension in extendible.Plugins.Where(e => e.GetType() == plugin.KongObjectType))
                 {
                     token.AddFirst(new JProperty(plugin.PluginName, JToken.FromObject(extension)));
