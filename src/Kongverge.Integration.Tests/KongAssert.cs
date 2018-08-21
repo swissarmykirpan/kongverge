@@ -20,7 +20,7 @@ namespace Kongverge.Integration.Tests
             actual.Should().BeNull($"Service with id '{id}' was found");
         }
 
-        public static T ShouldHaveOnePlugin<T>(this KongService service) where T : IKongPluginConfig
+        public static T ShouldHaveOnePlugin<T>(this ExtendibleKongObject service) where T : IKongPluginConfig
         {
             service.Should().NotBeNull();
             service.Plugins.Should().NotBeNull();
