@@ -5,16 +5,11 @@ VisualStudioVersion = 15.0.27428.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge", "src\Kongverge\Kongverge.csproj", "{60D1F6AE-BC4C-46FA-B65C-1F315F8D5DAC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KongVerge.Tests", "src\KongVerge.Tests\KongVerge.Tests.csproj", "{DE16BF1F-3593-4099-B18F-4F4FBE8404CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Tests", "src\Kongverge.Tests\Kongverge.Tests.csproj", "{DE16BF1F-3593-4099-B18F-4F4FBE8404CC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Validation", "src\Kongverge.Validation\Kongverge.Validation.csproj", "{1A6B1A1F-9AB8-45BB-9C33-40B8F7D349DE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Common", "src\Kongverge.Common\Kongverge.Common.csproj", "{8DD88358-C5EF-4BA6-8A33-0E1EC3146197}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{677082D4-0DEE-4A66-AE56-6FCB704D2B2C}"
-	ProjectSection(SolutionItems) = preProject
-		.gitignore = .gitignore
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Validation.Tests", "src\Kongverge.Validation.Tests\Kongverge.Validation.Tests.csproj", "{B1BBBAA9-08FC-4F00-9E06-2970801A719A}"
 EndProject
@@ -25,6 +20,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Common.Tests", "src\Kongverge.Common.Tests\Kongverge.Common.Tests.csproj", "{1C5B085D-063C-4F9C-94F2-51C63AE6948B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Integration.Tests", "src\Kongverge.Integration.Tests\Kongverge.Integration.Tests.csproj", "{0A099441-1FCD-4105-AA68-6519C94E1E4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kongverge.TestHelpers", "src\Kongverge.TestHelpers\Kongverge.TestHelpers.csproj", "{E3C727F6-2109-42C3-9BA3-CB2B5F66A87D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,6 +61,10 @@ Global
 		{0A099441-1FCD-4105-AA68-6519C94E1E4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A099441-1FCD-4105-AA68-6519C94E1E4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A099441-1FCD-4105-AA68-6519C94E1E4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3C727F6-2109-42C3-9BA3-CB2B5F66A87D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3C727F6-2109-42C3-9BA3-CB2B5F66A87D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3C727F6-2109-42C3-9BA3-CB2B5F66A87D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3C727F6-2109-42C3-9BA3-CB2B5F66A87D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +74,7 @@ Global
 		{B1BBBAA9-08FC-4F00-9E06-2970801A719A} = {7781A389-5975-4D1D-B53D-D121ED676A07}
 		{1C5B085D-063C-4F9C-94F2-51C63AE6948B} = {7781A389-5975-4D1D-B53D-D121ED676A07}
 		{0A099441-1FCD-4105-AA68-6519C94E1E4B} = {7781A389-5975-4D1D-B53D-D121ED676A07}
+		{E3C727F6-2109-42C3-9BA3-CB2B5F66A87D} = {7781A389-5975-4D1D-B53D-D121ED676A07}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {434FBED9-7DD3-48E6-A059-2583D7C5917B}

@@ -6,7 +6,7 @@ using FizzWare.NBuilder;
 using FizzWare.NBuilder.Generators;
 using Kongverge.Common.Plugins.BuiltIn.RequestTransform;
 
-namespace Kongverge.Common.Tests.Plugins
+namespace Kongverge.TestHelpers
 {
     public static class BuilderExtensions
     {
@@ -37,7 +37,7 @@ namespace Kongverge.Common.Tests.Plugins
             .Build();
 
         public static Dictionary<string, string> RandomDictionary(int length = 3) => Enumerable
-            .Range(0, 3)
+            .Range(0, length)
             .Select(x => GetRandom.String(10))
             .ToDictionary(x => x, x => x.GetHashCode().ToString());
 
@@ -48,6 +48,6 @@ namespace Kongverge.Common.Tests.Plugins
             .With(x => x.QueryString, RandomHashSet())
             .Build();
 
-        public static HashSet<string> RandomHashSet(int length = 3) => new HashSet<string>(Enumerable.Range(0, 3).Select(x => GetRandom.String(10)));
+        public static HashSet<string> RandomHashSet(int length = 3) => new HashSet<string>(Enumerable.Range(0, length).Select(x => GetRandom.String(10)));
     }
 }

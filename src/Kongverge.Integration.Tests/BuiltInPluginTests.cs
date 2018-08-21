@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using FizzWare.NBuilder;
 using Kongverge.Common.Plugins.BuiltIn;
 using Kongverge.Common.Plugins.BuiltIn.RequestTransform;
-using Kongverge.Common.Tests.Plugins;
+using Kongverge.TestHelpers;
 
 namespace Kongverge.Integration.Tests
 {
