@@ -139,7 +139,10 @@ namespace Kongverge.Common.Services
     Protocols  : {protocols}",
                 route.Paths, route.Methods, route.Protocols);
 
+            var plugins = route.Plugins;
+            route.Plugins = null;
             var content = KongJsonConvert.Serialize(route);
+            route.Plugins = plugins;
 
             try
             {
