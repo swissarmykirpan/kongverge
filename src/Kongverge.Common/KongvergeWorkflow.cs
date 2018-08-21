@@ -44,7 +44,11 @@ namespace Kongverge.Common
             }
 
             //Process Input Files
-            var processedFiles = await ProcessFiles(existingServices, dataFiles).ConfigureAwait(false);
+            var servicesFromFile = dataFiles
+                .Select(f => f.Service)
+                .ToList();
+
+            await ProcessServices(existingServices, servicesFromFile).ConfigureAwait(false);
 
             // Ensure global config has converged
             if (existingGlobalConfig.Succeeded)
@@ -58,7 +62,7 @@ namespace Kongverge.Common
 
             //Remove Missing Services
             var missingServices = existingServices
-                .Except(processedFiles)
+                .Except(servicesFromFile)
                 .ToList();
 
             if (missingServices.Count == 0)
@@ -83,62 +87,58 @@ namespace Kongverge.Common
             }
         }
 
-        private async Task<IEnumerable<KongService>> ProcessFiles(
+        private async Task ProcessServices(
             IReadOnlyCollection<KongService> existingServices,
-            IEnumerable<KongDataFile> dataFiles)
+            IReadOnlyCollection<KongService> newServices)
         {
-            var processedFiles = new List<KongService>();
-            foreach (var data in dataFiles)
+            foreach (var service in newServices)
             {
-                processedFiles.Add(data.Service);
-                await ProcessFile(existingServices, data).ConfigureAwait(false);
+                await ProcessService(existingServices, service).ConfigureAwait(false);
             }
-
-            return processedFiles;
         }
 
-        private async Task ProcessFile(IEnumerable<KongService> existingServices, KongDataFile data)
+        private async Task ProcessService(IEnumerable<KongService> existingServices, KongService newService)
         {
-            var existingService = existingServices.SingleOrDefault(x => x.Name == data.Service.Name);
+            var existingService = existingServices.SingleOrDefault(x => x.Name == newService.Name);
 
             if (existingService == null)
             {
-                Log.Information("\nAdding new service: \"{name}\"", data.Service.Name);
+                Log.Information("\nAdding new service: \"{name}\"", newService.Name);
 
-                var valid = await ServiceValidationHelper.Validate(data).ConfigureAwait(false);
+                var valid = await ServiceValidationHelper.Validate(newService).ConfigureAwait(false);
 
                 if (!valid)
                 {
-                    Log.Information("Invalid Data File: {name}{ext}", data.Service.Name, Settings.FileExtension);
+                    Log.Information("Invalid Data File: {name}{ext}", newService.Name, Settings.FileExtension);
                     return;
                 }
 
-                var serviceAdded = await _kongWriter.AddService(data.Service).ConfigureAwait(false);
+                var serviceAdded = await _kongWriter.AddService(newService).ConfigureAwait(false);
 
                 if (serviceAdded.Succeeded)
                 {
-                    await ConvergePlugins(data.Service, serviceAdded.Result).ConfigureAwait(false);
+                    await ConvergePlugins(newService, serviceAdded.Result).ConfigureAwait(false);
 
-                    await ConvergeRoutes(data.Service, serviceAdded.Result).ConfigureAwait(false);
+                    await ConvergeRoutes(newService, serviceAdded.Result).ConfigureAwait(false);
                 }
             }
             else
             {
                 // TODO: Clean this up, its messy, but where else can we do this?
-                data.Service.Id = existingService.Id;
+                newService.Id = existingService.Id;
 
-                await ConvergePlugins(data.Service, existingService).ConfigureAwait(false);
+                await ConvergePlugins(newService, existingService).ConfigureAwait(false);
 
-                await ConvergeRoutes(data.Service, existingService).ConfigureAwait(false);
+                await ConvergeRoutes(newService, existingService).ConfigureAwait(false);
 
-                if (!ServiceHasChanged(existingService, data.Service))
+                if (!ServiceHasChanged(existingService, newService))
                 {
                     return;
                 }
 
-                Log.Information("Updating service: \"{name}\"", data.Service.Name);
+                Log.Information("Updating service: \"{name}\"", newService.Name);
 
-                await _kongWriter.UpdateService(data.Service).ConfigureAwait(false);
+                await _kongWriter.UpdateService(newService).ConfigureAwait(false);
             }
         }
 
