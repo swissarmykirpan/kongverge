@@ -25,26 +25,6 @@ namespace Kongverge.Common.DTOs
             return Id;
         }
 
-        private class EmptyExtendibleKongObject : ExtendibleKongObject
-        {
-            internal EmptyExtendibleKongObject()
-            {
-                Plugins = new List<IKongPluginConfig>();
-            }
-
-            protected override PluginBody DoDecoratePluginBody(PluginBody body)
-            {
-                return body;
-            }
-        }
-
-        public static ExtendibleKongObject Empty { get; } = new EmptyExtendibleKongObject();
-
-        public bool ShouldSerializeExtensions()
-        {
-            return false;
-        }
-
         public PluginBody DecoratePluginBody(PluginBody body)
         {
             body = DoDecoratePluginBody(body);
