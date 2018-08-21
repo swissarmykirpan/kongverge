@@ -58,7 +58,7 @@ namespace KongVerge.Tests.Workflow
             var system = new KongvergeWorkflowSut();
             var route1 = new KongRoute();
 
-            var service = new KongService
+            var target = new KongService
             {
                 Routes = new List<KongRoute>
                 {
@@ -66,9 +66,9 @@ namespace KongVerge.Tests.Workflow
                 }
             };
 
-            await system.Sut.ConvergeRoutes(service, Array.Empty<KongRoute>());
+            await system.Sut.ConvergeRoutes(target, new KongService());
 
-            system.KongWriter.Verify(k => k.AddRoute(service, route1), Times.Once());
+            system.KongWriter.Verify(k => k.AddRoute(target, route1), Times.Once());
         }
 
         [Fact]
@@ -80,17 +80,17 @@ namespace KongVerge.Tests.Workflow
                 Id = Guid.NewGuid().ToString()
             };
 
-            var service = new KongService
+            var target = new KongService
             {
                 Routes = new List<KongRoute>()
             };
 
-            var routes = new List<KongRoute>
-                {
-                    route1
-                };
+            var existing = new KongService
+            {
+                Routes = new[] { route1 }
+            };
 
-            await system.Sut.ConvergeRoutes(service, routes);
+            await system.Sut.ConvergeRoutes(target, existing);
 
             system.KongWriter.Verify(k => k.DeleteRoute(route1.Id), Times.Once());
         }
