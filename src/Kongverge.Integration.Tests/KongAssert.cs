@@ -1,3 +1,5 @@
+using System;
+using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Kongverge.Common.DTOs;
@@ -14,10 +16,10 @@ namespace Kongverge.Integration.Tests
             actual.Should().NotBeNull($"Service with id '{id}' was not found");
         }
 
-        public static async Task ShouldNotHaveServiceWithId(this IKongAdminReader kongReader, string id)
+        public static void ShouldNotHaveServiceWithId(this IKongAdminReader kongReader, string id)
         {
-            var actual = await kongReader.GetService(id);
-            actual.Should().BeNull($"Service with id '{id}' was found");
+            Func<Task> action = async () => await kongReader.GetService(id);
+            action.Should().Throw<KongException>().Which.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
         public static T ShouldHaveOnePlugin<T>(this ExtendibleKongObject service) where T : IKongPluginConfig

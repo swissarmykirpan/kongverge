@@ -79,7 +79,7 @@ namespace Kongverge
             });
 
             services.AddSingleton<IDataFileHelper, DataFileHelper>();
-            services.AddSingleton<HttpClient>();
+            services.AddSingleton<KongAdminHttpClient>();
             services.AddOptions();
 
             var configuration = new ConfigurationBuilder()

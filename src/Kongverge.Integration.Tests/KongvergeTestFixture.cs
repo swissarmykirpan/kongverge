@@ -50,10 +50,9 @@ namespace Kongverge.Integration.Tests
 
         public async Task<KongService> AddServiceAndChildren(KongService service)
         {
-            var addServiceResult = await KongAdminWriter.AddService(service);
-            addServiceResult.Should().NotBeNull();
-            addServiceResult.ShouldSucceed();
-            addServiceResult.Result.Id.Should().NotBeNullOrEmpty();
+            var addedService = await KongAdminWriter.AddService(service);
+            addedService.Should().NotBeNull();
+            addedService.Id.Should().NotBeNullOrEmpty();
 
             if (service.Plugins != null)
             {
@@ -70,8 +69,8 @@ namespace Kongverge.Integration.Tests
             {
                 foreach (var route in service.Routes)
                 {
-                    var addRouteResult = await KongAdminWriter.AddRoute(service, route);
-                    addRouteResult.ShouldSucceed();
+                    var addedRoute = await KongAdminWriter.AddRoute(service, route);
+                    addedRoute.Should().NotBeNull();
 
                     foreach (var plugin in route.Plugins)
                     {
@@ -85,23 +84,23 @@ namespace Kongverge.Integration.Tests
             }
 
             CleanUp.Add(service);
-            return addServiceResult.Result;
+            return addedService;
         }
 
         private async Task<KongPluginResponse> ShouldUpsertPlugin(PluginBody pluginBody)
         {
-            var pluginResult = await KongAdminWriter.UpsertPlugin(pluginBody);
-            pluginResult.Should().NotBeNull();
-            pluginResult.ShouldSucceed();
-            pluginResult.Result.Id.Should().NotBeNullOrEmpty();
+            var plugin = await KongAdminWriter.UpsertPlugin(pluginBody);
+            plugin.Should().NotBeNull();
+            plugin.Id.Should().NotBeNullOrEmpty();
 
-            return pluginResult.Result;
+            return plugin;
         }
 
         public void Dispose()
         {
             foreach (var service in CleanUp)
             {
+                KongAdminWriter.DeleteRoutes(service).Wait();
                 KongAdminWriter.DeleteService(service.Id).Wait();
             }
         }
