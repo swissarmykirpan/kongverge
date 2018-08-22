@@ -1,8 +1,6 @@
 using System;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Helpers;
 using Kongverge.Common.Services;
-using Microsoft.Extensions.Options;
 using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,82 +13,101 @@ using Kongverge.Common;
 
 namespace KongVerge.Tests.Workflow
 {
-    public class KongvergeWorkflowTests
+    public class ServicesProcessorTests
     {
         private readonly Fixture _fixture = new Fixture();
 
-        public class KongvergeWorkflowSut
+        public class ServicesProcessorSut
         {
-            private static readonly Fixture Fixture = new Fixture();
-
-            public Mock<IDataFileHelper> DataFiles = new Mock<IDataFileHelper>();
-            public Mock<IKongAdminReader> KongReader = new Mock<IKongAdminReader>();
             public Mock<IKongAdminWriter> KongWriter = new Mock<IKongAdminWriter>();
             public Mock<IKongPluginCollection> KongPluginCollection = new Mock<IKongPluginCollection>();
 
-            public Settings Settings { get; }
-            public KongvergeWorkflow Sut { get; }
+            public ServicesProcessor Sut { get; }
 
-            public KongvergeWorkflowSut()
+            public ServicesProcessorSut()
             {
-                KongReader.Setup(k => k.KongIsReachable()).ReturnsAsync(true);
-
-                Settings = new Settings
-                {
-                    Admin = Fixture.Create<Admin>()
-                };
-
-                var configuration = new Mock<IOptions<Settings>>();
-                configuration.Setup(c => c.Value).Returns(Settings);
-
-                Sut = new KongvergeWorkflow(
-                    KongReader.Object,
-                    configuration.Object,
+                Sut = new ServicesProcessor(
                     KongWriter.Object,
-                    DataFiles.Object,
                     KongPluginCollection.Object);
             }
         }
 
         [Fact]
+        public async Task NoOpWorks()
+        {
+            var system = new ServicesProcessorSut();
+
+            var existingServices = new List<KongService>();
+            var newServices = new List<KongService>();
+
+            await system.Sut.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+
+            system.KongWriter.Verify(k =>
+                k.AddRoute(It.IsAny<KongService>(), It.IsAny<KongRoute>()), Times.Never);
+        }
+
+        [Fact]
         public async Task ConvergeRoutes_WillAddMissingRoutes()
         {
-            var system = new KongvergeWorkflowSut();
+            var system = new ServicesProcessorSut();
             var route1 = new KongRoute();
 
-            var target = new KongService
+            var existingServices = new List<KongService>
             {
-                Routes = new List<KongRoute>
+                new KongService
                 {
-                    route1
+                    Name = "TestService1"
                 }
             };
 
-            await system.Sut.ConvergeRoutes(target, new KongService());
+            var newServices = new List<KongService>
+            { 
+                new KongService
+                {
+                    Name = "TestService1",
+                    Routes = new List<KongRoute>
+                    {
+                        route1
+                    }
+                }
+            };
 
-            system.KongWriter.Verify(k => k.AddRoute(target, route1), Times.Once());
+           await system.Sut.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+
+            system.KongWriter.Verify(k => k.AddRoute(newServices[0], route1), Times.Once());
         }
 
         [Fact]
         public async Task ConvergeRoutes_WillRemoveExcessRoutes()
         {
-            var system = new KongvergeWorkflowSut();
+            var system = new ServicesProcessorSut();
             var route1 = new KongRoute
             {
                 Id = Guid.NewGuid().ToString()
             };
 
-            var target = new KongService
+            var existingServices = new List<KongService>
             {
-                Routes = new List<KongRoute>()
+                new KongService
+                {
+                    Name = "TestService2",
+                    Routes = new List<KongRoute>
+                    {
+                        route1
+                    }
+                }
             };
 
-            var existing = new KongService
+            var newServices = new List<KongService>
             {
-                Routes = new[] { route1 }
+                new KongService
+                {
+                    Name = "TestService2",
+                    Routes = new List<KongRoute>()
+                }
             };
 
-            await system.Sut.ConvergeRoutes(target, existing);
+            await system.Sut.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
 
             system.KongWriter.Verify(k => k.DeleteRoute(route1.Id), Times.Once());
         }
@@ -101,17 +118,30 @@ namespace KongVerge.Tests.Workflow
             var plugin2 = _fixture.Create<TestKongConfig>();
             var plugin1 = _fixture.Create<OtherTestKongConfig>();
 
-            var service = new KongService
+            var existingServices = new List<KongService>
             {
-                Plugins = new List<IKongPluginConfig>
-                { plugin1, plugin2 }
+                new KongService
+                {
+                    Name = "TestService3",
+                    Plugins = new List<IKongPluginConfig>
+                    {
+                        plugin1,
+                        plugin2
+                    }
+                }
             };
 
-            var targetService = new KongService();
+            var newServices = new List<KongService>
+            {
+                new KongService
+                {
+                    Name = "TestService3"
+                }
+            };
 
-            var system = new KongvergeWorkflowSut();
+            var system = new ServicesProcessorSut();
 
-            await system.Sut.ConvergePlugins(targetService, service);
+            await system.Sut.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
 
             system.KongWriter.Verify(k => k.DeletePlugin(plugin1.id), Times.Once());
             system.KongWriter.Verify(k => k.DeletePlugin(plugin2.id), Times.Once());
@@ -125,20 +155,33 @@ namespace KongVerge.Tests.Workflow
             var body1 = _fixture.Create<PluginBody>();
             var body2 = _fixture.Create<PluginBody>();
 
-            var service = new KongService();
-
-            var targetService = new KongService
-            {
-                Plugins = new List<IKongPluginConfig>
-                { plugin1, plugin2 }
-            };
-
-            var system = new KongvergeWorkflowSut();
+            var system = new ServicesProcessorSut();
 
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin2)).Returns(body2);
 
-            await system.Sut.ConvergePlugins(targetService, service);
+            var existingServices = new List<KongService>
+            {
+                new KongService
+                {
+                    Name = "TestService4"
+                }
+            };
+
+            var newServices = new List<KongService>
+            {
+                new KongService
+                {
+                    Name = "TestService4",
+                    Plugins = new List<IKongPluginConfig>
+                    {
+                        plugin1,
+                        plugin2
+                    }
+                }
+            };
+
+            await system.Sut.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
 
             system.KongWriter.Verify(k => k.UpsertPlugin(body1), Times.Once());
             system.KongWriter.Verify(k => k.UpsertPlugin(body2), Times.Once());
@@ -151,21 +194,29 @@ namespace KongVerge.Tests.Workflow
             var plugin1 = _fixture.Create<TestKongConfig>();
             var body1 = _fixture.Create<PluginBody>();
 
-            var service = new KongService
+            var existingServices = new List<KongService>
             {
-                Plugins = new List<IKongPluginConfig> { plugin2 }
+                new KongService
+                {
+                    Name = "TestService5",
+                    Plugins = new List<IKongPluginConfig> { plugin2 }
+                }
             };
 
-            var targetService = new KongService
+            var newServices = new List<KongService>
             {
-                Plugins = new List<IKongPluginConfig> { plugin1 }
+                new KongService
+                {
+                    Name = "TestService5",
+                    Plugins = new List<IKongPluginConfig> { plugin1 }
+                }
             };
 
-            var system = new KongvergeWorkflowSut();
+            var system = new ServicesProcessorSut();
 
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
 
-            await system.Sut.ConvergePlugins(targetService, service);
+            await system.Sut.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
 
             system.KongWriter.Verify(k => k.UpsertPlugin(body1), Times.Once());
         }
@@ -191,9 +242,11 @@ namespace KongVerge.Tests.Workflow
                 }
             };
 
-            var system = SetupExecute_WithNoServiceChanges(clusterConfig, fileConfig);
+            var system = new ServicesProcessorSut();
 
-            await system.Sut.DoExecute();
+            var noServices = new List<KongService>();
+
+            await system.Sut.Process(noServices, noServices, clusterConfig, fileConfig);
 
             system.KongWriter.Verify(kong => kong.UpsertPlugin(It.IsAny<PluginBody>()), Times.Never());
         }
@@ -218,11 +271,13 @@ namespace KongVerge.Tests.Workflow
 
             var body = _fixture.Create<PluginBody>();
 
-            var system = SetupExecute_WithNoServiceChanges(clusterConfig, fileConfig);
-
+            var system = new ServicesProcessorSut();
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin)).Returns(body);
 
-            await system.Sut.DoExecute();
+
+            var noServices = new List<KongService>();
+
+            await system.Sut.Process(noServices, noServices, clusterConfig, fileConfig);
 
             system.KongWriter.Verify(kong => kong.UpsertPlugin(It.IsAny<PluginBody>()), Times.Once());
         }
@@ -251,11 +306,13 @@ namespace KongVerge.Tests.Workflow
 
             var body = _fixture.Create<PluginBody>();
 
-            var system = SetupExecute_WithNoServiceChanges(clusterConfig, fileConfig);
-
+            var system = new ServicesProcessorSut();
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin)).Returns(body);
 
-            await system.Sut.DoExecute();
+
+            var noServices = new List<KongService>();
+
+            await system.Sut.Process(noServices, noServices, clusterConfig, fileConfig);
 
             system.KongWriter.Verify(kong => kong.UpsertPlugin(It.IsAny<PluginBody>()), Times.Once());
         }
@@ -280,40 +337,15 @@ namespace KongVerge.Tests.Workflow
 
             var body = _fixture.Create<PluginBody>();
 
-            var system = SetupExecute_WithNoServiceChanges(clusterConfig, fileConfig);
-
+            var system = new ServicesProcessorSut();
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin)).Returns(body);
 
-            await system.Sut.DoExecute();
+
+            var noServices = new List<KongService>();
+
+            await system.Sut.Process(noServices, noServices, clusterConfig, fileConfig);
 
             system.KongWriter.Verify(kong => kong.DeletePlugin(plugin.id), Times.Once());
-        }
-
-        private static KongvergeWorkflowSut SetupExecute_WithNoServiceChanges(GlobalConfig clusterConfig, GlobalConfig fileConfig)
-        {
-            IReadOnlyCollection<KongDataFile> files = Array.Empty<KongDataFile>();
-
-            var system = new KongvergeWorkflowSut();
-
-            system.KongReader
-                  .Setup(kong => kong.GetServices())
-                  .ReturnsAsync(new List<KongService>());
-
-            system.KongReader
-                  .Setup(kong =>
-                            kong.GetGlobalConfig())
-                  .ReturnsAsync(KongAction.Success(clusterConfig))
-                  .Verifiable();
-
-            system.DataFiles
-                  .Setup(file =>
-                            file.GetDataFiles(
-                                It.IsAny<string>(),
-                                out files,
-                                out fileConfig))
-                  .Returns(true)
-                  .Verifiable();
-            return system;
         }
     }
 }
