@@ -3,6 +3,7 @@ using Kongverge.Common.DTOs;
 using Kongverge.Common.Services;
 using Moq;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 using AutoFixture;
@@ -13,35 +14,118 @@ using Kongverge.Common;
 
 namespace KongVerge.Tests.Workflow
 {
-    public class ServicesProcessorTests
+    internal class ServicesProcessorEnvironment
     {
-        private readonly Fixture _fixture = new Fixture();
+        public readonly Mock<IKongAdminWriter> KongWriter = new Mock<IKongAdminWriter>();
+        public readonly Mock<IKongPluginCollection> KongPluginCollection = new Mock<IKongPluginCollection>();
+        public ServicesProcessor Processor { get; }
 
-        public class ServicesProcessorSut
+        public ServicesProcessorEnvironment()
         {
-            public Mock<IKongAdminWriter> KongWriter = new Mock<IKongAdminWriter>();
-            public Mock<IKongPluginCollection> KongPluginCollection = new Mock<IKongPluginCollection>();
-
-            public ServicesProcessor Sut { get; }
-
-            public ServicesProcessorSut()
-            {
-                Sut = new ServicesProcessor(
-                    KongWriter.Object,
-                    KongPluginCollection.Object);
-            }
+            Processor = new ServicesProcessor(KongWriter.Object, KongPluginCollection.Object);
         }
 
-        [Fact]
-        public async Task NoOpWorks()
+        public void VerifyNoActionTaken()
         {
-            var system = new ServicesProcessorSut();
+            KongWriter.Verify(k =>
+                k.AddService(It.IsAny<KongService>()), Times.Never);
+            KongWriter.Verify(k =>
+                k.DeleteService(It.IsAny<string>()), Times.Never);
+            KongWriter.Verify(k =>
+                k.AddRoute(It.IsAny<KongService>(), It.IsAny<KongRoute>()), Times.Never);
+            KongWriter.Verify(k =>
+                k.DeleteRoute(It.IsAny<string>()), Times.Never);
+        }
+    }
+
+    public class ServicesProcessorTests
+    {
+        [Fact]
+        public async Task NoOpWithNoServicesWorks()
+        {
+            var system = new ServicesProcessorEnvironment();
 
             var existingServices = new List<KongService>();
             var newServices = new List<KongService>();
 
-            await system.Sut.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
 
+            system.VerifyNoActionTaken();
+        }
+
+        [Fact]
+        public async Task NoOpWithOneServicesWorks()
+        {
+            var system = new ServicesProcessorEnvironment();
+
+            var existingServices = new List<KongService>
+            {
+                new KongService
+                {
+                    Name = "service1"
+                }
+            };
+
+            var newServices = new List<KongService>
+            {
+                new KongService
+                {
+                    Name = "service1"
+                }
+            };
+
+            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+
+            system.VerifyNoActionTaken();
+        }
+
+        [Fact]
+        public async Task CanAddService()
+        {
+            var system = new ServicesProcessorEnvironment();
+
+            var existingServices = new List<KongService>();
+            var newServices = new List<KongService>
+            {
+                new KongService
+                {
+                    Name = "TestService_A"
+                }
+            };
+
+
+            system.KongWriter.Setup(e => e.AddService(It.IsAny<KongService>()))
+                .ReturnsAsync(KongAction.Success(HttpStatusCode.OK, new KongService()));
+
+            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+
+            system.KongWriter.Verify(k =>
+                k.AddService(It.IsAny<KongService>()), Times.Once);
+            system.KongWriter.Verify(k =>
+                k.AddRoute(It.IsAny<KongService>(), It.IsAny<KongRoute>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task CanRemoveService()
+        {
+            var system = new ServicesProcessorEnvironment();
+
+            var existingServices = new List<KongService>
+            {
+                new KongService
+                {
+                    Name = "TestService_A"
+                }
+            };
+
+            var newServices = new List<KongService>();
+
+            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+
+            system.KongWriter.Verify(k =>
+                k.AddService(It.IsAny<KongService>()), Times.Never);
+            system.KongWriter.Verify(k =>
+                k.DeleteService(It.IsAny<string>()), Times.Once);
             system.KongWriter.Verify(k =>
                 k.AddRoute(It.IsAny<KongService>(), It.IsAny<KongRoute>()), Times.Never);
         }
@@ -49,7 +133,7 @@ namespace KongVerge.Tests.Workflow
         [Fact]
         public async Task ConvergeRoutes_WillAddMissingRoutes()
         {
-            var system = new ServicesProcessorSut();
+            var system = new ServicesProcessorEnvironment();
             var route1 = new KongRoute();
 
             var existingServices = new List<KongService>
@@ -72,7 +156,7 @@ namespace KongVerge.Tests.Workflow
                 }
             };
 
-           await system.Sut.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+           await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
 
             system.KongWriter.Verify(k => k.AddRoute(newServices[0], route1), Times.Once());
         }
@@ -80,7 +164,7 @@ namespace KongVerge.Tests.Workflow
         [Fact]
         public async Task ConvergeRoutes_WillRemoveExcessRoutes()
         {
-            var system = new ServicesProcessorSut();
+            var system = new ServicesProcessorEnvironment();
             var route1 = new KongRoute
             {
                 Id = Guid.NewGuid().ToString()
@@ -107,7 +191,7 @@ namespace KongVerge.Tests.Workflow
                 }
             };
 
-            await system.Sut.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
 
             system.KongWriter.Verify(k => k.DeleteRoute(route1.Id), Times.Once());
         }
@@ -115,8 +199,9 @@ namespace KongVerge.Tests.Workflow
         [Fact]
         public async Task ConvergePlugins_WillRemoveExcessPlugins()
         {
-            var plugin2 = _fixture.Create<TestKongConfig>();
-            var plugin1 = _fixture.Create<OtherTestKongConfig>();
+            var fixture = new Fixture();
+            var plugin2 = fixture.Create<TestKongConfig>();
+            var plugin1 = fixture.Create<OtherTestKongConfig>();
 
             var existingServices = new List<KongService>
             {
@@ -139,9 +224,9 @@ namespace KongVerge.Tests.Workflow
                 }
             };
 
-            var system = new ServicesProcessorSut();
+            var system = new ServicesProcessorEnvironment();
 
-            await system.Sut.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
 
             system.KongWriter.Verify(k => k.DeletePlugin(plugin1.id), Times.Once());
             system.KongWriter.Verify(k => k.DeletePlugin(plugin2.id), Times.Once());
@@ -150,12 +235,13 @@ namespace KongVerge.Tests.Workflow
         [Fact]
         public async Task ConvergePlugins_WillAddMissingPlugins()
         {
-            var plugin2 = _fixture.Create<TestKongConfig>();
-            var plugin1 = _fixture.Create<OtherTestKongConfig>();
-            var body1 = _fixture.Create<PluginBody>();
-            var body2 = _fixture.Create<PluginBody>();
+            var fixture = new Fixture();
+            var plugin2 = fixture.Create<TestKongConfig>();
+            var plugin1 = fixture.Create<OtherTestKongConfig>();
+            var body1 = fixture.Create<PluginBody>();
+            var body2 = fixture.Create<PluginBody>();
 
-            var system = new ServicesProcessorSut();
+            var system = new ServicesProcessorEnvironment();
 
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin2)).Returns(body2);
@@ -181,7 +267,7 @@ namespace KongVerge.Tests.Workflow
                 }
             };
 
-            await system.Sut.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
 
             system.KongWriter.Verify(k => k.UpsertPlugin(body1), Times.Once());
             system.KongWriter.Verify(k => k.UpsertPlugin(body2), Times.Once());
@@ -190,9 +276,10 @@ namespace KongVerge.Tests.Workflow
         [Fact]
         public async Task ConvergePlugins_WillUpdateChangedPlugins()
         {
-            var plugin2 = _fixture.Create<TestKongConfig>();
-            var plugin1 = _fixture.Create<TestKongConfig>();
-            var body1 = _fixture.Create<PluginBody>();
+            var fixture = new Fixture();
+            var plugin2 = fixture.Create<TestKongConfig>();
+            var plugin1 = fixture.Create<TestKongConfig>();
+            var body1 = fixture.Create<PluginBody>();
 
             var existingServices = new List<KongService>
             {
@@ -212,11 +299,11 @@ namespace KongVerge.Tests.Workflow
                 }
             };
 
-            var system = new ServicesProcessorSut();
+            var system = new ServicesProcessorEnvironment();
 
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
 
-            await system.Sut.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
 
             system.KongWriter.Verify(k => k.UpsertPlugin(body1), Times.Once());
         }
@@ -224,7 +311,8 @@ namespace KongVerge.Tests.Workflow
         [Fact]
         public async Task GlobalConfig_NoChangesIfMatch()
         {
-            var plugin = _fixture.Create<TestKongConfig>();
+            var fixture = new Fixture();
+            var plugin = fixture.Create<TestKongConfig>();
 
             var clusterConfig = new GlobalConfig
             {
@@ -242,11 +330,11 @@ namespace KongVerge.Tests.Workflow
                 }
             };
 
-            var system = new ServicesProcessorSut();
+            var system = new ServicesProcessorEnvironment();
 
             var noServices = new List<KongService>();
 
-            await system.Sut.Process(noServices, noServices, clusterConfig, fileConfig);
+            await system.Processor.Process(noServices, noServices, clusterConfig, fileConfig);
 
             system.KongWriter.Verify(kong => kong.UpsertPlugin(It.IsAny<PluginBody>()), Times.Never());
         }
@@ -254,7 +342,8 @@ namespace KongVerge.Tests.Workflow
         [Fact]
         public async Task GlobalConfig_AddsPluginGlobally()
         {
-            var plugin = _fixture.Create<TestKongConfig>();
+            var fixture = new Fixture();
+            var plugin = fixture.Create<TestKongConfig>();
 
             var clusterConfig = new GlobalConfig
             {
@@ -269,15 +358,15 @@ namespace KongVerge.Tests.Workflow
                 }
             };
 
-            var body = _fixture.Create<PluginBody>();
+            var body = fixture.Create<PluginBody>();
 
-            var system = new ServicesProcessorSut();
+            var system = new ServicesProcessorEnvironment();
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin)).Returns(body);
 
 
             var noServices = new List<KongService>();
 
-            await system.Sut.Process(noServices, noServices, clusterConfig, fileConfig);
+            await system.Processor.Process(noServices, noServices, clusterConfig, fileConfig);
 
             system.KongWriter.Verify(kong => kong.UpsertPlugin(It.IsAny<PluginBody>()), Times.Once());
         }
@@ -285,8 +374,9 @@ namespace KongVerge.Tests.Workflow
         [Fact]
         public async Task GlobalConfig_UpdatesPluginGlobally()
         {
-            var plugin = _fixture.Create<TestKongConfig>();
-            var plugin2 = _fixture.Create<TestKongConfig>();
+            var fixture = new Fixture();
+            var plugin = fixture.Create<TestKongConfig>();
+            var plugin2 = fixture.Create<TestKongConfig>();
 
             var clusterConfig = new GlobalConfig
             {
@@ -304,15 +394,14 @@ namespace KongVerge.Tests.Workflow
                 }
             };
 
-            var body = _fixture.Create<PluginBody>();
+            var body = fixture.Create<PluginBody>();
 
-            var system = new ServicesProcessorSut();
+            var system = new ServicesProcessorEnvironment();
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin)).Returns(body);
-
 
             var noServices = new List<KongService>();
 
-            await system.Sut.Process(noServices, noServices, clusterConfig, fileConfig);
+            await system.Processor.Process(noServices, noServices, clusterConfig, fileConfig);
 
             system.KongWriter.Verify(kong => kong.UpsertPlugin(It.IsAny<PluginBody>()), Times.Once());
         }
@@ -320,7 +409,8 @@ namespace KongVerge.Tests.Workflow
         [Fact]
         public async Task GlobalConfig_RemovesPluginGlobally()
         {
-            var plugin = _fixture.Create<TestKongConfig>();
+            var fixture = new Fixture();
+            var plugin = fixture.Create<TestKongConfig>();
 
             var clusterConfig = new GlobalConfig
             {
@@ -335,15 +425,15 @@ namespace KongVerge.Tests.Workflow
                 Plugins = new List<IKongPluginConfig>()
             };
 
-            var body = _fixture.Create<PluginBody>();
+            var body = fixture.Create<PluginBody>();
 
-            var system = new ServicesProcessorSut();
+            var system = new ServicesProcessorEnvironment();
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin)).Returns(body);
 
 
             var noServices = new List<KongService>();
 
-            await system.Sut.Process(noServices, noServices, clusterConfig, fileConfig);
+            await system.Processor.Process(noServices, noServices, clusterConfig, fileConfig);
 
             system.KongWriter.Verify(kong => kong.DeletePlugin(plugin.id), Times.Once());
         }
