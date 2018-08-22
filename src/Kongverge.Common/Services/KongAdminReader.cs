@@ -22,11 +22,11 @@ namespace Kongverge.Common.Services
         private const string PluginsRoute = "/plugins";
 
         private readonly Settings _configuration;
-        protected readonly HttpClient HttpClient;
+        protected readonly KongAdminHttpClient HttpClient;
         private readonly JsonSerializerSettings _settings;
         private readonly IKongPluginCollection _kongPluginCollection;
 
-        public KongAdminReader(IOptions<Settings> configuration, HttpClient httpClient, IKongPluginCollection kongPluginCollection, PluginConverter converter)
+        public KongAdminReader(IOptions<Settings> configuration, KongAdminHttpClient httpClient, IKongPluginCollection kongPluginCollection, PluginConverter converter)
         {
             _configuration = configuration.Value;
             HttpClient = httpClient;
@@ -38,7 +38,7 @@ namespace Kongverge.Common.Services
             _settings = new JsonSerializerSettings
             {
                 DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
-                Converters = converter != null ? new[] { converter } : null
+                Converters = converter != null ? new JsonConverter[] { converter } : null
             };
             _kongPluginCollection = kongPluginCollection;
         }
@@ -300,7 +300,7 @@ namespace Kongverge.Common.Services
             return routes;
         }
 
-        public async Task<KongAction<GlobalConfig>> GetGlobalConfig()
+        public async Task<GlobalConfig> GetGlobalConfig()
         {
             try
             {
@@ -308,11 +308,10 @@ namespace Kongverge.Common.Services
 
                 var globalPlugins = plugins.Where(p => null == (p.consumer_id ?? p.service_id ?? p.route_id));
 
-                return
-                    KongAction.Success(new GlobalConfig
-                    {
-                        Plugins = TranslateToConfig(globalPlugins)
-                    });
+                return new GlobalConfig
+                {
+                    Plugins = TranslateToConfig(globalPlugins)
+                };
             }
             catch (Exception ex)
             {

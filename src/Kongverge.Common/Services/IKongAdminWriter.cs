@@ -7,20 +7,20 @@ namespace Kongverge.Common.Services
 {
     public interface IKongAdminWriter
     {
-        Task<KongAction<KongService>> AddService(KongService service);
+        Task<KongService> AddService(KongService service);
 
-        Task<KongAction<KongService>> UpdateService(KongService service);
+        Task<KongService> UpdateService(KongService service);
 
-        Task<KongAction<string>> DeleteService(string serviceId);
+        Task<string> DeleteService(string serviceId);
 
-        Task<KongAction<KongRoute>> AddRoute(KongService service, KongRoute route);
+        Task<KongRoute> AddRoute(KongService service, KongRoute route);
 
-        Task<KongAction<IEnumerable<KongRoute>>> DeleteRoutes(KongService service);
+        Task<IEnumerable<KongRoute>> DeleteRoutes(KongService service);
 
-        Task<KongAction<KongPluginResponse>> UpsertPlugin(PluginBody plugin);
+        Task<KongPluginResponse> UpsertPlugin(PluginBody plugin);
 
-        Task<bool> DeleteRoute(string routeId);
+        Task DeleteRoute(string routeId);
 
-        Task<bool> DeletePlugin(string pluginId);
+        Task DeletePlugin(string pluginId);
     }
 }
