@@ -14,6 +14,6 @@ namespace Kongverge.Common.Services
         Task<IReadOnlyCollection<KongService>> GetServices();
         Task<KongService> GetService(string serviceId);
 
-        Task<KongAction<GlobalConfig>> GetGlobalConfig();
+        Task<GlobalConfig> GetGlobalConfig();
     }
 }
