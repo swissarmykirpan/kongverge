@@ -50,15 +50,7 @@ namespace Kongverge.Common
 
             await ProcessServices(existingServices, servicesFromFile).ConfigureAwait(false);
 
-            // Ensure global config has converged
-            if (existingGlobalConfig.Succeeded)
-            {
-                await ConvergePlugins(newGlobalConfig, existingGlobalConfig.Result);
-            }
-            else
-            {
-                Log.Error("Unable to get current global config");
-            }
+            await ConvergePlugins(newGlobalConfig, existingGlobalConfig);
 
             //Remove Missing Services
             var missingServices = existingServices
@@ -115,12 +107,8 @@ namespace Kongverge.Common
 
                 var serviceAdded = await _kongWriter.AddService(newService).ConfigureAwait(false);
 
-                if (serviceAdded.Succeeded)
-                {
-                    await ConvergePlugins(newService, serviceAdded.Result).ConfigureAwait(false);
-
-                    await ConvergeRoutes(newService, serviceAdded.Result).ConfigureAwait(false);
-                }
+                await ConvergePlugins(newService, serviceAdded).ConfigureAwait(false);
+                await ConvergeRoutes(newService, serviceAdded).ConfigureAwait(false);
             }
             else
             {

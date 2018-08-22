@@ -39,7 +39,7 @@ namespace KongVerge.Tests
                 });
 
             var kongPluginCollection = new Mock<IKongPluginCollection>();
-            var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
+            var httpClient = new KongAdminHttpClient(_fakeHttpMessageHandler.Object);
             var sut = new KongAdminWriter(_configuration, httpClient, kongPluginCollection.Object, null);
 
             //Act
@@ -61,7 +61,7 @@ namespace KongVerge.Tests
                 });
 
             var kongPluginCollection = new Mock<IKongPluginCollection>();
-            var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
+            var httpClient = new KongAdminHttpClient(_fakeHttpMessageHandler.Object);
             var sut = new KongAdminWriter(_configuration, httpClient, kongPluginCollection.Object, null);
 
             //Act
@@ -78,7 +78,7 @@ namespace KongVerge.Tests
             _fakeHttpMessageHandler.Setup(f => f.Send(It.IsAny<HttpRequestMessage>())).Throws<HttpRequestException>();
 
             var kongPluginCollection = new Mock<IKongPluginCollection>();
-            var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
+            var httpClient = new KongAdminHttpClient(_fakeHttpMessageHandler.Object);
             var sut = new KongAdminWriter(_configuration, httpClient, kongPluginCollection.Object, null);
 
             //Act
@@ -117,7 +117,7 @@ namespace KongVerge.Tests
             };
 
             var kongPluginCollection = new Mock<IKongPluginCollection>();
-            var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
+            var httpClient = new KongAdminHttpClient(_fakeHttpMessageHandler.Object);
             var sut = new KongAdminWriter(_configuration, httpClient, kongPluginCollection.Object, null);
 
             //Act
@@ -148,7 +148,7 @@ namespace KongVerge.Tests
             var successResponse = new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new StringContent("")
+                Content = new StringContent(JsonConvert.SerializeObject(route))
             };
 
             _fakeHttpMessageHandler.Setup(f => f.Send(It.IsAny<HttpRequestMessage>()))
@@ -157,7 +157,7 @@ namespace KongVerge.Tests
 
 
             var kongPluginCollection = new Mock<IKongPluginCollection>();
-            var httpClient = new HttpClient(_fakeHttpMessageHandler.Object);
+            var httpClient = new KongAdminHttpClient(_fakeHttpMessageHandler.Object);
             var sut = new KongAdminWriter(_configuration, httpClient, kongPluginCollection.Object, null);
 
             //Act
