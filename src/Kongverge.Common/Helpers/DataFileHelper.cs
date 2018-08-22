@@ -54,8 +54,8 @@ namespace Kongverge.Common.Helpers
                     .Select(ParseFile)
                     .ToList();
 
-                globalConfig =
-                    ParseGlobalConfig(Path.Combine(dataPath, _configuration.GlobalConfigPath));
+                var globalPluginsFile = Path.Combine(dataPath, _configuration.GlobalConfigPath);
+                globalConfig = File.Exists(globalPluginsFile) ? ParseGlobalConfig(globalPluginsFile) : new GlobalConfig();
             }
             catch (Exception ex)
             {
