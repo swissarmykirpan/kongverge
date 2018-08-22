@@ -11,27 +11,27 @@ using Serilog;
 
 namespace Kongverge.Common
 {
-    public class ServicesWorkflow
+    public class ServicesProcessor
     {
         private readonly IKongAdminWriter _kongWriter;
         private readonly IKongPluginCollection _kongPluginCollection;
 
-        public ServicesWorkflow(IKongAdminWriter kongWriter, IKongPluginCollection kongPluginCollection)
+        public ServicesProcessor(IKongAdminWriter kongWriter, IKongPluginCollection kongPluginCollection)
         {
             _kongWriter = kongWriter;
             _kongPluginCollection = kongPluginCollection;
         }
 
-        public async Task<int> ProcessServices(
+        public async Task<int> Process(
             IReadOnlyCollection<KongService> existingServices,
             IReadOnlyCollection<KongService> newServices,
-            GlobalConfig existingGlobalConfig,
-            GlobalConfig newGlobalConfig)
+            GlobalConfig existingGlobals,
+            GlobalConfig newGlobals)
         {
             await ProcessServices(existingServices, newServices).ConfigureAwait(false);
 
             // Ensure global config has converged
-            await ConvergePlugins(newGlobalConfig, existingGlobalConfig);
+            await ConvergePlugins(newGlobals, existingGlobals);
 
             //Remove Missing Services
             var missingServices = existingServices

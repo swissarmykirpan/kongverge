@@ -53,9 +53,9 @@ namespace Kongverge.Common
                 .Select(f => f.Service)
                 .ToList();
 
-            var serviceWorkFlow = new ServicesWorkflow(_kongWriter, _kongPluginCollection);
+            var processor = new ServicesProcessor(_kongWriter, _kongPluginCollection);
 
-            return await serviceWorkFlow.ProcessServices(existingServices, servicesFromFile,
+            return await processor.Process(existingServices, servicesFromFile,
                 existingGlobalConfig.Result, newGlobalConfig);
         }
     }

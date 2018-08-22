@@ -26,7 +26,7 @@ namespace KongVerge.Tests.Workflow
             public Mock<IKongPluginCollection> KongPluginCollection = new Mock<IKongPluginCollection>();
 
             public Settings Settings { get; }
-            public ServicesWorkflow Sut { get; }
+            public ServicesProcessor Sut { get; }
 
             public ServiceWorkflowSut()
             {
@@ -38,53 +38,10 @@ namespace KongVerge.Tests.Workflow
                 var configuration = new Mock<IOptions<Settings>>();
                 configuration.Setup(c => c.Value).Returns(Settings);
 
-                Sut = new ServicesWorkflow(
+                Sut = new ServicesProcessor(
                     KongWriter.Object,
                     KongPluginCollection.Object);
             }
-        }
-
-        [Fact]
-        public async Task ConvergeRoutes_WillAddMissingRoutes()
-        {
-            var system = new ServiceWorkflowSut();
-            var route1 = new KongRoute();
-
-            var target = new KongService
-            {
-                Routes = new List<KongRoute>
-                {
-                    route1
-                }
-            };
-
-            await system.Sut.ConvergeRoutes(target, new KongService());
-
-            system.KongWriter.Verify(k => k.AddRoute(target, route1), Times.Once());
-        }
-
-        [Fact]
-        public async Task ConvergeRoutes_WillRemoveExcessRoutes()
-        {
-            var system = new ServiceWorkflowSut();
-            var route1 = new KongRoute
-            {
-                Id = Guid.NewGuid().ToString()
-            };
-
-            var target = new KongService
-            {
-                Routes = new List<KongRoute>()
-            };
-
-            var existing = new KongService
-            {
-                Routes = new[] { route1 }
-            };
-
-            await system.Sut.ConvergeRoutes(target, existing);
-
-            system.KongWriter.Verify(k => k.DeleteRoute(route1.Id), Times.Once());
         }
 
         [Fact]
