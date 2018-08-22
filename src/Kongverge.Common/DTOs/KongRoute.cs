@@ -70,7 +70,7 @@ namespace Kongverge.Common.DTOs
             }
         }
 
-        internal void MergeFromService(KongRoute addedRoute)
+        internal void MergeFromRoute(KongRoute addedRoute)
         {
             this.Id = addedRoute.Id;
         }
