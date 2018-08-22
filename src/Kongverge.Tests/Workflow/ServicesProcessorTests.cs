@@ -1,7 +1,5 @@
-using System;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Services;
-using Microsoft.Extensions.Options;
 using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,30 +12,19 @@ using Kongverge.Common;
 
 namespace KongVerge.Tests.Workflow
 {
-    public class ServiceWorkflowTests
+    public class ServicesProcessorTests
     {
         private readonly Fixture _fixture = new Fixture();
 
-        public class ServiceWorkflowSut
+        public class ServicesProcessorSut
         {
-            private static readonly Fixture Fixture = new Fixture();
-
             public Mock<IKongAdminWriter> KongWriter = new Mock<IKongAdminWriter>();
             public Mock<IKongPluginCollection> KongPluginCollection = new Mock<IKongPluginCollection>();
 
-            public Settings Settings { get; }
             public ServicesProcessor Sut { get; }
 
-            public ServiceWorkflowSut()
+            public ServicesProcessorSut()
             {
-                Settings = new Settings
-                {
-                    Admin = Fixture.Create<Admin>()
-                };
-
-                var configuration = new Mock<IOptions<Settings>>();
-                configuration.Setup(c => c.Value).Returns(Settings);
-
                 Sut = new ServicesProcessor(
                     KongWriter.Object,
                     KongPluginCollection.Object);
@@ -58,7 +45,7 @@ namespace KongVerge.Tests.Workflow
 
             var targetService = new KongService();
 
-            var system = new ServiceWorkflowSut();
+            var system = new ServicesProcessorSut();
 
             await system.Sut.ConvergePlugins(targetService, service);
 
@@ -82,7 +69,7 @@ namespace KongVerge.Tests.Workflow
                 { plugin1, plugin2 }
             };
 
-            var system = new ServiceWorkflowSut();
+            var system = new ServicesProcessorSut();
 
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin2)).Returns(body2);
@@ -110,7 +97,7 @@ namespace KongVerge.Tests.Workflow
                 Plugins = new List<IKongPluginConfig> { plugin1 }
             };
 
-            var system = new ServiceWorkflowSut();
+            var system = new ServicesProcessorSut();
 
             system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
 
