@@ -11,12 +11,12 @@ using Serilog;
 
 namespace Kongverge.Common
 {
-    public class ServiceWorkflow
+    public class ServicesWorkflow
     {
         private readonly IKongAdminWriter _kongWriter;
         private readonly IKongPluginCollection _kongPluginCollection;
 
-        public ServiceWorkflow(IKongAdminWriter kongWriter, IKongPluginCollection kongPluginCollection)
+        public ServicesWorkflow(IKongAdminWriter kongWriter, IKongPluginCollection kongPluginCollection)
         {
             _kongWriter = kongWriter;
             _kongPluginCollection = kongPluginCollection;
@@ -25,7 +25,8 @@ namespace Kongverge.Common
         public async Task<int> ProcessServices(
             IReadOnlyCollection<KongService> existingServices,
             IReadOnlyCollection<KongService> newServices,
-            GlobalConfig existingGlobalConfig, GlobalConfig newGlobalConfig)
+            GlobalConfig existingGlobalConfig,
+            GlobalConfig newGlobalConfig)
         {
             await ProcessServices(existingServices, newServices).ConfigureAwait(false);
 
@@ -114,7 +115,7 @@ namespace Kongverge.Common
             }
         }
 
-        public async Task ConvergeRoutes(KongService target, KongService existing)
+        private async Task ConvergeRoutes(KongService target, KongService existing)
         {
             var toAdd = target.Routes.Except(existing.Routes);
             var toRemove = existing.Routes.Except(target.Routes);

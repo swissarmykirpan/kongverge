@@ -26,7 +26,7 @@ namespace KongVerge.Tests.Workflow
             public Mock<IKongPluginCollection> KongPluginCollection = new Mock<IKongPluginCollection>();
 
             public Settings Settings { get; }
-            public ServiceWorkflow Sut { get; }
+            public ServicesWorkflow Sut { get; }
 
             public ServiceWorkflowSut()
             {
@@ -38,7 +38,7 @@ namespace KongVerge.Tests.Workflow
                 var configuration = new Mock<IOptions<Settings>>();
                 configuration.Setup(c => c.Value).Returns(Settings);
 
-                Sut = new ServiceWorkflow(
+                Sut = new ServicesWorkflow(
                     KongWriter.Object,
                     KongPluginCollection.Object);
             }
