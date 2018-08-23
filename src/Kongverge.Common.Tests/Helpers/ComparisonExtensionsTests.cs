@@ -3,9 +3,9 @@ using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
 using Xunit;
 
-namespace KongVerge.Tests
+namespace Kongverge.Common.Tests.Helpers
 {
-    public class ExtensionsTests
+    public class ComparisonExtensionsTests
     {
         [Fact]
         public void DetailedCompareReturnsDiff()

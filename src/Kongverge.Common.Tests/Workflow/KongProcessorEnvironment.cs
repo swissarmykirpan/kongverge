@@ -1,10 +1,10 @@
-using Kongverge.Common;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Plugins;
 using Kongverge.Common.Services;
+using Kongverge.Common.Workflow;
 using Moq;
 
-namespace KongVerge.Tests.Workflow
+namespace Kongverge.Common.Tests.Workflow
 {
     internal class KongProcessorEnvironment
     {

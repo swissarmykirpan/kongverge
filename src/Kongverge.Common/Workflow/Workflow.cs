@@ -6,7 +6,7 @@ using Kongverge.Common.Services;
 using Microsoft.Extensions.Options;
 using Serilog;
 
-namespace Kongverge.Common
+namespace Kongverge.Common.Workflow
 {
     public abstract class Workflow
     {

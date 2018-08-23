@@ -1,16 +1,15 @@
 using System;
-using Kongverge.Common.DTOs;
-using Kongverge.Common.Services;
-using Moq;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Xunit;
 using AutoFixture;
+using Kongverge.Common.DTOs;
+using Kongverge.Common.Tests.Helpers;
 using Kongverge.KongPlugin;
-using KongVerge.Tests.Serialization;
+using Moq;
+using Xunit;
 
-namespace KongVerge.Tests.Workflow
+namespace Kongverge.Common.Tests.Workflow
 {
     public class KongProcessorTests
     {
