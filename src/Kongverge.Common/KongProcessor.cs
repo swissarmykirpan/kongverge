@@ -104,7 +104,7 @@ namespace Kongverge.Common
             }
         }
 
-        public async Task ConvergeRoutes(KongService target, KongService existing)
+        private async Task ConvergeRoutes(KongService target, KongService existing)
         {
             var toAdd = target.Routes.Except(existing.Routes);
             var toRemove = existing.Routes.Except(target.Routes);
@@ -124,7 +124,7 @@ namespace Kongverge.Common
             }
         }
 
-        public async Task ConvergePlugins(ExtendibleKongObject target, ExtendibleKongObject existing)
+        private async Task ConvergePlugins(ExtendibleKongObject target, ExtendibleKongObject existing)
         {
             var newSet = target?.Plugins?.ToDictionary(e => e.GetType()) ?? new Dictionary<Type, IKongPluginConfig>();
             var existingSet = existing?.Plugins?.ToDictionary(t => t.GetType()) ?? new Dictionary<Type, IKongPluginConfig>();
