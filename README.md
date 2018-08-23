@@ -1,5 +1,8 @@
 # Kongverge
 
+[![Build status](https://ci.je-labs.com/app/rest/builds/buildType:ExternalApiServices_KongvergeCi/statusIcon)](https://ci.je-labs.com/viewType.html?buildTypeId=ExternalApiServices_KongvergeCi&branch_ExternalApiServices=%3Cdefault%3E&tab=buildTypeStatusDiv)
+
+
 A Desired State Configuration tool for Kong.
 
 A command-line tool written in cross-platform [.NET Core 2.1](http://dot.net).
