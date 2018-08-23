@@ -37,11 +37,11 @@ namespace Kongverge.Common
 
             if (missingServices.Count > 0)
             {
-                await DeleteServicesMissingFromConfig(missingServices).ConfigureAwait(false);
+                await DeleteServices(missingServices).ConfigureAwait(false);
             }
         }
 
-        private async Task DeleteServicesMissingFromConfig(IEnumerable<KongService> missingServices)
+        private async Task DeleteServices(IEnumerable<KongService> missingServices)
         {
             Log.Information("\nDeleting old services:");
             foreach (var service in missingServices)
