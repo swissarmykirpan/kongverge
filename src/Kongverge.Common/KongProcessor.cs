@@ -23,12 +23,12 @@ namespace Kongverge.Common
         }
 
         public async Task Process(
-            IReadOnlyCollection<KongService> existingServices, List<KongService> newServices,
-            GlobalConfig existingConfig, GlobalConfig newConfig)
+            IReadOnlyCollection<KongService> existingServices, IReadOnlyCollection<KongService> newServices,
+            GlobalConfig existingGlobalConfig, GlobalConfig newGlobalConfig)
         {
             await ProcessServices(existingServices, newServices).ConfigureAwait(false);
 
-            await ConvergePlugins(newConfig, existingConfig);
+            await ConvergePlugins(newGlobalConfig, existingGlobalConfig);
 
             //Remove Missing Services
             var missingServices = existingServices
