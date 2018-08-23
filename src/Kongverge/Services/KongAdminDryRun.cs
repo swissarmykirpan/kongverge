@@ -16,13 +16,13 @@ namespace Kongverge.Services
     {
         public KongAdminDryRun(
             IOptions<Settings> configuration,
-            HttpClient httpClient,
+            KongAdminHttpClient httpClient,
             IKongPluginCollection kongPluginCollection,
             PluginConverter converter) : base(configuration, httpClient, kongPluginCollection, converter)
         {
         }
 
-        public Task<KongAction<KongPluginResponse>> UpsertPlugin(PluginBody plugin)
+        public Task<KongPluginResponse> UpsertPlugin(PluginBody plugin)
         {
             Log.Information("Adding plugin {plugin}\n\tWith config {config}", plugin.name, plugin.config);
             var response = new KongPluginResponse
@@ -31,64 +31,64 @@ namespace Kongverge.Services
                 Id = Guid.NewGuid().ToString()
             };
 
-            return Task.FromResult(KongAction.Success(response));
+            return Task.FromResult(response);
         }
 
-        public Task<KongAction<KongRoute>> AddRoute(KongService service, KongRoute route)
+        public Task<KongRoute> AddRoute(KongService service, KongRoute route)
         {
             Log.Information(@"Adding Route
     Route Paths: {path}
     Methods    : {methods}
     Protocols  : {Protocols}", route.Paths, route.Methods, route.Protocols);
 
-            return Task.FromResult(KongAction.Success(route));
+            return Task.FromResult(route);
         }
 
-        public Task<KongAction<KongService>> AddService(KongService service)
+        public Task<KongService> AddService(KongService service)
         {
             Log.Information("Adding service {name}", service.Name);
             service.Id = Guid.NewGuid().ToString();
-            return Task.FromResult(KongAction.Success(service));
+            return Task.FromResult(service);
         }
 
-        public Task<bool> DeletePlugin(string pluginId)
+        public Task DeletePlugin(string pluginId)
         {
             Log.Information("Deleting plugin {id}", pluginId);
-            return Task.FromResult(true);
+            return Task.CompletedTask;
         }
 
-        public Task<bool> DeleteRoute(string routeId)
+        public Task DeleteRoute(string routeId)
         {
             Log.Information("Deleting route {id}", routeId);
-            return Task.FromResult(true);
+            return Task.CompletedTask;
         }
 
-        public async Task<KongAction<IEnumerable<KongRoute>>> DeleteRoutes(KongService service)
+        public async Task<IEnumerable<KongRoute>> DeleteRoutes(KongService service)
         {
             var routes = await GetRoutes(service.Name).ConfigureAwait(false);
             return await DeleteRoutes(routes).ConfigureAwait(false);
         }
 
-        public Task<KongAction<IEnumerable<KongRoute>>> DeleteRoutes(IEnumerable<KongRoute> routes)
+        public Task<IEnumerable<KongRoute>> DeleteRoutes(IEnumerable<KongRoute> routes)
         {
             foreach (var route in routes)
             {
                 Log.Information("Deleting route {id} that serves paths {paths}", route.Id, route.Paths);
             }
 
-            return Task.FromResult(KongAction.Success(routes));
+            return Task.FromResult(routes);
         }
 
-        public Task<KongAction<string>> DeleteService(string serviceId)
+        public Task<string> DeleteService(string serviceId)
         {
             Log.Information("Deleting service {id}", serviceId);
-            return Task.FromResult(KongAction.Success(serviceId));
+            return Task.FromResult(serviceId);
         }
 
-        public Task<KongAction<KongService>> UpdateService(KongService service)
+        public Task<KongService> UpdateService(KongService service)
         {
             Log.Information("Updating service {name} with host {host}", service.Name, service.Host);
-            return Task.FromResult(KongAction.Success(service));
+            return Task.FromResult(service);
         }
     }
 }

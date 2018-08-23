@@ -302,7 +302,7 @@ namespace KongVerge.Tests.Workflow
             system.KongReader
                   .Setup(kong =>
                             kong.GetGlobalConfig())
-                  .ReturnsAsync(KongAction.Success(clusterConfig))
+                  .ReturnsAsync(clusterConfig)
                   .Verifiable();
 
             system.DataFiles
