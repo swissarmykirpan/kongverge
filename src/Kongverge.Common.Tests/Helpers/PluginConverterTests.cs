@@ -1,14 +1,14 @@
+using System.Collections.Generic;
+using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
 using Kongverge.KongPlugin;
+using Newtonsoft.Json;
 using Xunit;
 
-namespace KongVerge.Tests.Serialization
+namespace Kongverge.Common.Tests.Helpers
 {
     public class PluginConverterTests
     {

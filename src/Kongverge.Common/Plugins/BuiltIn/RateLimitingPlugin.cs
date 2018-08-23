@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Kongverge.Common.Helpers;
 using Kongverge.KongPlugin;

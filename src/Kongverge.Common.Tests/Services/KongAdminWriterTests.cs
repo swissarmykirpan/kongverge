@@ -6,17 +6,18 @@ using FluentAssertions;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Plugins;
 using Kongverge.Common.Services;
+using Kongverge.TestHelpers;
 using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace KongVerge.Tests
+namespace Kongverge.Common.Tests.Services
 {
     public class KongAdminWriterTests
     {
         private readonly Mock<FakeHttpMessageHandler> _fakeHttpMessageHandler =
-            new Mock<FakeHttpMessageHandler> {CallBase = true};
+            new Mock<FakeHttpMessageHandler> { CallBase = true };
 
         private readonly IOptions<Settings> _configuration = Options.Create(new Settings
         {
@@ -140,7 +141,7 @@ namespace KongVerge.Tests
 
             var route = new KongRoute
             {
-                Paths = new[] {"/test"},
+                Paths = new[] { "/test" },
                 StripPath = false
             };
 
@@ -152,7 +153,7 @@ namespace KongVerge.Tests
             };
 
             _fakeHttpMessageHandler.Setup(f => f.Send(It.IsAny<HttpRequestMessage>()))
-                .Callback<HttpRequestMessage>(r => content = (StringContent) r.Content)
+                .Callback<HttpRequestMessage>(r => content = (StringContent)r.Content)
                 .Returns(successResponse);
 
 

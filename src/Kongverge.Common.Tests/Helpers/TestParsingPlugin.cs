@@ -1,7 +1,7 @@
 using System.Linq;
 using Kongverge.KongPlugin;
 
-namespace KongVerge.Tests.Serialization
+namespace Kongverge.Common.Tests.Helpers
 {
     internal class TestParsingPlugin : KongPluginBase<TestKongConfig>
     {

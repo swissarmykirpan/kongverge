@@ -2,7 +2,7 @@ using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
 using Xunit;
 
-namespace KongVerge.Tests
+namespace Kongverge.Common.Tests.Helpers
 {
     public class ServiceValidationHelperTests
     {
@@ -10,15 +10,15 @@ namespace KongVerge.Tests
         public void RoutePathsCannotBeEmpty()
         {
             //Arrange
-            var data =new KongService
+            var data = new KongService
+            {
+                Routes = new[]
                 {
-                    Routes = new[]
+                    new KongRoute
                     {
-                        new KongRoute
-                        {
-                            Paths = null
-                        }
+                        Paths = null
                     }
+                }
             };
 
             //Act
