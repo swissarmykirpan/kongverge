@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FizzWare.NBuilder;
+using AutoFixture;
 using FluentAssertions;
 using FluentAssertions.Equivalency;
 using FluentAssertions.Execution;
@@ -68,20 +68,18 @@ namespace Kongverge.Integration.Tests
                         .Using<string>(CompareStringsWithoutNull).WhenTypeIs<string>());
             }
         }
-
-
+        
         protected virtual IEnumerable<TPluginConfig> Permutations
         {
             get
             {
-                yield return Builder<TPluginConfig>.CreateNew().Build();
+                yield return new Fixture().Create<TPluginConfig>();
             }
         }
 
         /// <summary>
         /// Treat null string and empty string as equivalent
         /// </summary>
-        /// <param name="ctx"></param>
         private static void CompareStringsWithoutNull(IAssertionContext<string> ctx)
         {
             var equal = (ctx.Subject ?? string.Empty).Equals(ctx.Expectation ?? string.Empty);

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using FizzWare.NBuilder;
+using AutoFixture;
 using FluentAssertions;
 using Kongverge.KongPlugin;
 using Xunit;
@@ -24,7 +24,7 @@ namespace Kongverge.Common.Tests.Plugins
         [Fact]
         public void RoundTripFromConfigWithAllFields()
         {
-            var configIn = Populate(Builder<TPluginConfig>.CreateNew()).Build();
+            var configIn = new Fixture().Create<TPluginConfig>();
             var plugin = new TPlugin();
 
             var configOut = RoundTripFromConfig(plugin, configIn);
@@ -59,11 +59,6 @@ namespace Kongverge.Common.Tests.Plugins
         {
             var config = (TConfig)plugin.CreateConfigObject(body);
             return plugin.CreatePluginBody(config);
-        }
-
-        protected virtual ISingleObjectBuilder<TPluginConfig> Populate(ISingleObjectBuilder<TPluginConfig> builder)
-        {
-            return builder;
         }
 
         protected virtual Dictionary<string, object> EmptyConfig => new Dictionary<string, object>();

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Kongverge.KongPlugin;
 using Newtonsoft.Json;
@@ -16,7 +17,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
         public bool HideCredentials { get; set; }
 
         [JsonProperty("anonymous")]
-        public string Anonymous { get; set; } = string.Empty;
+        public Guid? Anonymous { get; set; }
 
         [JsonProperty("run_on_preflight")]
         public bool RunOnPreflight { get; set; } = true;
@@ -30,7 +31,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
                 return otherConfig.KeyInBody == KeyInBody
                     && otherConfig.HideCredentials == HideCredentials
                     && otherConfig.RunOnPreflight == RunOnPreflight
-                    && otherConfig.Anonymous.Equals(Anonymous)
+                    && otherConfig.Anonymous == Anonymous
                     && otherConfig.KeyNames.Count == KeyNames.Count
                     && KeyNamesMatch(otherConfig);
             }
