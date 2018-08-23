@@ -15,7 +15,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
             {
                 KeyNames = pluginBody.config.ReadStringSet("key_names"),
                 KeyInBody = pluginBody.config.ReadBool("key_in_body"),
-                Anonymous = pluginBody.config.ReadString("anonymous"),
+                Anonymous = pluginBody.config.ReadNullableGuid("anonymous"),
                 RunOnPreflight = pluginBody.config.ReadBool("run_on_preflight"),
                 HideCredentials = pluginBody.config.ReadBool("hide_credentials")
             };
@@ -25,11 +25,11 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             return new PluginBody(PluginName, new Dictionary<string, object>
             {
-                { "key_names", target.KeyNames.ToCommaSeperatedString()},
-                { "key_in_body", target.KeyInBody.ToString().ToLower()},
-                { "anonymous", target.Anonymous},
-                { "run_on_preflight", target.RunOnPreflight.ToString().ToLower()},
-                { "hide_credentials", target.HideCredentials.ToString().ToLower()},
+                { "key_names", target.KeyNames.ToCommaSeperatedString() },
+                { "key_in_body", target.KeyInBody },
+                { "anonymous", target.Anonymous },
+                { "run_on_preflight", target.RunOnPreflight },
+                { "hide_credentials", target.HideCredentials }
             });
         }
     }

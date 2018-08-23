@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using FizzWare.NBuilder;
+using AutoFixture;
 using Kongverge.Common.Plugins.BuiltIn;
 using Kongverge.Common.Plugins.BuiltIn.RequestTransform;
 using Kongverge.TestHelpers;
@@ -17,6 +17,20 @@ namespace Kongverge.Integration.Tests
     {
         public KeyAuthenticationPluginTests(KongvergeTestFixture kongvergeTestFixture) : base(kongvergeTestFixture)
         {
+        }
+
+        protected override IEnumerable<KeyAuthenticationConfig> Permutations
+        {
+            get
+            {
+                var fixture = new Fixture();
+
+                yield return fixture.Create<KeyAuthenticationConfig>();
+
+                yield return fixture.Build<KeyAuthenticationConfig>()
+                    .Without(x => x.Anonymous)
+                    .Create();
+            }
         }
     }
 
@@ -52,46 +66,59 @@ namespace Kongverge.Integration.Tests
         {
             get
             {
-                yield return Builder<TPluginConfig>
-                    .CreateNew()
-                    .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
-                    .With(x => x.Replace, Builder<AdvancedTransformReplace>.CreateNew().Build())
-                    .Build();
+                var fixture = new Fixture();
 
-                yield return Builder<TPluginConfig>
-                    .CreateNew()
-                    .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
-                    .With(x => x.Add, BuilderExtensions.RandomBaseConfig<AdvancedTransform>())
-                    .Build();
+                yield return fixture.Build<TPluginConfig>()
+                    .With(x => x.HttpMethod, Random.HttpMethod())
+                    .Without(x => x.Add)
+                    .Without(x => x.Append)
+                    .Without(x => x.Remove)
+                    .Without(x => x.Rename)
+                    .Create();
 
-                yield return Builder<TPluginConfig>
-                    .CreateNew()
-                    .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
-                    .With(x => x.Append, BuilderExtensions.RandomBaseConfig<AdvancedTransform>())
-                    .Build();
+                yield return fixture.Build<TPluginConfig>()
+                    .With(x => x.HttpMethod, Random.HttpMethod())
+                    .Without(x => x.Replace)
+                    .Without(x => x.Append)
+                    .Without(x => x.Remove)
+                    .Without(x => x.Rename)
+                    .Create();
 
-                yield return Builder<TPluginConfig>
-                    .CreateNew()
-                    .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
-                    .With(x => x.Remove, BuilderExtensions.RandomRemoveConfig())
-                    .Build();
+                yield return fixture.Build<TPluginConfig>()
+                    .With(x => x.HttpMethod, Random.HttpMethod())
+                    .Without(x => x.Replace)
+                    .Without(x => x.Add)
+                    .Without(x => x.Remove)
+                    .Without(x => x.Rename)
+                    .Create();
 
-                yield return Builder<TPluginConfig>
-                    .CreateNew()
-                    .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
-                    .With(x => x.Replace, BuilderExtensions.RandomBaseConfig<AdvancedTransformReplace>())
-                    .Build();
+                yield return fixture.Build<TPluginConfig>()
+                    .With(x => x.HttpMethod, Random.HttpMethod())
+                    .Without(x => x.Replace)
+                    .Without(x => x.Add)
+                    .Without(x => x.Append)
+                    .Without(x => x.Rename)
+                    .Create();
 
-                yield return Builder<TPluginConfig>
-                    .CreateNew()
-                    .With(x => x.HttpMethod, BuilderExtensions.RandomHttpMethod())
-                    .With(x => x.Rename, BuilderExtensions.RandomBaseConfig<AdvancedTransform>())
-                    .Build();
+                yield return fixture.Build<TPluginConfig>()
+                    .With(x => x.HttpMethod, Random.HttpMethod())
+                    .Without(x => x.Remove)
+                    .Without(x => x.Add)
+                    .Without(x => x.Append)
+                    .Without(x => x.Rename)
+                    .Create();
 
-                yield return Builder<TPluginConfig>
-                    .CreateNew()
-                    .PopulateRequestTransformerConfig()
-                    .Build();
+                yield return fixture.Build<TPluginConfig>()
+                    .With(x => x.HttpMethod, Random.HttpMethod())
+                    .Without(x => x.Remove)
+                    .Without(x => x.Add)
+                    .Without(x => x.Append)
+                    .Without(x => x.Replace)
+                    .Create();
+
+                yield return fixture.Build<TPluginConfig>()
+                    .With(x => x.HttpMethod, Random.HttpMethod())
+                    .Create();
             }
         }
     }

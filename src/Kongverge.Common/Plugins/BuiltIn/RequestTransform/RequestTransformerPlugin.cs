@@ -73,9 +73,9 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
         {
             return new JObject
             {
-                {"headers", new JArray(section.Headers.ToCommaSeperatedStrings())},
-                {"querystring", new JArray(section.QueryString.ToCommaSeperatedStrings())},
-                {"body",  new JArray(section.Body.ToCommaSeperatedStrings())}
+                { "headers", new JArray(section.Headers.ToCommaSeperatedStrings()) },
+                { "querystring", new JArray(section.QueryString.ToCommaSeperatedStrings()) },
+                { "body",  new JArray(section.Body.ToCommaSeperatedStrings()) }
             };
         }
 
@@ -83,9 +83,9 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
         {
             return new JObject
             {
-                {"headers", new JArray(section.Headers)},
-                {"querystring", new JArray(section.QueryString)},
-                {"body",  new JArray(section.Body)}
+                { "headers", new JArray(section.Headers) },
+                { "querystring", new JArray(section.QueryString) },
+                { "body",  new JArray(section.Body) }
             };
         }
 
@@ -94,9 +94,9 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
             return new JObject
             {
                 { "uri", section.Uri },
-                {"headers", new JArray(section.Headers.ToCommaSeperatedStrings())},
-                {"querystring", new JArray(section.QueryString.ToCommaSeperatedStrings())},
-                {"body",  new JArray(section.Body.ToCommaSeperatedStrings())}
+                { "headers", new JArray(section.Headers.ToCommaSeperatedStrings()) },
+                { "querystring", new JArray(section.QueryString.ToCommaSeperatedStrings()) },
+                { "body",  new JArray(section.Body.ToCommaSeperatedStrings()) }
             };
         }
     }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Kongverge.Common.Helpers;
 using Kongverge.KongPlugin;
 
 namespace Kongverge.Common.Plugins.BuiltIn
@@ -14,7 +13,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             return new CorrelationIdConfig
             {
-                Generator = pluginBody.config.ReadString("generator").FromJsonString<CorrelationIdGenerator>(),
+                Generator = pluginBody.config.ReadEnum<CorrelationIdGenerator>("generator"),
                 EchoDownstream = pluginBody.config.ReadBool("echo_downstream"),
                 HeaderName = pluginBody.config.ReadString("header_name")
             };

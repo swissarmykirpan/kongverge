@@ -1,6 +1,4 @@
-using FizzWare.NBuilder;
 using Kongverge.Common.Plugins.Custom;
-using Kongverge.TestHelpers;
 
 namespace Kongverge.Common.Tests.Plugins
 {
@@ -26,9 +24,5 @@ namespace Kongverge.Common.Tests.Plugins
 
     public class JeRequestTransformerPluginTests : PluginTests<JeRequestTransformerPlugin, JeRequestTransformerConfig>
     {
-        protected override ISingleObjectBuilder<JeRequestTransformerConfig> Populate(ISingleObjectBuilder<JeRequestTransformerConfig> builder)
-        {
-            return builder.PopulateRequestTransformerConfig();
-        }
     }
 }
