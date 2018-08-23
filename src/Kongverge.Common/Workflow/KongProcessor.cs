@@ -7,7 +7,7 @@ using Kongverge.Common.Plugins;
 using Kongverge.Common.Services;
 using Serilog;
 
-namespace Kongverge.Common
+namespace Kongverge.Common.Workflow
 {
     public class KongProcessor
     {

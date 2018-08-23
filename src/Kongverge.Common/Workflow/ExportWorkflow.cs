@@ -4,7 +4,7 @@ using Kongverge.Common.Helpers;
 using Kongverge.Common.Services;
 using Microsoft.Extensions.Options;
 
-namespace Kongverge.Common
+namespace Kongverge.Common.Workflow
 {
     public class ExportWorkflow : Workflow
     {

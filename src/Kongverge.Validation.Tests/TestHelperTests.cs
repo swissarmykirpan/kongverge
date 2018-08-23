@@ -4,9 +4,9 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
+using Kongverge.TestHelpers;
 using Kongverge.Validation.DTOs;
 using Kongverge.Validation.Helpers;
-using KongVerge.Validation.Tests;
 using Microsoft.Extensions.Options;
 using Moq;
 using Serilog;
@@ -34,7 +34,7 @@ namespace Kongverge.Validation.Tests
             var sut = GenerateTestHelper();
             var test = new Test
             {
-                Headers = new Dictionary<string, string> {{ "Accept-Language", "en-GB"}},
+                Headers = new Dictionary<string, string> { { "Accept-Language", "en-GB" } },
                 Route = "/test/route",
                 Method = "PUT"
             };
@@ -60,7 +60,7 @@ namespace Kongverge.Validation.Tests
 
             sut.AddTest(test);
             //Act//Assert
-            await Assert.ThrowsAsync<MethodNotImplementedException>(()=>sut.RunTests(new FakeHttpMessageHandler()));
+            await Assert.ThrowsAsync<MethodNotImplementedException>(() => sut.RunTests(new FakeHttpMessageHandler()));
         }
 
         [Fact]
@@ -68,10 +68,10 @@ namespace Kongverge.Validation.Tests
         {
             //Arrange
             var logEvents = new List<LogEvent>();
-            
+
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Observers(e => e.Subscribe(
-                    x=>logEvents.Add(x)))
+                    x => logEvents.Add(x)))
                 .CreateLogger();
 
             var test1 = new Test
@@ -101,8 +101,9 @@ namespace Kongverge.Validation.Tests
             resultList["test2"].SetResult(test1);
 
             var testTracker = new TestTracker
-            { TestList = testList,
-            TestResultTasks = resultList
+            {
+                TestList = testList,
+                TestResultTasks = resultList
             };
             var sut = GenerateTestHelper(testTracker);
 
@@ -168,7 +169,7 @@ namespace Kongverge.Validation.Tests
             await sut.RunTest(new KeyValuePair<string, Test>("test", test), testHttpClient);
 
             //Assert
-            messageHandlerMock.Verify(x=>x.Send(It.IsAny<HttpRequestMessage>()), Times.Once);
+            messageHandlerMock.Verify(x => x.Send(It.IsAny<HttpRequestMessage>()), Times.Once);
             Assert.Equal(httpMethod, requestMessage.Method);
         }
     }
