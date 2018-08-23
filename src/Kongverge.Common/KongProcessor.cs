@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,7 +5,6 @@ using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
 using Kongverge.Common.Plugins;
 using Kongverge.Common.Services;
-using Kongverge.KongPlugin;
 using Serilog;
 
 namespace Kongverge.Common
@@ -14,12 +12,12 @@ namespace Kongverge.Common
     public class KongProcessor
     {
         private readonly IKongAdminWriter _kongWriter;
-        private readonly IKongPluginCollection _kongPluginCollection;
+        private readonly PluginProcessor _pluginProcessor;
 
         public KongProcessor(IKongAdminWriter kongWriter, IKongPluginCollection kongPluginCollection)
         {
             _kongWriter = kongWriter;
-            _kongPluginCollection = kongPluginCollection;
+            _pluginProcessor = new PluginProcessor(_kongWriter, kongPluginCollection);
         }
 
         public async Task Process(
@@ -28,7 +26,7 @@ namespace Kongverge.Common
         {
             await ProcessServices(existingServices, newServices).ConfigureAwait(false);
 
-            await ConvergePlugins(newGlobalConfig, existingGlobalConfig);
+            await _pluginProcessor.Process(existingGlobalConfig, newGlobalConfig);
 
             //Remove Missing Services
             var missingServices = existingServices
@@ -81,17 +79,17 @@ namespace Kongverge.Common
 
                 var serviceAdded = await _kongWriter.AddService(newService).ConfigureAwait(false);
 
-                await ConvergePlugins(newService, serviceAdded).ConfigureAwait(false);
-                await ConvergeRoutes(newService, serviceAdded).ConfigureAwait(false);
+                await _pluginProcessor.Process(serviceAdded, newService).ConfigureAwait(false);
+                await ConvergeRoutes(serviceAdded, newService).ConfigureAwait(false);
             }
             else
             {
                 // TODO: Clean this up, its messy, but where else can we do this?
                 newService.Id = existingService.Id;
 
-                await ConvergePlugins(newService, existingService).ConfigureAwait(false);
+                await _pluginProcessor.Process(existingService, newService).ConfigureAwait(false);
 
-                await ConvergeRoutes(newService, existingService).ConfigureAwait(false);
+                await ConvergeRoutes(existingService, newService).ConfigureAwait(false);
 
                 if (!ServiceHasChanged(existingService, newService))
                 {
@@ -104,7 +102,7 @@ namespace Kongverge.Common
             }
         }
 
-        private async Task ConvergeRoutes(KongService target, KongService existing)
+        private async Task ConvergeRoutes(KongService existing, KongService target)
         {
             var toAdd = target.Routes.Except(existing.Routes);
             var toRemove = existing.Routes.Except(target.Routes);
@@ -120,46 +118,7 @@ namespace Kongverge.Common
                 // TODO: Clean up same as before - the targets when loaded from file don't have IDs?
                 //routepair.Target.Id = routepair.Existing.Id;
 
-                await ConvergePlugins(routepair.Target, routepair.Existing).ConfigureAwait(false);
-            }
-        }
-
-        private async Task ConvergePlugins(ExtendibleKongObject target, ExtendibleKongObject existing)
-        {
-            var newSet = target?.Plugins?.ToDictionary(e => e.GetType()) ?? new Dictionary<Type, IKongPluginConfig>();
-            var existingSet = existing?.Plugins?.ToDictionary(t => t.GetType()) ?? new Dictionary<Type, IKongPluginConfig>();
-
-            var changes = newSet.Keys.Union(existingSet.Keys)
-                .Select(key =>
-                    new
-                    {
-                        Target = newSet.ContainsKey(key) ? newSet[key] : null,
-                        Existing = existingSet.ContainsKey(key) ? existingSet[key] : null
-                    });
-
-            foreach (var change in changes)
-            {
-                if (change.Target == null)
-                {
-                    await _kongWriter.DeletePlugin(change.Existing.id).ConfigureAwait(false);
-                }
-                else if (change.Existing == null)
-                {
-                    var content = _kongPluginCollection.CreatePluginBody(change.Target);
-
-                    await _kongWriter.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
-                }
-                else if(!change.Target.IsExactMatch(change.Existing))
-                {
-                    var content = _kongPluginCollection.CreatePluginBody(change.Target);
-
-                    content.id = change.Existing.id;
-
-                    // TODO: Same problem here - target has come from a file, and it doesn't have the Created info to feed into created_at
-                    target.Created = existing.Created;
-
-                    await _kongWriter.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
-                }
+                await _pluginProcessor.Process(routepair.Existing, routepair.Target).ConfigureAwait(false);
             }
         }
 
