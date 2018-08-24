@@ -149,15 +149,44 @@ namespace Kongverge.Common.Tests.Workflow
 
             await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
 
-            system.KongWriter.Verify(k =>
-                k.AddService(It.IsAny<KongService>()), Times.Never);
-            system.KongWriter.Verify(k =>
-                k.AddRoute(It.IsAny<KongService>(), It.IsAny<KongRoute>()), Times.Never);
+            system.VerifyNoAdds();
+
+            system.KongWriter.Verify(k => k.DeleteService(It.IsAny<string>()), Times.Never);
+            system.KongWriter.Verify(k => k.DeleteRoute(It.IsAny<string>()), Times.Never);
+            system.KongWriter.Verify(k => k.DeletePlugin(plugin1.id), Times.Once());
+        }
+
+        [Fact]
+        public async Task WhenRoutePluginAndRouteAreRemoved_TheyAreDeleted()
+        {
+            var fixture = new Fixture();
+            var plugin1 = fixture.Create<OtherTestKongConfig>();
+            var body1 = fixture.Create<PluginBody>();
+            var routeId = Guid.NewGuid().ToString();
+
+            var system = new KongProcessorEnvironment();
+
+            system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
+
+            var existingServices = ServiceWithRouteAndPlugin(routeId, plugin1);
+
+            var newServices = new List<KongService>
+            {
+                new KongService
+                {
+                    Name = "TestService1"
+                    // no routes in new state
+                }
+            };
+
+            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+
+            system.VerifyNoAdds();
 
             system.KongWriter.Verify(k => k.UpsertPlugin(It.IsAny<PluginBody>()), Times.Never);
 
             system.KongWriter.Verify(k => k.DeleteService(It.IsAny<string>()), Times.Never);
-            system.KongWriter.Verify(k => k.DeleteRoute(It.IsAny<string>()), Times.Never);
+            system.KongWriter.Verify(k => k.DeleteRoute(It.IsAny<string>()), Times.Once);
             system.KongWriter.Verify(k => k.DeletePlugin(plugin1.id), Times.Once());
         }
 
