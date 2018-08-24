@@ -4,5 +4,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <LangVersion>latest</LangVersion>
     <Copyright>Copyright (c) JustEat 2018-$([System.DateTime]::Now.ToString(yyyy))</Copyright>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/justeat/kongverge.git</RepositoryUrl>
   </PropertyGroup>
 </Project>
