@@ -187,7 +187,6 @@ namespace Kongverge.Common.Tests.Workflow
 
             system.KongWriter.Verify(k => k.DeleteService(It.IsAny<string>()), Times.Never);
             system.KongWriter.Verify(k => k.DeleteRoute(It.IsAny<string>()), Times.Once);
-            system.KongWriter.Verify(k => k.DeletePlugin(plugin1.id), Times.Once());
         }
 
         private static List<KongService> ServiceWithRouteAndPlugin(string routeId, OtherTestKongConfig plugin1)
