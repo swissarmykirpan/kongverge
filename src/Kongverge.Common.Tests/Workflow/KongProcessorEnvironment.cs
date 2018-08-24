@@ -2,6 +2,7 @@ using Kongverge.Common.DTOs;
 using Kongverge.Common.Plugins;
 using Kongverge.Common.Services;
 using Kongverge.Common.Workflow;
+using Kongverge.KongPlugin;
 using Moq;
 
 namespace Kongverge.Common.Tests.Workflow
@@ -19,14 +20,22 @@ namespace Kongverge.Common.Tests.Workflow
 
         public void VerifyNoActionTaken()
         {
-            KongWriter.Verify(k =>
-                k.AddService(It.IsAny<KongService>()), Times.Never);
-            KongWriter.Verify(k =>
-                k.DeleteService(It.IsAny<string>()), Times.Never);
-            KongWriter.Verify(k =>
-                k.AddRoute(It.IsAny<KongService>(), It.IsAny<KongRoute>()), Times.Never);
-            KongWriter.Verify(k =>
-                k.DeleteRoute(It.IsAny<string>()), Times.Never);
+            VerifyNoAdds();
+            VerifyNoDeletes();
+        }
+
+        public void VerifyNoDeletes()
+        {
+            KongWriter.Verify(k => k.DeleteService(It.IsAny<string>()), Times.Never);
+            KongWriter.Verify(k => k.DeleteRoute(It.IsAny<string>()), Times.Never);
+            KongWriter.Verify(k => k.DeletePlugin(It.IsAny<string>()), Times.Never);
+        }
+
+        public void VerifyNoAdds()
+        {
+            KongWriter.Verify(k => k.AddService(It.IsAny<KongService>()), Times.Never);
+            KongWriter.Verify(k => k.AddRoute(It.IsAny<KongService>(), It.IsAny<KongRoute>()), Times.Never);
+            KongWriter.Verify(k => k.UpsertPlugin(It.IsAny<PluginBody>()), Times.Never);
         }
     }
 }

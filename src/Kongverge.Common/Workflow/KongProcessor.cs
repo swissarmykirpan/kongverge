@@ -104,14 +104,16 @@ namespace Kongverge.Common.Workflow
 
         private async Task ConvergeRoutes(KongService existing, KongService target)
         {
-            var toAdd = target.Routes.Except(existing.Routes);
-            var toRemove = existing.Routes.Except(target.Routes);
+            var existingRoutes = existing?.Routes ?? new List<KongRoute>();
+            var toAdd = target.Routes.Except(existingRoutes);
+
+            var toRemove = existingRoutes.Except(target.Routes);
 
             await Task.WhenAll(toRemove.Select(r => _kongWriter.DeleteRoute(r.Id))).ConfigureAwait(false);
             await Task.WhenAll(toAdd.Select(r => _kongWriter.AddRoute(target, r))).ConfigureAwait(false);
 
             var matchingRoutePairs =
-                target.Routes.Select(r => new ExtendibleKongObjectTargetPair(r, existing.Routes));
+                target.Routes.Select(r => new ExtendibleKongObjectTargetPair(r, existingRoutes));
 
             foreach (var routepair in matchingRoutePairs)
             {
