@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Kongverge.Common.Helpers;
 using Kongverge.KongPlugin;
 
 namespace Kongverge.Common.Plugins.BuiltIn
@@ -14,7 +13,7 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             return new RateLimitingConfig
             {
-                Identifier = pluginBody.config.ReadString("identifier").FromJsonString<RateLimitingIdentifier>(),
+                Identifier = pluginBody.config.ReadEnum<RateLimitingIdentifier>("identifier"),
                 Limit = pluginBody.config.ReadInts("limit"),
                 WindowSize = pluginBody.config.ReadInts("window_size")
             };

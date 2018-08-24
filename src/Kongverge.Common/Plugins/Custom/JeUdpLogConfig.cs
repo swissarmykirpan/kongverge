@@ -5,6 +5,7 @@ namespace Kongverge.Common.Plugins.Custom
 {
     public class JeUdpLogConfig : IKongPluginConfig
     {
+        [JsonProperty("timeout")]
         public int Timeout { get; set; }
 
         [JsonProperty("host")]

@@ -39,6 +39,23 @@ namespace Kongverge.KongPlugin
             return (long)values[key];
         }
 
+        public static Guid? ReadNullableGuid(this IDictionary<string, object> values, string key)
+        {
+            var obj = values.ReadString(key);
+
+            if (string.IsNullOrEmpty(obj))
+            {
+                return null;
+            }
+
+            if (Guid.TryParse(obj, out var result))
+            {
+                return result;
+            }
+
+            throw new InvalidOperationException($"Invalid value for Guid: '{obj}'");
+        }
+
         public static bool ReadBool(this IDictionary<string, object> values, string key)
         {
             if (!values.ContainsKey(key))
@@ -64,6 +81,26 @@ namespace Kongverge.KongPlugin
                 default:
                     return false;
             }
+        }
+
+        public static T ReadEnum<T>(this IDictionary<string, object> values, string key) where T : Enum
+        {
+            var obj = values.ReadString(key);
+
+            if (string.IsNullOrEmpty(obj))
+            {
+                return default;
+            }
+
+            foreach (T enumValue in Enum.GetValues(typeof(T)))
+            {
+                if (string.Equals(obj, enumValue.ToJsonString(), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return enumValue;
+                }
+            }
+
+            throw new InvalidOperationException($"Invalid value for {typeof(T).Name} enum: '{obj}'");
         }
 
         public static string ReadString(this IDictionary<string, object> values, string key)
@@ -124,7 +161,7 @@ namespace Kongverge.KongPlugin
             return StringsToMaps(stringValues);
         }
 
-        public static IDictionary<string, string> StringsToMaps(IEnumerable<string> values)
+        private static IDictionary<string, string> StringsToMaps(IEnumerable<string> values)
         {
             return values
                 .Select(value => value.Split(':'))
@@ -173,17 +210,6 @@ namespace Kongverge.KongPlugin
                 default:
                     return new Dictionary<string, object>();
             }
-        }
-
-        public static string ToCommaSeperatedString(this IEnumerable<string> strings)
-        {
-            return string.Join(",", strings);
-        }
-
-        public static IEnumerable<string> ToCommaSeperatedStrings(this IDictionary<string, string> stringMaps)
-        {
-            return stringMaps
-                .Select(kv => $"{kv.Key}:{kv.Value}");
         }
 
         public static bool SetsMatch<T>(ICollection<T> a, ICollection<T> b)

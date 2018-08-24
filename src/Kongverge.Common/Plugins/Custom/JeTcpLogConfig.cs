@@ -5,8 +5,10 @@ namespace Kongverge.Common.Plugins.Custom
 {
     public class JeTcpLogConfig : IKongPluginConfig
     {
+        [JsonProperty("timeout")]
         public int Timeout { get; set; }
 
+        [JsonProperty("keepalive")]
         public int KeepAlive { get; set; }
 
         [JsonProperty("host")]

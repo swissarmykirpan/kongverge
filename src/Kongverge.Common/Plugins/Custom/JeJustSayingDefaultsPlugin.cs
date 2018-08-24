@@ -23,7 +23,7 @@ namespace Kongverge.Common.Plugins.Custom
             var config = new Dictionary<string, object>
             {
                 { "raisingcomponent", target.RaisingComponent },
-                { "tenant", target.Tenant}
+                { "tenant", target.Tenant }
             };
 
             return new PluginBody(PluginName, config);

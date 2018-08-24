@@ -27,9 +27,9 @@ namespace Kongverge.Common.Plugins.Custom
             {
                 { "timeout", target.Timeout },
                 { "host", target.Host },
-                { "port", target.Port},
-                { "log_body", target.LogBody},
-                { "max_body_size", target.MaxBodySize}
+                { "port", target.Port },
+                { "log_body", target.LogBody },
+                { "max_body_size", target.MaxBodySize }
             };
             return new PluginBody(PluginName, config);
         }
