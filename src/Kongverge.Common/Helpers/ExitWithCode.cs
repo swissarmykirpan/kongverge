@@ -8,6 +8,7 @@ namespace Kongverge.Common.Helpers
         Success = 0,
         HostUnreachable,
         InvalidPort,
+        MissingHost,
         InputFolderUnreachable,
         IncompatibleArguments
     }
@@ -23,6 +24,10 @@ namespace Kongverge.Common.Helpers
 
                 case ExitCode.InvalidPort:
                     Log.Error("Invalid port specified");
+                    break;
+
+                case ExitCode.MissingHost:
+                    Log.Error("host must be specified");
                     break;
 
                 case ExitCode.HostUnreachable:
