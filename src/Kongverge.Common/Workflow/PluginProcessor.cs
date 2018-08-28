@@ -20,8 +20,7 @@ namespace Kongverge.Common.Workflow
             _kongPluginCollection = kongPluginCollection;
         }
 
-        public async Task Process(
-            ExtendibleKongObject existing, ExtendibleKongObject target)
+        public async Task Process(ExtendibleKongObject existing, ExtendibleKongObject target)
         {
             var newSet = PluginTypeMap(target?.Plugins);
             var existingSet = PluginTypeMap(existing?.Plugins);
