@@ -102,6 +102,11 @@ namespace Kongverge
                     return ExitCode.InvalidPort;
                 }
 
+                if (!Host.HasValue())
+                {
+                    return ExitCode.MissingHost;
+                }
+
                 return null;
             }
 
