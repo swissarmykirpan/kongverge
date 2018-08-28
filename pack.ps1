@@ -17,5 +17,6 @@ Write-Host "Packing KongVerge version $fullVersion" -ForegroundColor Green
 Remove-Item $OutputPath\*.*  -Force -Recurse
 & $dotnet pack .\src\Kongverge\KongVerge.csproj -o $OutputPath /p:PackageVersion=$fullVersion
 
-Write-Host "Pushing KongVerge version $fullVersion" -ForegroundColor Green
-& $dotnet nuget push $OutputPath\*.nupkg --source http://packages.je-labs.com/nuget/Global/ --api-key $NugetApiKey
+$feedUrl = "http://packages.je-labs.com/nuget/Global/"
+Write-Host "Pushing KongVerge version $fullVersion to $feedUrl" -ForegroundColor Green
+& $dotnet nuget push $OutputPath\*.nupkg --source $feedUrl --api-key $NugetApiKey
