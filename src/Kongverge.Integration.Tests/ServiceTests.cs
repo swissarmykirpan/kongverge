@@ -19,7 +19,7 @@ namespace Kongverge.Integration.Tests
         [Fact]
         public async Task DefaultServiceHasNoPlugins()
         {
-            var service = new ServiceBuilder().AddDefaultTestService().Build();
+            var service = _fixture.ServiceBuilder.CreateDefaultTestService().Build();
             var kongServiceAdded = await _fixture.AddServiceAndChildren(service);
 
             var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
@@ -40,9 +40,9 @@ namespace Kongverge.Integration.Tests
         [Fact]
         public async Task AddServiceWorksAsExpected()
         {
-            var service = new ServiceBuilder().AddDefaultTestService().Build();
-            var addedService = await _fixture.KongAdminWriter.AddService(service);
-            _fixture.CleanUp.Add(service);
+            var service = _fixture.ServiceBuilder.CreateDefaultTestService().Build();
+            var addedService = await _fixture.AddServiceAndChildren(service);
+
             addedService.Id.Should().NotBeNullOrEmpty();
 
             await _fixture.KongAdminReader.ShouldHaveServiceWithId(addedService.Id);
@@ -52,13 +52,12 @@ namespace Kongverge.Integration.Tests
         public async Task AddServiceWithRoutesWillAddService()
         {
             var paths = new[] {"/health/check", "/foo/bar"};
-            var serviceToAdd = new ServiceBuilder()
-                .AddDefaultTestService()
+            var serviceToAdd = _fixture.ServiceBuilder
+                .CreateDefaultTestService()
                 .WithRoutePaths(paths)
                 .Build();
 
-            var addedService = await AddServiceAndRoutes(serviceToAdd);
-            _fixture.CleanUp.Add(serviceToAdd);
+            var addedService = await _fixture.AddServiceAndChildren(serviceToAdd);
 
             addedService.Id.Should().NotBeNullOrEmpty();
 
@@ -69,13 +68,12 @@ namespace Kongverge.Integration.Tests
         public async Task AddServiceWithRoutesWillAddRoutesToKong()
         {
             var paths = new[] { "/health/check", "/foo/bar" };
-            var serviceToAdd = new ServiceBuilder()
-                .AddDefaultTestService()
+            var serviceToAdd = _fixture.ServiceBuilder
+                .CreateDefaultTestService()
                 .WithRoutePaths(paths)
                 .Build();
 
-            var addedService = await AddServiceAndRoutes(serviceToAdd);
-            _fixture.CleanUp.Add(serviceToAdd);
+            var addedService = await _fixture.AddServiceAndChildren(serviceToAdd);
 
             var serviceReadFromKong = await _fixture.KongAdminReader.GetService(addedService.Id);
             serviceReadFromKong.Routes.Should().HaveCount(1);
@@ -85,35 +83,15 @@ namespace Kongverge.Integration.Tests
         [Fact]
         public async Task DeleteServiceWorksAsExpected()
         {
-            var service = await AddTestService();
-
-            await _fixture.KongAdminWriter.DeleteService(service.Id);
-            _fixture.KongAdminReader.ShouldNotHaveServiceWithId(service.Id);
-        }
-
-        private async Task<KongService> AddTestService()
-        {
-            var service = new ServiceBuilder().AddDefaultTestService().Build();
-            var addedService = await _fixture.KongAdminWriter.AddService(service);
-
+            var service = _fixture.ServiceBuilder.CreateDefaultTestService().Build();
+            var addedService = await _fixture.AddServiceAndChildren(service);
+            
             addedService.Id.Should().NotBeNullOrEmpty();
 
-            await _fixture.KongAdminReader.ShouldHaveServiceWithId(service.Id);
+            await _fixture.KongAdminReader.ShouldHaveServiceWithId(addedService.Id);
 
-            return addedService;
-        }
-
-        private async Task<KongService> AddServiceAndRoutes(KongService service)
-        {
-            var addedService = await _fixture.KongAdminWriter.AddService(service);
-
-            foreach (var route in service.Routes)
-            {
-                var addedRoute = await _fixture.KongAdminWriter.AddRoute(service, route);
-                addedRoute.Id.Should().NotBeNullOrEmpty();
-            }
-
-            return addedService;
+            await _fixture.DeleteServiceWithChildren(addedService);
+            _fixture.KongAdminReader.ShouldNotHaveServiceWithId(addedService.Id);
         }
     }
 }
