@@ -8,8 +8,4 @@
     <PackageReference Include="AutoFixture" Version="4.5.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Kongverge.Common\Kongverge.Common.csproj" />
-  </ItemGroup>
-
 </Project>
