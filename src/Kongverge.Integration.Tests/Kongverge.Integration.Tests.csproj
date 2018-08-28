@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Kongverge.Common\Kongverge.Common.csproj" />
     <ProjectReference Include="..\Kongverge.TestHelpers\Kongverge.TestHelpers.csproj" />
     <ProjectReference Include="..\Kongverge\Kongverge.csproj" />
   </ItemGroup>
