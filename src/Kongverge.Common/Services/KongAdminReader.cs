@@ -20,25 +20,17 @@ namespace Kongverge.Common.Services
         private const string RoutesRoute = "/routes";
         private const string PluginsRoute = "/plugins";
 
-        private readonly Settings _configuration;
         protected readonly KongAdminHttpClient HttpClient;
-        private readonly JsonSerializerSettings _settings;
         private readonly IKongPluginCollection _kongPluginCollection;
 
         public KongAdminReader(IOptions<Settings> configuration, KongAdminHttpClient httpClient, IKongPluginCollection kongPluginCollection, PluginConverter converter)
         {
-            _configuration = configuration.Value;
             HttpClient = httpClient;
             if (HttpClient.BaseAddress == null)
             {
-                HttpClient.BaseAddress = new Uri($"http://{_configuration.Admin.Host}:{_configuration.Admin.Port}");
+                HttpClient.BaseAddress = new Uri($"http://{configuration.Value.Admin.Host}:{configuration.Value.Admin.Port}");
             }
 
-            _settings = new JsonSerializerSettings
-            {
-                DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
-                Converters = converter != null ? new JsonConverter[] { converter } : null
-            };
             _kongPluginCollection = kongPluginCollection;
         }
 
@@ -46,16 +38,11 @@ namespace Kongverge.Common.Services
         {
             try
             {
-                var response = await HttpClient.GetAsync("/").ConfigureAwait(false);
-                if (response.StatusCode != HttpStatusCode.OK)
-                {
-                    Log.Error("ERROR: Unable to contact Kong: {host}:{port}", _configuration.Admin.Host, _configuration.Admin.Port);
-                    return false;
-                }
+                await HttpClient.GetAsync("/").ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "ERROR: Unable to contact Kong: {host}:{port}", _configuration.Admin.Host, _configuration.Admin.Port);
+                Log.Error(ex, "ERROR: Unable to contact Kong: {baseAddress}", HttpClient.BaseAddress);
                 return false;
             }
 
@@ -75,42 +62,18 @@ namespace Kongverge.Common.Services
 
         public async Task<IReadOnlyCollection<KongService>> GetServices()
         {
-            var services = new List<KongService>();
+            var services = await GetPagedResponse<KongService>(ServicesRoute);
 
-            var lastPage = false;
-            var requestUri = ServicesRoute;
-            do
-            {
-                var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
-                response.EnsureSuccessStatusCode();
-
-                var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var servicesResult = JsonConvert.DeserializeObject<GetServicesResponse>(value);
-
-                services.AddRange(servicesResult.Data);
-                if (servicesResult.Next == null)
-                {
-                    lastPage = true;
-                }
-                else
-                {
-                    requestUri = servicesResult.Next;
-                }
-            } while (!lastPage);
-
-            services = await PopulateServiceRoutes(services).ConfigureAwait(false);
+            await PopulateServiceRoutes(services).ConfigureAwait(false);
             await PopulatePluginInfo(services).ConfigureAwait(false);
-            return services.AsReadOnly();
+
+            return services;
         }
 
         public async Task<KongService> GetService(string serviceId)
         {
             var requestUri = $"{ServicesRoute}/{serviceId}";
             var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
-            if (response.StatusCode == HttpStatusCode.NotFound)
-            {
-                return null;
-            }
 
             response.EnsureSuccessStatusCode();
 
@@ -131,83 +94,29 @@ namespace Kongverge.Common.Services
             return service;
         }
 
-        private async Task<IReadOnlyCollection<PluginBody>> GetServicePlugins(string serviceId)
+        private Task<IReadOnlyCollection<PluginBody>> GetServicePlugins(string serviceId)
         {
-            var requestUri = $"{PluginsRoute}?service_id={serviceId}";
-            return await GetUriPlugins(requestUri);
+            return GetPagedResponse<PluginBody>($"{PluginsRoute}?service_id={serviceId}");
         }
 
-        private async Task<IReadOnlyCollection<PluginBody>> GetRoutePlugins(string routeId)
+        private Task<IReadOnlyCollection<PluginBody>> GetRoutePlugins(string routeId)
         {
-            var requestUri = $"{PluginsRoute}?route_id={routeId}";
-            return await GetUriPlugins(requestUri);
+            return GetPagedResponse<PluginBody>($"{PluginsRoute}?route_id={routeId}");
         }
 
-        private async Task<IReadOnlyCollection<PluginBody>> GetUriPlugins(string requestUri)
-        {
-            var allPlugins = new List<PluginBody>();
-            var lastPage = false;
-
-            do
-            {
-                var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
-
-                response.EnsureSuccessStatusCode();
-
-                var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var pluginsResult = JsonConvert.DeserializeObject<PluginsResponse>(value);
-
-                allPlugins.AddRange(pluginsResult.Data);
-                if (pluginsResult.Next == null)
-                {
-                    lastPage = true;
-                }
-                else
-                {
-                    requestUri = pluginsResult.Next;
-                }
-            } while (!lastPage);
-
-            return allPlugins;
-        }
-
-        private async Task PopulatePluginInfo(List<KongService> services)
+        private async Task PopulatePluginInfo(IReadOnlyCollection<KongService> services)
         {
             var plugins = await GetAllPlugins();
 
             GroupPlugins(services, plugins);
         }
 
-        private async Task<List<PluginBody>> GetAllPlugins()
+        private Task<IReadOnlyCollection<PluginBody>> GetAllPlugins()
         {
-            var plugins = new List<PluginBody>();
-            var lastPage = false;
-            var requestUri = PluginsRoute;
-            do
-            {
-                var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
-
-                response.EnsureSuccessStatusCode();
-
-                var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var pluginsResult = JsonConvert.DeserializeObject<PluginsResponse>(value, _settings);
-
-                plugins.AddRange(pluginsResult.Data);
-
-                if (pluginsResult.Next == null)
-                {
-                    lastPage = true;
-                }
-                else
-                {
-                    requestUri = pluginsResult.Next;
-                }
-
-            } while (!lastPage);
-            return plugins;
+            return GetPagedResponse<PluginBody>(PluginsRoute);
         }
 
-        private void GroupPlugins(List<KongService> services, List<PluginBody> plugins)
+        private void GroupPlugins(IReadOnlyCollection<KongService> services, IReadOnlyCollection<PluginBody> plugins)
         {
             var serviceGroups = plugins.GroupBy(p => p.service_id).Where(g => !string.IsNullOrEmpty(g.Key)).ToDictionary(g => g.Key, g => g);
 
@@ -232,98 +141,63 @@ namespace Kongverge.Common.Services
             }
         }
 
-        public async Task<List<KongService>> PopulateServiceRoutes(List<KongService> services)
+        public async Task PopulateServiceRoutes(IReadOnlyCollection<KongService> services)
         {
             foreach (var service in services)
             {
                 service.Routes = await GetRoutes(service.Name).ConfigureAwait(false);
             }
-
-            return services;
         }
 
-        public async Task<List<KongRoute>> GetRoutes()
+        public Task<IReadOnlyCollection<KongRoute>> GetRoutes(string serviceName)
         {
-            var routes = new List<KongRoute>();
-            var lastPage = false;
-            var requestUri = RoutesRoute;
-            do
-            {
-                var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
-
-                response.EnsureSuccessStatusCode();
-
-                var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var servicesResult = JsonConvert.DeserializeObject<GetRoutesResponse>(value);
-
-                routes.AddRange(servicesResult.Data);
-
-                if (servicesResult.Next == null)
-                {
-                    lastPage = true;
-                }
-                else
-                {
-                    requestUri = servicesResult.Next;
-                }
-            } while (!lastPage);
-            return routes;
-        }
-
-        public async Task<List<KongRoute>> GetRoutes(string serviceName)
-        {
-            var routes = new List<KongRoute>();
-            var lastPage = false;
-            var requestUri = $"/services/{serviceName}/routes";
-            do
-            {
-                var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
-
-                response.EnsureSuccessStatusCode();
-
-                var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var servicesResult = JsonConvert.DeserializeObject<GetRoutesResponse>(value);
-
-                routes.AddRange(servicesResult.Data);
-
-                if (servicesResult.Next == null)
-                {
-                    lastPage = true;
-                }
-                else
-                {
-                    requestUri = servicesResult.Next;
-                }
-            } while (!lastPage);
-
-            return routes;
+            return GetPagedResponse<KongRoute>($"/services/{serviceName}/routes");
         }
 
         public async Task<GlobalConfig> GetGlobalConfig()
         {
-            try
-            {
-                var plugins = await GetAllPlugins();
+            var plugins = await GetAllPlugins();
 
-                var globalPlugins = plugins.Where(p => null == (p.consumer_id ?? p.service_id ?? p.route_id));
+            var globalPlugins = plugins.Where(p => null == (p.consumer_id ?? p.service_id ?? p.route_id));
 
-                return new GlobalConfig
-                {
-                    Plugins = TranslateToConfig(globalPlugins)
-                };
-            }
-            catch (Exception ex)
+            return new GlobalConfig
             {
-                Log.Error(ex, "Unable to get all plugins from Kong server");
-                throw;
-            }
+                Plugins = TranslateToConfig(globalPlugins)
+            };
         }
 
-        private IList<IKongPluginConfig> TranslateToConfig(IEnumerable<PluginBody> plugins)
+        private IReadOnlyCollection<IKongPluginConfig> TranslateToConfig(IEnumerable<PluginBody> plugins)
         {
             return plugins.Select(_kongPluginCollection.TranslateToConfig)
                           .Where(p => p != null)
-                          .ToList();
+                          .ToArray();
+        }
+
+        private async Task<IReadOnlyCollection<T>> GetPagedResponse<T>(string requestUri)
+        {
+            var data = new List<T>();
+            var lastPage = false;
+
+            do
+            {
+                var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
+
+                var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var pagedResponse = JsonConvert.DeserializeObject<PagedResponse<T>>(value);
+
+                data.AddRange(pagedResponse.Data);
+
+                if (pagedResponse.Next == null)
+                {
+                    lastPage = true;
+                }
+                else
+                {
+                    requestUri = pagedResponse.Next;
+                }
+            } while (!lastPage);
+
+            return data.AsReadOnly();
         }
     }
 }

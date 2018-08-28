@@ -65,8 +65,7 @@ namespace Kongverge.Common.Tests.Workflow
                     Name = "TestService_A"
                 }
             };
-
-
+            
             system.KongWriter.Setup(e => e.AddService(It.IsAny<KongService>()))
                 .ReturnsAsync(newServices.First());
 

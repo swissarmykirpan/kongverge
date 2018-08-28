@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -27,9 +28,9 @@ namespace Kongverge.Integration.Tests
             service.Should().NotBeNull();
             service.Plugins.Should().NotBeNull();
             service.Plugins.Should().HaveCount(1);
-            service.Plugins[0].Should().BeOfType<T>();
+            service.Plugins.Single().Should().BeOfType<T>();
 
-            return (T)service.Plugins[0];
+            return (T)service.Plugins.Single();
         }
     }
 }
