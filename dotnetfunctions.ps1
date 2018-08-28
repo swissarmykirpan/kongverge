@@ -62,20 +62,6 @@ if ($installDotNetSdk -eq $true) {
     Write-Host "The required version of the .NET Core SDK, $dotnetVersion is already installed."
 }
 
-function DotNetPublish {
-    param([string]$Project)
-    $publishPath = (Join-Path $OutputPath "publish")
-    if ($VersionSuffix) {
-        & $dotnet publish $Project --output $publishPath --configuration $Configuration --version-suffix "$VersionSuffix" -r win10-x64 /p:VersionPrefix="$VersionPrefix"
-    }
-    else {
-        & $dotnet publish $Project --output $publishPath --configuration $Configuration -r win10-x86 /p:VersionPrefix="$VersionPrefix"
-    }
-    if ($LASTEXITCODE -ne 0) {
-        throw "dotnet publish failed with exit code $LASTEXITCODE"
-    }
-}
-
 function DotNetTest {
     param([string] $Project)
 
