@@ -12,6 +12,7 @@ namespace Kongverge.Common.Helpers
         InputFolderUnreachable,
         IncompatibleArguments
     }
+
     public class ExitWithCode
     {
         public static int Return(ExitCode exitCode)
@@ -27,7 +28,7 @@ namespace Kongverge.Common.Helpers
                     break;
 
                 case ExitCode.MissingHost:
-                    Log.Error("host must be specified");
+                    Log.Error("Host must be specified");
                     break;
 
                 case ExitCode.HostUnreachable:
