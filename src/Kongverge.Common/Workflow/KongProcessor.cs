@@ -26,7 +26,7 @@ namespace Kongverge.Common.Workflow
         {
             await ProcessServices(existingServices, newServices).ConfigureAwait(false);
 
-            await _pluginProcessor.Process(existingGlobalConfig, newGlobalConfig);
+            await _pluginProcessor.Process(existingGlobalConfig, newGlobalConfig).ConfigureAwait(false);
 
             //Remove Missing Services
             var missingServices = existingServices

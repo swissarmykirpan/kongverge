@@ -18,7 +18,7 @@ namespace Kongverge.Common.Helpers
                 client.BaseAddress = new Uri($"http://{service.Host}:{service.Port}");
                 try
                 {
-                    var response = await client.GetAsync("/");
+                    var response = await client.GetAsync("/").ConfigureAwait(false);
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
                         Log.Error("Unable to contact host: {host}", service.Host);
@@ -49,7 +49,7 @@ namespace Kongverge.Common.Helpers
 
         public static async Task<bool> Validate(KongService service)
         {
-            var reachable = service.ValidateHost==false || await HostIsReachable(service);
+            var reachable = !service.ValidateHost || await HostIsReachable(service).ConfigureAwait(false);
             return reachable && RoutesAreValid(service);
         }
 
