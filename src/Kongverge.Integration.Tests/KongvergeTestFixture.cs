@@ -15,34 +15,39 @@ namespace Kongverge.Integration.Tests
 {
     public class KongvergeTestFixture : IDisposable
     {
+        public const string TestServiceNamePrefix = "testservice_";
+
         private readonly ServiceProvider _serviceProvider;
+        private readonly IList<KongService> _cleanUp;
+        private readonly IKongAdminWriter _kongAdminWriter;
+
         public IDataFileHelper DataFileHelper => _serviceProvider.GetService<IDataFileHelper>();
-        public IKongAdminWriter KongAdminWriter => _serviceProvider.GetService<IKongAdminWriter>();
         public IKongAdminReader KongAdminReader => _serviceProvider.GetService<IKongAdminReader>();
         public Settings Settings => _serviceProvider.GetRequiredService<IOptions<Settings>>().Value;
-        public IList<KongService> CleanUp { get; }
         public IKongPluginCollection PluginCollection => new KongPluginCollection(_serviceProvider.GetServices<IKongPlugin>());
+        public ServiceBuilder ServiceBuilder = new ServiceBuilder(TestServiceNamePrefix);
 
         public KongvergeTestFixture()
         {
             var services = new ServiceCollection();
             ServiceRegistration.AddServices(services);
             _serviceProvider = services.BuildServiceProvider();
-            CleanUp = new List<KongService>();
+            _cleanUp = new List<KongService>();
+            _kongAdminWriter = _serviceProvider.GetService<IKongAdminWriter>();
             DeleteExistingTestServices().GetAwaiter().GetResult();
         }
 
         private async Task<bool> DeleteExistingTestServices()
         {
             var services = await KongAdminReader.GetServices();
-            foreach (var service in services.Where(s => s.Name.StartsWith("testservice_")))
+            foreach (var service in services.Where(s => s.Name.StartsWith(TestServiceNamePrefix)))
             {
                 foreach (var route in service.Routes)
                 {
-                    await KongAdminWriter.DeleteRoute(route.Id);
+                    await _kongAdminWriter.DeleteRoute(route.Id);
                 }
 
-                await KongAdminWriter.DeleteService(service.Id);
+                await _kongAdminWriter.DeleteService(service.Id);
             }
 
             return true;
@@ -50,7 +55,7 @@ namespace Kongverge.Integration.Tests
 
         public async Task<KongService> AddServiceAndChildren(KongService service)
         {
-            var addedService = await KongAdminWriter.AddService(service);
+            var addedService = await _kongAdminWriter.AddService(service);
             addedService.Should().NotBeNull();
             addedService.Id.Should().NotBeNullOrEmpty();
 
@@ -69,7 +74,7 @@ namespace Kongverge.Integration.Tests
             {
                 foreach (var route in service.Routes)
                 {
-                    var addedRoute = await KongAdminWriter.AddRoute(service, route);
+                    var addedRoute = await _kongAdminWriter.AddRoute(service, route);
                     addedRoute.Should().NotBeNull();
 
                     foreach (var plugin in route.Plugins)
@@ -83,13 +88,25 @@ namespace Kongverge.Integration.Tests
                 }
             }
 
-            CleanUp.Add(service);
+            _cleanUp.Add(service);
             return addedService;
+        }
+
+        public async Task DeleteServiceWithChildren(KongService service)
+        {
+            await DeleteServiceWithChildrenInternal(service);
+            _cleanUp.Remove(service);
+        }
+
+        private async Task DeleteServiceWithChildrenInternal(KongService service)
+        {
+            await _kongAdminWriter.DeleteRoutes(service);
+            await _kongAdminWriter.DeleteService(service.Id);
         }
 
         private async Task<KongPluginResponse> ShouldUpsertPlugin(PluginBody pluginBody)
         {
-            var plugin = await KongAdminWriter.UpsertPlugin(pluginBody);
+            var plugin = await _kongAdminWriter.UpsertPlugin(pluginBody);
             plugin.Should().NotBeNull();
             plugin.Id.Should().NotBeNullOrEmpty();
 
@@ -98,10 +115,9 @@ namespace Kongverge.Integration.Tests
 
         public void Dispose()
         {
-            foreach (var service in CleanUp)
+            foreach (var service in _cleanUp)
             {
-                KongAdminWriter.DeleteRoutes(service).Wait();
-                KongAdminWriter.DeleteService(service.Id).Wait();
+                DeleteServiceWithChildrenInternal(service).Wait();
             }
         }
     }
