@@ -155,8 +155,7 @@ namespace Kongverge.Common.Tests.Services
             _fakeHttpMessageHandler.Setup(f => f.Send(It.IsAny<HttpRequestMessage>()))
                 .Callback<HttpRequestMessage>(r => content = (StringContent)r.Content)
                 .Returns(successResponse);
-
-
+            
             var kongPluginCollection = new Mock<IKongPluginCollection>();
             var httpClient = new KongAdminHttpClient(_fakeHttpMessageHandler.Object);
             var sut = new KongAdminWriter(_configuration, httpClient, kongPluginCollection.Object, null);
@@ -166,6 +165,7 @@ namespace Kongverge.Common.Tests.Services
 
             //Assert
             var serializerSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+            route.Plugins = null;
             var routeJson = JsonConvert.SerializeObject(route, serializerSettings);
             var json = await content.ReadAsStringAsync();
             routeJson.Should().Be(json);

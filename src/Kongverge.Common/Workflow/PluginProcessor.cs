@@ -59,7 +59,7 @@ namespace Kongverge.Common.Workflow
             }
         }
 
-        private static Dictionary<Type, IKongPluginConfig> PluginTypeMap(IList<IKongPluginConfig> plugins)
+        private static Dictionary<Type, IKongPluginConfig> PluginTypeMap(IReadOnlyCollection<IKongPluginConfig> plugins)
         {
             return plugins?.ToDictionary(e => e.GetType()) ?? new Dictionary<Type, IKongPluginConfig>();
         }

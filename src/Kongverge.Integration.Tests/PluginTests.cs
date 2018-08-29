@@ -25,8 +25,8 @@ namespace Kongverge.Integration.Tests
         {
             foreach (var plugin in Permutations)
             {
-                var service = new ServiceBuilder()
-                    .AddDefaultTestService()
+                var service = _fixture.ServiceBuilder
+                    .CreateDefaultTestService()
                     .WithPlugin(plugin)
                     .Build();
 
@@ -48,8 +48,8 @@ namespace Kongverge.Integration.Tests
         {
             foreach (var plugin in Permutations)
             {
-                var service = new ServiceBuilder()
-                    .AddDefaultTestService()
+                var service = _fixture.ServiceBuilder
+                    .CreateDefaultTestService()
                     .WithRoutePaths("/path/one", "/another/route")
                     .WithRoutePlugin(plugin)
                     .Build();

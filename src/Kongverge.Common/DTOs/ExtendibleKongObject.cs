@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kongverge.KongPlugin;
@@ -18,7 +19,7 @@ namespace Kongverge.Common.DTOs
             return string.IsNullOrEmpty(Id);
         }
 
-        public IList<IKongPluginConfig> Plugins { get; set; }
+        public IReadOnlyCollection<IKongPluginConfig> Plugins { get; set; } = Array.Empty<IKongPluginConfig>();
 
         public override string ToString()
         {
