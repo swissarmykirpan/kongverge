@@ -26,7 +26,7 @@ namespace Kongverge.Common.Tests.Workflow
 
         public void VerifyNoDeletes()
         {
-            KongWriter.Verify(k => k.DeleteService(It.IsAny<string>()), Times.Never);
+            KongWriter.Verify(k => k.DeleteService(It.IsAny<string>(), It.IsAny<bool>()), Times.Never);
             KongWriter.Verify(k => k.DeleteRoute(It.IsAny<string>()), Times.Never);
             KongWriter.Verify(k => k.DeletePlugin(It.IsAny<string>()), Times.Never);
         }

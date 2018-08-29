@@ -92,14 +92,8 @@ namespace Kongverge.Integration.Tests
 
         public async Task DeleteServiceWithChildren(KongService service)
         {
-            await DeleteServiceWithChildrenInternal(service);
+            await _kongAdminWriter.DeleteService(service.Id, true);
             _cleanUp.Remove(service);
-        }
-
-        private async Task DeleteServiceWithChildrenInternal(KongService service)
-        {
-            await _kongAdminWriter.DeleteRoutes(service);
-            await _kongAdminWriter.DeleteService(service.Id);
         }
 
         private async Task ShouldUpsertPlugin(PluginBody pluginBody)
@@ -112,7 +106,7 @@ namespace Kongverge.Integration.Tests
         {
             foreach (var service in _cleanUp)
             {
-                DeleteServiceWithChildrenInternal(service).Wait();
+                _kongAdminWriter.DeleteService(service.Id, true).Wait();
             }
         }
     }
