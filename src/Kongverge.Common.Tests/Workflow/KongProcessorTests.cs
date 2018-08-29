@@ -66,9 +66,6 @@ namespace Kongverge.Common.Tests.Workflow
                 }
             };
             
-            system.KongWriter.Setup(e => e.AddService(It.IsAny<KongService>()))
-                .ReturnsAsync(newServices.First());
-
             await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
 
             system.KongWriter.Verify(k =>

@@ -75,8 +75,9 @@ namespace Kongverge.Validation
                 var httpEndpoint = $"http://{localIp}:{configuration.TestPort}";
                 var config = new Dictionary<string, object> {{"http_endpoint", httpEndpoint}};
                 Log.Information($"Adding HTTP Logging Plugin with url: {httpEndpoint}");
-                var plugin = await _kongAdminService.UpsertPlugin(new PluginBody("http-log", config));
-                _pluginId = plugin.Id;
+                var pluginBody = new PluginBody("http-log", config);
+                await _kongAdminService.UpsertPlugin(pluginBody);
+                _pluginId = pluginBody.id;
 
                 await Task.Delay(5000);
 
