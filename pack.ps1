@@ -13,7 +13,12 @@ Remove-Item $OutputPath\*.*  -Force -Recurse
 Write-Host "Building solution..." -ForegroundColor Green
 & $dotnet build $solutionPath
 
-$fullVersion = $VersionPrefix + $VersionSuffix
+if ($VersionSuffix -eq "") {
+    $fullVersion = $VersionPrefix
+} else {
+    $fullVersion = $VersionPrefix + "-" + $VersionSuffix
+}
+
 
 Write-Host "Packing Kongverge version $fullVersion" -ForegroundColor Green
 & $dotnet pack .\src\Kongverge\Kongverge.csproj -o $OutputPath /p:PackageVersion=$fullVersion
