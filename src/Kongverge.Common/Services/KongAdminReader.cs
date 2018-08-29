@@ -79,14 +79,14 @@ namespace Kongverge.Common.Services
             var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var service = JsonConvert.DeserializeObject<KongService>(value);
 
-            var plugins = await GetServicePlugins(serviceId);
+            var plugins = await GetServicePlugins(service.Id);
             service.Plugins = TranslateToConfig(plugins);
 
-            service.Routes = await GetRoutes(service.Name);
+            service.Routes = await GetRoutes(service.Id).ConfigureAwait(false);
 
             foreach (var route in service.Routes)
             {
-                var pluginsRead = await GetRoutePlugins(route.Id);
+                var pluginsRead = await GetRoutePlugins(route.Id).ConfigureAwait(false);
                 route.Plugins = TranslateToConfig(pluginsRead);
             }
 
@@ -144,13 +144,13 @@ namespace Kongverge.Common.Services
         {
             foreach (var service in services)
             {
-                service.Routes = await GetRoutes(service.Name).ConfigureAwait(false);
+                service.Routes = await GetRoutes(service.Id).ConfigureAwait(false);
             }
         }
 
-        public Task<IReadOnlyCollection<KongRoute>> GetRoutes(string serviceName)
+        public Task<IReadOnlyCollection<KongRoute>> GetRoutes(string serviceId)
         {
-            return GetPagedResponse<KongRoute>($"/services/{serviceName}/routes");
+            return GetPagedResponse<KongRoute>($"/services/{serviceId}/routes");
         }
 
         public async Task<GlobalConfig> GetGlobalConfig()

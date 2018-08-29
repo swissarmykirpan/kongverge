@@ -46,7 +46,6 @@ namespace Kongverge.Common.Workflow
             {
                 Log.Information("Deleting service \"{serviceName}\"", service.Name);
 
-                await _kongWriter.DeleteRoutes(service).ConfigureAwait(false);
                 await _kongWriter.DeleteService(service.Id).ConfigureAwait(false);
             }
         }
