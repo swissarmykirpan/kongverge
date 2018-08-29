@@ -53,11 +53,10 @@ namespace Kongverge.Integration.Tests
             return true;
         }
 
-        public async Task<KongService> AddServiceAndChildren(KongService service)
+        public async Task AddServiceAndChildren(KongService service)
         {
-            var addedService = await _kongAdminWriter.AddService(service);
-            addedService.Should().NotBeNull();
-            addedService.Id.Should().NotBeNullOrEmpty();
+            await _kongAdminWriter.AddService(service);
+            service.Id.Should().NotBeNullOrEmpty();
 
             if (service.Plugins != null)
             {
@@ -74,8 +73,8 @@ namespace Kongverge.Integration.Tests
             {
                 foreach (var route in service.Routes)
                 {
-                    var addedRoute = await _kongAdminWriter.AddRoute(service, route);
-                    addedRoute.Should().NotBeNull();
+                    await _kongAdminWriter.AddRoute(service, route);
+                    route.Id.Should().NotBeNullOrEmpty();
 
                     foreach (var plugin in route.Plugins)
                     {
@@ -89,7 +88,6 @@ namespace Kongverge.Integration.Tests
             }
 
             _cleanUp.Add(service);
-            return addedService;
         }
 
         public async Task DeleteServiceWithChildren(KongService service)
@@ -104,13 +102,10 @@ namespace Kongverge.Integration.Tests
             await _kongAdminWriter.DeleteService(service.Id);
         }
 
-        private async Task<KongPluginResponse> ShouldUpsertPlugin(PluginBody pluginBody)
+        private async Task ShouldUpsertPlugin(PluginBody pluginBody)
         {
-            var plugin = await _kongAdminWriter.UpsertPlugin(pluginBody);
-            plugin.Should().NotBeNull();
-            plugin.Id.Should().NotBeNullOrEmpty();
-
-            return plugin;
+            await _kongAdminWriter.UpsertPlugin(pluginBody);
+            pluginBody.id.Should().NotBeNullOrEmpty();
         }
 
         public void Dispose()

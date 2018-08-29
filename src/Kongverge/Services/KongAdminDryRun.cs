@@ -21,33 +21,28 @@ namespace Kongverge.Services
         {
         }
 
-        public Task<KongPluginResponse> UpsertPlugin(PluginBody plugin)
+        public Task UpsertPlugin(PluginBody plugin)
         {
             Log.Information("Adding plugin {plugin}\n\tWith config {config}", plugin.name, plugin.config);
-            var response = new KongPluginResponse
-            {
-                Name = plugin.ToString(),
-                Id = Guid.NewGuid().ToString()
-            };
-
-            return Task.FromResult(response);
+            plugin.id = Guid.NewGuid().ToString();
+            return Task.CompletedTask;
         }
 
-        public Task<KongRoute> AddRoute(KongService service, KongRoute route)
+        public Task AddRoute(KongService service, KongRoute route)
         {
             Log.Information(@"Adding Route
     Route Paths: {path}
     Methods    : {methods}
     Protocols  : {Protocols}", route.Paths, route.Methods, route.Protocols);
-
-            return Task.FromResult(route);
+            route.Id = Guid.NewGuid().ToString();
+            return Task.CompletedTask;
         }
 
-        public Task<KongService> AddService(KongService service)
+        public Task AddService(KongService service)
         {
             Log.Information("Adding service {name}", service.Name);
             service.Id = Guid.NewGuid().ToString();
-            return Task.FromResult(service);
+            return Task.CompletedTask;
         }
 
         public Task DeletePlugin(string pluginId)
@@ -62,32 +57,32 @@ namespace Kongverge.Services
             return Task.CompletedTask;
         }
 
-        public async Task<IEnumerable<KongRoute>> DeleteRoutes(KongService service)
+        public async Task DeleteRoutes(KongService service)
         {
             var routes = await GetRoutes(service.Name).ConfigureAwait(false);
-            return await DeleteRoutes(routes).ConfigureAwait(false);
+            await DeleteRoutes(routes).ConfigureAwait(false);
         }
 
-        public Task<IEnumerable<KongRoute>> DeleteRoutes(IEnumerable<KongRoute> routes)
+        public Task DeleteRoutes(IEnumerable<KongRoute> routes)
         {
             foreach (var route in routes)
             {
                 Log.Information("Deleting route {id} that serves paths {paths}", route.Id, route.Paths);
             }
 
-            return Task.FromResult(routes);
+            return Task.CompletedTask;
         }
 
-        public Task<string> DeleteService(string serviceId)
+        public Task DeleteService(string serviceId)
         {
             Log.Information("Deleting service {id}", serviceId);
-            return Task.FromResult(serviceId);
+            return Task.CompletedTask;
         }
 
-        public Task<KongService> UpdateService(KongService service)
+        public Task UpdateService(KongService service)
         {
             Log.Information("Updating service {name} with host {host}", service.Name, service.Host);
-            return Task.FromResult(service);
+            return Task.CompletedTask;
         }
     }
 }

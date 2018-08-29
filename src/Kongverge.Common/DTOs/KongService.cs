@@ -60,11 +60,6 @@ namespace Kongverge.Common.DTOs
                 && string.Equals(Path, other.Path);
         }
 
-        internal void MergeFromService(KongService apiservice)
-        {
-            this.Id = apiservice.Id;
-        }
-
         public override bool Equals(object obj)
         {
 #pragma warning disable IDE0041 // Use 'is null' check
