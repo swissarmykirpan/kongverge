@@ -77,10 +77,10 @@ namespace Kongverge.Common.Workflow
                     return;
                 }
 
-                var serviceAdded = await _kongWriter.AddService(newService).ConfigureAwait(false);
+                await _kongWriter.AddService(newService).ConfigureAwait(false);
 
-                await _pluginProcessor.Process(serviceAdded, newService).ConfigureAwait(false);
-                await ConvergeRoutes(serviceAdded, newService).ConfigureAwait(false);
+                await _pluginProcessor.Process(null, newService).ConfigureAwait(false);
+                await ConvergeRoutes(null, newService).ConfigureAwait(false);
             }
             else
             {

@@ -70,11 +70,6 @@ namespace Kongverge.Common.DTOs
             }
         }
 
-        internal void MergeFromRoute(KongRoute addedRoute)
-        {
-            this.Id = addedRoute.Id;
-        }
-
         protected override PluginBody DoDecoratePluginBody(PluginBody body)
         {
             body.route_id = Id;
