@@ -12,7 +12,7 @@ Kongverge is built [as a .NET core global tool](https://docs.microsoft.com/en-us
 
 You can install `kongverge` as a global tool as follows:
 
-* First, have .NET Core 2.1 or later installed. At a commandline, `dotnet --list-runtimes` should succeed and show an item for `Microsoft.NETCore.App 2.1.0` or later.
+* First, have [.NET Core 2.1 or later installed](https://www.microsoft.com/net/download). At a commandline, `dotnet --list-runtimes` should succeed and show an item for `Microsoft.NETCore.App 2.1.0` or later.
 * Install with `dotnet tool install kongverge --global --add-source http://packages.je-labs.com/nuget/Global/`.
 * You should then be able to run `kongverge` from the commandline e.g. `kongverge --help`
 
