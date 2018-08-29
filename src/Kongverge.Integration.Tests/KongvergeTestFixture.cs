@@ -35,6 +35,18 @@ namespace Kongverge.Integration.Tests
             _cleanUp = new List<KongService>();
             _kongAdminWriter = _serviceProvider.GetService<IKongAdminWriter>();
             DeleteExistingTestServices().GetAwaiter().GetResult();
+            DeleteExistingGlobalPlugins().GetAwaiter().GetResult();
+        }
+
+        private async Task<bool> DeleteExistingGlobalPlugins()
+        {
+            var plugins = await KongAdminReader.GetGlobalConfig();
+            foreach (var plugin in plugins.Plugins)
+            {
+                await _kongAdminWriter.DeletePlugin(plugin.id);
+            }
+
+            return true;
         }
 
         private async Task<bool> DeleteExistingTestServices()
@@ -104,7 +116,12 @@ namespace Kongverge.Integration.Tests
             await _kongAdminWriter.DeleteService(service.Id);
         }
 
-        private async Task<KongPluginResponse> ShouldUpsertPlugin(PluginBody pluginBody)
+        public async Task DeleteGlobalPlugin(string id)
+        {
+            await _kongAdminWriter.DeletePlugin(id);
+        }
+
+        public async Task<KongPluginResponse> ShouldUpsertPlugin(PluginBody pluginBody)
         {
             var plugin = await _kongAdminWriter.UpsertPlugin(pluginBody);
             plugin.Should().NotBeNull();
