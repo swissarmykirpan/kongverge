@@ -32,15 +32,5 @@ namespace Kongverge.Integration.Tests
 
             return (T)service.Plugins.Single();
         }
-
-        public static T ShouldHaveOnePlugin<T>(this GlobalConfig globalConfig) where T : IKongPluginConfig
-        {
-            globalConfig.Should().NotBeNull();
-            globalConfig.Plugins.Should().NotBeNull();
-            globalConfig.Plugins.Should().HaveCount(1);
-            globalConfig.Plugins.Single().Should().BeOfType<T>();
-
-            return (T)globalConfig.Plugins.Single();
-        }
     }
 }
