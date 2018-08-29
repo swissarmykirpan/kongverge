@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Kongverge.Common.DTOs;
 using Kongverge.KongPlugin;
@@ -8,15 +9,24 @@ namespace Kongverge.Integration.Tests
 {
     public class ServiceBuilder
     {
-        private readonly KongService _service = new KongService();
+        private readonly string _testServiceNamePrefix;
+        private KongService _service;
 
-        public ServiceBuilder AddDefaultTestService(string testIdentifier = null)
+        public ServiceBuilder(string testServiceNamePrefix)
         {
-            _service.Name = string.IsNullOrWhiteSpace(testIdentifier) ?
-                $"testservice_{Guid.NewGuid().ToString()}" :
-                $"testservice_{testIdentifier}_{Guid.NewGuid().ToString()}";
-            _service.Host = "www.example.com";
-            _service.Port = 80;
+            _testServiceNamePrefix = testServiceNamePrefix;
+        }
+
+        public ServiceBuilder CreateDefaultTestService(string testIdentifier = null)
+        {
+            _service = new KongService
+            {
+                Name = string.IsNullOrWhiteSpace(testIdentifier)
+                    ? $"{_testServiceNamePrefix}{Guid.NewGuid().ToString()}"
+                    : $"{_testServiceNamePrefix}{testIdentifier}_{Guid.NewGuid().ToString()}",
+                Host = "www.example.com",
+                Port = 80
+            };
             return this;
         }
 
@@ -29,37 +39,21 @@ namespace Kongverge.Integration.Tests
                 Methods = new[] { "GET" }
             };
 
-            if (_service.Routes == null)
-            {
-                _service.Routes = new List<KongRoute> { route };
-            }
-            else
-            {
-                _service.Routes = _service.Routes.Concat(new[] { route }).ToList();
-            }
+            _service.Routes = _service.Routes.Concat(new[] { route }).ToArray();
             return this;
         }
 
         public ServiceBuilder WithPlugin(IKongPluginConfig plugin)
         {
-            if (_service.Plugins == null)
-            {
-                _service.Plugins = new List<IKongPluginConfig>();
-            }
-            _service.Plugins.Add(plugin);
+            _service.Plugins = _service.Plugins.Concat(new [] { plugin }).ToArray();
             return this;
         }
-
-
+        
         public ServiceBuilder WithRoutePlugin(IKongPluginConfig plugin)
         {
             var route = _service.Routes.First();
 
-            if (route.Plugins == null)
-            {
-                route.Plugins = new List<IKongPluginConfig>();
-            }
-            route.Plugins.Add(plugin);
+            route.Plugins = route.Plugins.Concat(new [] { plugin }).ToArray();
             return this;
         }
 

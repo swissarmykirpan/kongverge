@@ -30,11 +30,6 @@ namespace Kongverge.Common.Helpers
                 return existingValue;
             }
 
-            if (extendibleObject.Plugins == null)
-            {
-                extendibleObject.Plugins = new List<IKongPluginConfig>();
-            }
-
             // All Aboard the Hack Train!!
             // If you don't pass the serializer nested routes don't get extensions. If you pass it at the top you end
             // up in an infinite loop
@@ -50,15 +45,18 @@ namespace Kongverge.Common.Helpers
                 }
             }
 
+            var plugins = new List<IKongPluginConfig>();
             foreach (var parser in _parsers)
             {
                 var token = jobj.SelectToken(parser.PluginName);
 
                 if (token != null)
                 {
-                    extendibleObject.Plugins.Add(token.ToObject(parser.KongObjectType) as IKongPluginConfig);
+                    plugins.Add(token.ToObject(parser.KongObjectType) as IKongPluginConfig);
                 }
             }
+
+            extendibleObject.Plugins = plugins.AsReadOnly();
 
             return extendibleObject;
         }
