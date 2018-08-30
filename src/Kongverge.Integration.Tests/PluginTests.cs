@@ -75,10 +75,10 @@ namespace Kongverge.Integration.Tests
             foreach (var plugin in Permutations)
             {
                 var pluginBody = _fixture.PluginCollection.CreatePluginBody(plugin);
-                var pluginOut = await _fixture.ShouldUpsertPlugin(pluginBody);
-                var globalPlugins = await _fixture.KongAdminReader.GetGlobalConfig();
+                var pluginOut = await _fixture.UpsertPlugin(pluginBody);
+                var globalConfig = await _fixture.KongAdminReader.GetGlobalConfig();
 
-                globalPlugins.Plugins.Single(x => x.id == pluginOut.Id).Should()
+                globalConfig.Plugins.Single(x => x.id == pluginOut.Id).Should()
                     .BeEquivalentTo(plugin, opt => opt
                         .Excluding(p => p.id)
                         .Using<string>(CompareStringsWithoutNull).WhenTypeIs<string>());

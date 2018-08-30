@@ -40,8 +40,8 @@ namespace Kongverge.Integration.Tests
 
         private async Task<bool> DeleteExistingGlobalPlugins()
         {
-            var plugins = await KongAdminReader.GetGlobalConfig();
-            foreach (var plugin in plugins.Plugins)
+            var globalConfig = await KongAdminReader.GetGlobalConfig();
+            foreach (var plugin in globalConfig.Plugins)
             {
                 await _kongAdminWriter.DeletePlugin(plugin.id);
             }
@@ -78,7 +78,7 @@ namespace Kongverge.Integration.Tests
                     var pluginBody = PluginCollection.CreatePluginBody(plugin);
                     pluginBody.service_id = service.Id;
 
-                    await ShouldUpsertPlugin(pluginBody);
+                    await UpsertPlugin(pluginBody);
                 }
             }
 
@@ -95,7 +95,7 @@ namespace Kongverge.Integration.Tests
                         pluginBody.service_id = service.Id;
                         pluginBody.route_id = route.Id;
 
-                        await ShouldUpsertPlugin(pluginBody);
+                        await UpsertPlugin(pluginBody);
                     }
                 }
             }
@@ -121,7 +121,7 @@ namespace Kongverge.Integration.Tests
             await _kongAdminWriter.DeletePlugin(id);
         }
 
-        public async Task<KongPluginResponse> ShouldUpsertPlugin(PluginBody pluginBody)
+        public async Task<KongPluginResponse> UpsertPlugin(PluginBody pluginBody)
         {
             var plugin = await _kongAdminWriter.UpsertPlugin(pluginBody);
             plugin.Should().NotBeNull();
