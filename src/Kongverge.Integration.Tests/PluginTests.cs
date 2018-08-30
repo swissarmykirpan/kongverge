@@ -68,7 +68,27 @@ namespace Kongverge.Integration.Tests
                         .Using<string>(CompareStringsWithoutNull).WhenTypeIs<string>());
             }
         }
-        
+
+        [Fact]
+        public async Task ShouldRoundTripGlobalPluginToKong()
+        {
+            foreach (var plugin in Permutations)
+            {
+                var pluginBody = _fixture.PluginCollection.CreatePluginBody(plugin);
+                var pluginOut = await _fixture.UpsertPlugin(pluginBody);
+                var globalConfig = await _fixture.KongAdminReader.GetGlobalConfig();
+
+                globalConfig.Plugins.Single(x => x.id == pluginOut.Id).Should()
+                    .BeEquivalentTo(plugin, opt => opt
+                        .Excluding(p => p.id)
+                        .Using<string>(CompareStringsWithoutNull).WhenTypeIs<string>());
+
+                // We need to delete the globally added plugin because the some plugins for e.g. request-transfomer plugin 
+                // cannot be added as a global plugin multiple times.
+                await _fixture.DeleteGlobalPlugin(pluginOut.Id);
+            }
+        }
+
         protected virtual IEnumerable<TPluginConfig> Permutations
         {
             get
