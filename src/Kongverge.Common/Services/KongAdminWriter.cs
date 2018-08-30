@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -86,6 +85,7 @@ namespace Kongverge.Common.Services
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
             try
             {
+                await DeleteRoutes(serviceId).ConfigureAwait(false);
                 await HttpClient.SendAsync(request).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -121,12 +121,6 @@ namespace Kongverge.Common.Services
                 Log.Error(e, e.Message);
                 throw;
             }
-        }
-
-        public async Task DeleteRoutes(KongService service)
-        {
-            IEnumerable<KongRoute> routes = await GetRoutes(service.Name).ConfigureAwait(false);
-            await Task.WhenAll(routes.Select(r => DeleteRoute(r.Id))).ConfigureAwait(false);
         }
 
         public async Task DeleteRoute(string routeId)
@@ -179,6 +173,12 @@ namespace Kongverge.Common.Services
                 Log.Error(e, e.Message);
                 throw;
             }
+        }
+
+        private async Task DeleteRoutes(string serviceId)
+        {
+            var routes = await GetRoutes(serviceId).ConfigureAwait(false);
+            await Task.WhenAll(routes.Select(r => DeleteRoute(r.Id))).ConfigureAwait(false);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Kongverge.Common.Workflow
         {
             await ProcessServices(existingServices, newServices).ConfigureAwait(false);
 
-            await _pluginProcessor.Process(existingGlobalConfig, newGlobalConfig);
+            await _pluginProcessor.Process(existingGlobalConfig, newGlobalConfig).ConfigureAwait(false);
 
             //Remove Missing Services
             var missingServices = existingServices
@@ -46,7 +46,6 @@ namespace Kongverge.Common.Workflow
             {
                 Log.Information("Deleting service \"{serviceName}\"", service.Name);
 
-                await _kongWriter.DeleteRoutes(service).ConfigureAwait(false);
                 await _kongWriter.DeleteService(service.Id).ConfigureAwait(false);
             }
         }
