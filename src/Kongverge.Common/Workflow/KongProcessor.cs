@@ -21,16 +21,16 @@ namespace Kongverge.Common.Workflow
         }
 
         public async Task Process(
-            IReadOnlyCollection<KongService> existingServices, IReadOnlyCollection<KongService> newServices,
-            GlobalConfig existingGlobalConfig, GlobalConfig newGlobalConfig)
+            IReadOnlyCollection<KongService> existingServices, IReadOnlyCollection<KongService> targetServices,
+            GlobalConfig existingGlobalConfig, GlobalConfig targetGlobalConfig)
         {
-            await ProcessServices(existingServices, newServices).ConfigureAwait(false);
+            await ProcessServices(existingServices, targetServices).ConfigureAwait(false);
 
-            await _pluginProcessor.Process(existingGlobalConfig, newGlobalConfig).ConfigureAwait(false);
+            await _pluginProcessor.Process(existingGlobalConfig, targetGlobalConfig).ConfigureAwait(false);
 
             //Remove Missing Services
             var missingServices = existingServices
-                .Except(newServices)
+                .Except(targetServices)
                 .ToList();
 
             if (missingServices.Count > 0)
