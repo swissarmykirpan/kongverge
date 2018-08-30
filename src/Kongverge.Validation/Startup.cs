@@ -35,6 +35,7 @@ namespace Kongverge.Validation
             services.Replace(new ServiceDescriptor(typeof(TestTracker), _testTracker));
             services.AddSingleton<IKongAdminWriter, KongAdminWriter>();
             services.AddSingleton<ITestFileHelper, TestFileHelper>();
+            services.AddSingleton<KongAdminHttpClient>();
 
 
             services.AddSingleton<PluginConverter>();
