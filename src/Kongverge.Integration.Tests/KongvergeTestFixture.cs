@@ -35,6 +35,18 @@ namespace Kongverge.Integration.Tests
             _cleanUp = new List<KongService>();
             _kongAdminWriter = _serviceProvider.GetService<IKongAdminWriter>();
             DeleteExistingTestServices().GetAwaiter().GetResult();
+            DeleteExistingGlobalPlugins().GetAwaiter().GetResult();
+        }
+
+        private async Task<bool> DeleteExistingGlobalPlugins()
+        {
+            var globalConfig = await KongAdminReader.GetGlobalConfig();
+            foreach (var plugin in globalConfig.Plugins)
+            {
+                await _kongAdminWriter.DeletePlugin(plugin.id);
+            }
+
+            return true;
         }
 
         private async Task<bool> DeleteExistingTestServices()
@@ -65,7 +77,7 @@ namespace Kongverge.Integration.Tests
                     var pluginBody = PluginCollection.CreatePluginBody(plugin);
                     pluginBody.service_id = service.Id;
 
-                    await ShouldUpsertPlugin(pluginBody);
+                    await UpsertPlugin(pluginBody);
                 }
             }
 
@@ -82,7 +94,7 @@ namespace Kongverge.Integration.Tests
                         pluginBody.service_id = service.Id;
                         pluginBody.route_id = route.Id;
 
-                        await ShouldUpsertPlugin(pluginBody);
+                        await UpsertPlugin(pluginBody);
                     }
                 }
             }
@@ -102,7 +114,12 @@ namespace Kongverge.Integration.Tests
             await _kongAdminWriter.DeleteService(service.Id);
         }
 
-        private async Task ShouldUpsertPlugin(PluginBody pluginBody)
+        public async Task DeleteGlobalPlugin(string id)
+        {
+            await _kongAdminWriter.DeletePlugin(id);
+        }
+
+        public async Task UpsertPlugin(PluginBody pluginBody)
         {
             await _kongAdminWriter.UpsertPlugin(pluginBody);
             pluginBody.id.Should().NotBeNullOrEmpty();
