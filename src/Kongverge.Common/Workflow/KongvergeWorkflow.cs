@@ -35,20 +35,20 @@ namespace Kongverge.Common.Workflow
 
             Log.Information("Reading files from {input}", Configuration.InputFolder);
             var success =
-                _fileHelper.GetDataFiles(Configuration.InputFolder, out var dataFiles, out var newGlobalConfig);
+                _fileHelper.GetDataFiles(Configuration.InputFolder, out var dataFiles, out var targetGlobalConfig);
             if (!success)
             {
                 return ExitWithCode.Return(ExitCode.InputFolderUnreachable);
             }
 
             //Process Input Files
-            var servicesFromFile = dataFiles
+            var targetServices = dataFiles
                 .Select(f => f.Service)
                 .ToList();
 
             var processor = new KongProcessor(_kongWriter, _kongPluginCollection);
 
-            await processor.Process(existingServices, servicesFromFile, existingGlobalConfig, newGlobalConfig)
+            await processor.Process(existingServices, targetServices, existingGlobalConfig, targetGlobalConfig)
                 .ConfigureAwait(false);
 
             return ExitWithCode.Return(ExitCode.Success);
