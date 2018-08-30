@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
@@ -57,23 +56,7 @@ namespace Kongverge.Services
             return Task.CompletedTask;
         }
 
-        public async Task DeleteRoutes(KongService service)
-        {
-            var routes = await GetRoutes(service.Name).ConfigureAwait(false);
-            await DeleteRoutes(routes).ConfigureAwait(false);
-        }
-
-        public Task DeleteRoutes(IEnumerable<KongRoute> routes)
-        {
-            foreach (var route in routes)
-            {
-                Log.Information("Deleting route {id} that serves paths {paths}", route.Id, route.Paths);
-            }
-
-            return Task.CompletedTask;
-        }
-
-        public Task DeleteService(string serviceId)
+        public Task DeleteService(string serviceId, bool cascadeDeleteRoutes = false)
         {
             Log.Information("Deleting service {id}", serviceId);
             return Task.CompletedTask;

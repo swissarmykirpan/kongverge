@@ -69,7 +69,7 @@ namespace Kongverge.Common.Tests.Workflow
             await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
 
             system.KongWriter.Verify(k =>
-                k.AddService(It.IsAny<KongService>()), Times.Once);
+                k.AddService(newServices.Single()), Times.Once);
             system.KongWriter.Verify(k =>
                 k.AddRoute(It.IsAny<KongService>(), It.IsAny<KongRoute>()), Times.Never);
         }
@@ -83,6 +83,7 @@ namespace Kongverge.Common.Tests.Workflow
             {
                 new KongService
                 {
+                    Id = Guid.NewGuid().ToString(),
                     Name = "TestService_A"
                 }
             };
@@ -94,7 +95,7 @@ namespace Kongverge.Common.Tests.Workflow
             system.KongWriter.Verify(k =>
                 k.AddService(It.IsAny<KongService>()), Times.Never);
             system.KongWriter.Verify(k =>
-                k.DeleteService(It.IsAny<string>()), Times.Once);
+                k.DeleteService(existingServices.Single().Id, true), Times.Once);
             system.KongWriter.Verify(k =>
                 k.AddRoute(It.IsAny<KongService>(), It.IsAny<KongRoute>()), Times.Never);
         }
@@ -127,7 +128,7 @@ namespace Kongverge.Common.Tests.Workflow
 
             await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
 
-            system.KongWriter.Verify(k => k.AddRoute(newServices[0], route1), Times.Once());
+            system.KongWriter.Verify(k => k.AddRoute(newServices.Single(), route1), Times.Once());
         }
 
         [Fact]

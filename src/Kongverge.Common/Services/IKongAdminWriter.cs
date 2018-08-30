@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
 using Kongverge.KongPlugin;
@@ -11,15 +10,13 @@ namespace Kongverge.Common.Services
 
         Task UpdateService(KongService service);
 
-        Task DeleteService(string serviceId);
+        Task DeleteService(string serviceId, bool cascadeDeleteRoutes = false);
 
         Task AddRoute(KongService service, KongRoute route);
 
-        Task DeleteRoutes(KongService service);
+        Task DeleteRoute(string routeId);
 
         Task UpsertPlugin(PluginBody plugin);
-
-        Task DeleteRoute(string routeId);
 
         Task DeletePlugin(string pluginId);
     }

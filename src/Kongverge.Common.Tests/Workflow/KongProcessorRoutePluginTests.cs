@@ -151,7 +151,7 @@ namespace Kongverge.Common.Tests.Workflow
 
             system.VerifyNoAdds();
 
-            system.KongWriter.Verify(k => k.DeleteService(It.IsAny<string>()), Times.Never);
+            system.KongWriter.Verify(k => k.DeleteService(It.IsAny<string>(), It.IsAny<bool>()), Times.Never);
             system.KongWriter.Verify(k => k.DeleteRoute(It.IsAny<string>()), Times.Never);
             system.KongWriter.Verify(k => k.DeletePlugin(plugin1.id), Times.Once());
         }
@@ -185,7 +185,7 @@ namespace Kongverge.Common.Tests.Workflow
 
             system.KongWriter.Verify(k => k.UpsertPlugin(It.IsAny<PluginBody>()), Times.Never);
 
-            system.KongWriter.Verify(k => k.DeleteService(It.IsAny<string>()), Times.Never);
+            system.KongWriter.Verify(k => k.DeleteService(It.IsAny<string>(), It.IsAny<bool>()), Times.Never);
             system.KongWriter.Verify(k => k.DeleteRoute(It.IsAny<string>()), Times.Once);
         }
 
