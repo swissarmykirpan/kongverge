@@ -23,7 +23,7 @@ namespace Kongverge.Common.Services
         {
         }
 
-        public async Task<KongService> AddService(KongService service)
+        public async Task AddService(KongService service)
         {
             var routes = service.Routes;
             var plugins = service.Plugins;
@@ -38,8 +38,7 @@ namespace Kongverge.Common.Services
                 var response = await HttpClient.PostAsync("/services/", content).ConfigureAwait(false);
                 var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var apiservice = JsonConvert.DeserializeObject<KongService>(responseBody);
-                service.MergeFromService(apiservice);
-                return service;
+                service.Id = apiservice.Id;
             }
             catch (Exception e)
             {
@@ -48,7 +47,7 @@ namespace Kongverge.Common.Services
             }
         }
 
-        public async Task<KongService> UpdateService(KongService service)
+        public async Task UpdateService(KongService service)
         {
             Log.Information("Updating service {name} to config {data}", service.Name, service);
             var requestUri = new Uri($"/services/{service.Name}", UriKind.Relative);
@@ -71,8 +70,7 @@ namespace Kongverge.Common.Services
                 var response = await HttpClient.SendAsync(request).ConfigureAwait(false);
                 var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var updated = JsonConvert.DeserializeObject<KongService>(responseBody);
-                service.MergeFromService(updated);
-                return service;
+                service.Id = updated.Id;
             }
             catch (Exception e)
             {
@@ -81,7 +79,7 @@ namespace Kongverge.Common.Services
             }
         }
 
-        public async Task<string> DeleteService(string serviceId)
+        public async Task DeleteService(string serviceId)
         {
             var requestUri = $"/services/{serviceId}";
 
@@ -89,7 +87,6 @@ namespace Kongverge.Common.Services
             try
             {
                 await HttpClient.SendAsync(request).ConfigureAwait(false);
-                return serviceId;
             }
             catch (Exception e)
             {
@@ -98,7 +95,7 @@ namespace Kongverge.Common.Services
             }
         }
 
-        public async Task<KongRoute> AddRoute(KongService service, KongRoute route)
+        public async Task AddRoute(KongService service, KongRoute route)
         {
             Log.Information(@"Adding Route
     Route Paths: {paths}
@@ -116,9 +113,8 @@ namespace Kongverge.Common.Services
                 var result = await HttpClient.PostAsync($"/services/{service.Id ?? service.Name}/routes", content).ConfigureAwait(false);
                 var responseBody = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var addedRoute = JsonConvert.DeserializeObject<KongRoute>(responseBody);
-                route.MergeFromRoute(addedRoute);
+                route.Id = addedRoute.Id;
                 Log.Information("Added route {route}", addedRoute);
-                return route;
             }
             catch (Exception e)
             {
@@ -127,11 +123,10 @@ namespace Kongverge.Common.Services
             }
         }
 
-        public async Task<IEnumerable<KongRoute>> DeleteRoutes(KongService service)
+        public async Task DeleteRoutes(KongService service)
         {
             IEnumerable<KongRoute> routes = await GetRoutes(service.Name).ConfigureAwait(false);
             await Task.WhenAll(routes.Select(r => DeleteRoute(r.Id))).ConfigureAwait(false);
-            return routes;
         }
 
         public async Task DeleteRoute(string routeId)
@@ -150,7 +145,7 @@ namespace Kongverge.Common.Services
             }
         }
 
-        public async Task<KongPluginResponse> UpsertPlugin(PluginBody plugin)
+        public async Task UpsertPlugin(PluginBody plugin)
         {
             var content = KongJsonConvert.Serialize(plugin);
 
@@ -158,9 +153,9 @@ namespace Kongverge.Common.Services
             {
                 var response = await HttpClient.PutAsync("/plugins", content).ConfigureAwait(false);
                 var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var pluginResponse = JsonConvert.DeserializeObject<KongPluginResponse>(responseBody);
+                var updated = JsonConvert.DeserializeObject<PluginBody>(responseBody);
+                plugin.id = updated.id;
                 Log.Information("Successfully added plugin {name} to route {id}", plugin.name, plugin.consumer_id ?? plugin.service_id ?? plugin.route_id);
-                return pluginResponse;
             }
             catch (Exception e)
             {

@@ -30,9 +30,9 @@ namespace Kongverge.Integration.Tests
                     .WithPlugin(plugin)
                     .Build();
 
-                var kongServiceAdded = await _fixture.AddServiceAndChildren(service);
+                await _fixture.AddServiceAndChildren(service);
 
-                var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
+                var serviceReadFromKong = await _fixture.KongAdminReader.GetService(service.Id);
 
                 var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin<TPluginConfig>();
 
@@ -54,9 +54,9 @@ namespace Kongverge.Integration.Tests
                     .WithRoutePlugin(plugin)
                     .Build();
 
-                var kongServiceAdded = await _fixture.AddServiceAndChildren(service);
+                await _fixture.AddServiceAndChildren(service);
 
-                var serviceReadFromKong = await _fixture.KongAdminReader.GetService(kongServiceAdded.Id);
+                var serviceReadFromKong = await _fixture.KongAdminReader.GetService(service.Id);
 
                 serviceReadFromKong.Routes.Should().HaveCount(1);
 
