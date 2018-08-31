@@ -19,7 +19,7 @@ namespace Kongverge.Common.DTOs
             return string.IsNullOrEmpty(Id);
         }
 
-        public IReadOnlyCollection<IKongPluginConfig> Plugins { get; set; } = Array.Empty<IKongPluginConfig>();
+        public IReadOnlyList<IKongPluginConfig> Plugins { get; set; } = Array.Empty<IKongPluginConfig>();
 
         public override string ToString()
         {

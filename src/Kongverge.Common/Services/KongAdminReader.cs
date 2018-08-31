@@ -93,12 +93,12 @@ namespace Kongverge.Common.Services
             return service;
         }
 
-        private Task<IReadOnlyCollection<PluginBody>> GetServicePlugins(string serviceId)
+        private Task<IReadOnlyList<PluginBody>> GetServicePlugins(string serviceId)
         {
             return GetPagedResponse<PluginBody>($"{PluginsRoute}?service_id={serviceId}");
         }
 
-        private Task<IReadOnlyCollection<PluginBody>> GetRoutePlugins(string routeId)
+        private Task<IReadOnlyList<PluginBody>> GetRoutePlugins(string routeId)
         {
             return GetPagedResponse<PluginBody>($"{PluginsRoute}?route_id={routeId}");
         }
@@ -110,7 +110,7 @@ namespace Kongverge.Common.Services
             GroupPlugins(services, plugins);
         }
 
-        private Task<IReadOnlyCollection<PluginBody>> GetAllPlugins()
+        private Task<IReadOnlyList<PluginBody>> GetAllPlugins()
         {
             return GetPagedResponse<PluginBody>(PluginsRoute);
         }
@@ -148,7 +148,7 @@ namespace Kongverge.Common.Services
             }
         }
 
-        public Task<IReadOnlyCollection<KongRoute>> GetRoutes(string serviceId)
+        public Task<IReadOnlyList<KongRoute>> GetRoutes(string serviceId)
         {
             return GetPagedResponse<KongRoute>($"/services/{serviceId}/routes");
         }
@@ -165,14 +165,14 @@ namespace Kongverge.Common.Services
             };
         }
 
-        private IReadOnlyCollection<IKongPluginConfig> TranslateToConfig(IEnumerable<PluginBody> plugins)
+        private IReadOnlyList<IKongPluginConfig> TranslateToConfig(IEnumerable<PluginBody> plugins)
         {
             return plugins.Select(_kongPluginCollection.TranslateToConfig)
                           .Where(p => p != null)
                           .ToArray();
         }
 
-        private async Task<IReadOnlyCollection<T>> GetPagedResponse<T>(string requestUri)
+        private async Task<IReadOnlyList<T>> GetPagedResponse<T>(string requestUri)
         {
             var data = new List<T>();
             var lastPage = false;
