@@ -39,7 +39,7 @@ namespace Kongverge.Common.DTOs
         [JsonProperty("path")]
         public string Path { get; set; }
 
-        public IReadOnlyCollection<KongRoute> Routes { get; set; } = Array.Empty<KongRoute>();
+        public IReadOnlyList<KongRoute> Routes { get; set; } = Array.Empty<KongRoute>();
 
         public bool Equals(KongService other)
         {

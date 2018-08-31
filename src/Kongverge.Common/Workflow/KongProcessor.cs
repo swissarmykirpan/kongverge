@@ -21,16 +21,19 @@ namespace Kongverge.Common.Workflow
         }
 
         public async Task Process(
-            IReadOnlyCollection<KongService> existingServices, IReadOnlyCollection<KongService> newServices,
-            GlobalConfig existingGlobalConfig, GlobalConfig newGlobalConfig)
+            IReadOnlyCollection<KongService> existingServices, IReadOnlyCollection<KongService> targetServices,
+            GlobalConfig existingGlobalConfig, GlobalConfig targetGlobalConfig)
         {
-            await ProcessServices(existingServices, newServices).ConfigureAwait(false);
+            foreach (var target in targetServices)
+            {
+                await ProcessService(existingServices, target).ConfigureAwait(false);
+            }
 
-            await _pluginProcessor.Process(existingGlobalConfig, newGlobalConfig).ConfigureAwait(false);
+            await _pluginProcessor.Process(existingGlobalConfig, targetGlobalConfig).ConfigureAwait(false);
 
             //Remove Missing Services
             var missingServices = existingServices
-                .Except(newServices)
+                .Except(targetServices)
                 .ToList();
 
             if (missingServices.Count > 0)
@@ -50,54 +53,44 @@ namespace Kongverge.Common.Workflow
             }
         }
 
-        private async Task ProcessServices(
-            IReadOnlyCollection<KongService> existingServices,
-            IReadOnlyCollection<KongService> newServices)
+        private async Task ProcessService(IEnumerable<KongService> existingServices, KongService target)
         {
-            foreach (var service in newServices)
+            var existing = existingServices.SingleOrDefault(x => x.Name == target.Name);
+
+            if (existing == null)
             {
-                await ProcessService(existingServices, service).ConfigureAwait(false);
-            }
-        }
+                Log.Information("\nAdding new service: \"{name}\"", target.Name);
 
-        private async Task ProcessService(IEnumerable<KongService> existingServices, KongService newService)
-        {
-            var existingService = existingServices.SingleOrDefault(x => x.Name == newService.Name);
-
-            if (existingService == null)
-            {
-                Log.Information("\nAdding new service: \"{name}\"", newService.Name);
-
-                var valid = await ServiceValidationHelper.Validate(newService).ConfigureAwait(false);
+                var valid = await ServiceValidationHelper.Validate(target).ConfigureAwait(false);
 
                 if (!valid)
                 {
-                    Log.Information("Invalid Data File: {name}{ext}", newService.Name, Settings.FileExtension);
+                    Log.Information("Invalid Data File: {name}{ext}", target.Name, Settings.FileExtension);
                     return;
                 }
 
-                await _kongWriter.AddService(newService).ConfigureAwait(false);
+                await _kongWriter.AddService(target).ConfigureAwait(false);
 
-                await _pluginProcessor.Process(null, newService).ConfigureAwait(false);
-                await ConvergeRoutes(null, newService).ConfigureAwait(false);
+                await _pluginProcessor.Process(null, target).ConfigureAwait(false);
+                await ConvergeRoutes(null, target).ConfigureAwait(false);
             }
             else
             {
                 // TODO: Clean this up, its messy, but where else can we do this?
-                newService.Id = existingService.Id;
+                target.Id = existing.Id;
 
-                await _pluginProcessor.Process(existingService, newService).ConfigureAwait(false);
+                await _pluginProcessor.Process(existing, target).ConfigureAwait(false);
 
-                await ConvergeRoutes(existingService, newService).ConfigureAwait(false);
+                await ConvergeRoutes(existing, target).ConfigureAwait(false);
 
-                if (!ServiceHasChanged(existingService, newService))
+                if (!ServiceHasChanged(existing, target))
                 {
                     return;
                 }
 
-                Log.Information("Updating service: \"{name}\"", newService.Name);
+                Log.Information("Updating service: \"{name}\"", target.Name);
 
-                await _kongWriter.UpdateService(newService).ConfigureAwait(false);
+                await _kongWriter.UpdateService(target).ConfigureAwait(false);
             }
         }
 
@@ -106,13 +99,13 @@ namespace Kongverge.Common.Workflow
             var existingRoutes = existing?.Routes ?? new List<KongRoute>();
             var toAdd = target.Routes.Except(existingRoutes);
 
+            // TODO: Consider detecting changes and patching existing routes, instead of deleting and adding again
             var toRemove = existingRoutes.Except(target.Routes);
 
             await Task.WhenAll(toRemove.Select(r => _kongWriter.DeleteRoute(r.Id))).ConfigureAwait(false);
             await Task.WhenAll(toAdd.Select(r => _kongWriter.AddRoute(target, r))).ConfigureAwait(false);
 
-            var matchingRoutePairs =
-                target.Routes.Select(r => new ExtendibleKongObjectTargetPair(r, existingRoutes));
+            var matchingRoutePairs = target.Routes.Select(r => new ExtendibleKongObjectTargetPair(r, existingRoutes));
 
             foreach (var routepair in matchingRoutePairs)
             {
@@ -123,11 +116,11 @@ namespace Kongverge.Common.Workflow
             }
         }
 
-        private static bool ServiceHasChanged(KongService existingService, KongService newService)
+        private static bool ServiceHasChanged(KongService existing, KongService target)
         {
-            if (!existingService.Equals(newService))
+            if (!existing.Equals(target))
             {
-                ServiceValidationHelper.PrintDiff(existingService, newService);
+                ServiceValidationHelper.PrintDiff(existing, target);
                 return true;
             }
 
