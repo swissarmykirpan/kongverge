@@ -99,6 +99,7 @@ namespace Kongverge.Common.Workflow
             var existingRoutes = existing?.Routes ?? new List<KongRoute>();
             var toAdd = target.Routes.Except(existingRoutes);
 
+            // TODO: Consider detecting changes and patching existing routes, instead of deleting and adding again
             var toRemove = existingRoutes.Except(target.Routes);
 
             await Task.WhenAll(toRemove.Select(r => _kongWriter.DeleteRoute(r.Id))).ConfigureAwait(false);
