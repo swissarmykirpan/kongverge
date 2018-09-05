@@ -1,11 +1,11 @@
 using System;
-using Kongverge.Common;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
 using Kongverge.Common.Workflow;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Serilog;
 
 namespace Kongverge
 {
@@ -40,18 +40,12 @@ namespace Kongverge
 
                 var workflow = serviceProvider.GetService<Workflow>();
 
-                Console.WriteLine($"*************\n* {app.Name} *\n*************");
+                Log.Information($"*************\n* {app.Name} *\n*************");
 
                 return await workflow.Execute().ConfigureAwait(false);
             });
 
-            var returnCode = app.Execute(args);
-#if DEBUG
-            Console.Write("Press a key to finish");
-            Console.ReadKey();
-#endif
-
-            return returnCode;
+            return app.Execute(args);
         }
 
         private class Options
