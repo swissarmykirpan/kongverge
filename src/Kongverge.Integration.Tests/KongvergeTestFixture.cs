@@ -15,6 +15,8 @@ namespace Kongverge.Integration.Tests
 {
     public class KongvergeTestFixture : IDisposable
     {
+        public const string Host = "kongtestbed-qa8-alb.jalfrezi.je-labs.com";
+        public const int Port = 8001;
         public const string TestServiceNamePrefix = "testservice_";
 
         private readonly ServiceProvider _serviceProvider;
@@ -32,8 +34,21 @@ namespace Kongverge.Integration.Tests
             var services = new ServiceCollection();
             ServiceRegistration.AddServices(services);
             _serviceProvider = services.BuildServiceProvider();
-            _cleanUp = new List<KongService>();
+            ConfigureSettings();
             _kongAdminWriter = _serviceProvider.GetService<IKongAdminWriter>();
+            _cleanUp = new List<KongService>();
+            DeleteExistingKongObjects();
+        }
+
+        private void ConfigureSettings()
+        {
+            var configuration = _serviceProvider.GetService<IOptions<Settings>>().Value;
+            configuration.Admin.Host = Host;
+            configuration.Admin.Port = Port;
+        }
+
+        private void DeleteExistingKongObjects()
+        {
             DeleteExistingTestServices().GetAwaiter().GetResult();
             DeleteExistingGlobalPlugins().GetAwaiter().GetResult();
         }
