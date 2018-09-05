@@ -50,11 +50,11 @@ namespace Kongverge.Common.Helpers
             {
                 dataFiles =
                     Directory.EnumerateFiles(dataPath, $"*{Settings.FileExtension}", SearchOption.AllDirectories)
-                    .Where(d => !d.EndsWith(_configuration.GlobalConfigPath))
+                    .Where(d => !d.EndsWith(Settings.GlobalConfigPath))
                     .Select(ParseFile)
                     .ToList();
 
-                var globalPluginsFile = Path.Combine(dataPath, _configuration.GlobalConfigPath);
+                var globalPluginsFile = Path.Combine(dataPath, Settings.GlobalConfigPath);
                 globalConfig = File.Exists(globalPluginsFile) ? ParseGlobalConfig(globalPluginsFile) : new GlobalConfig();
             }
             catch (Exception ex)

@@ -9,7 +9,7 @@ namespace Kongverge.Common.DTOs
         public static string FileExtension { get; } = ".json";
         public string TestFolder { get; set; } = "tests";
         public int TestPort { get; set; } = 65150;
-        public string GlobalConfigPath { get; set; } = "global.json";
+        public static string GlobalConfigPath { get; } = "global.json";
     }
 
     public class Admin
