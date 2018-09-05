@@ -9,6 +9,7 @@ namespace Kongverge.Common.Helpers
         HostUnreachable,
         InvalidPort,
         MissingHost,
+        MissingPort,
         InputFolderUnreachable,
         IncompatibleArguments
     }
@@ -29,6 +30,10 @@ namespace Kongverge.Common.Helpers
 
                 case ExitCode.MissingHost:
                     Log.Error("Host must be specified");
+                    break;
+
+                case ExitCode.MissingPort:
+                    Log.Error("Port must be specified");
                     break;
 
                 case ExitCode.HostUnreachable:
