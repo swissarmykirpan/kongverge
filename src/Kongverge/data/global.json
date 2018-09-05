@@ -1,6 +1,0 @@
-{
-  "correlation": {
-    "header": "Request-Id",
-    "template":  "UUID"
-  }
-}
