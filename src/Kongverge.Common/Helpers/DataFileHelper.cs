@@ -83,7 +83,14 @@ namespace Kongverge.Common.Helpers
 
         public void WriteConfigFiles(IEnumerable<KongService> existingServices)
         {
-            if (!Directory.Exists(_configuration.OutputFolder))
+            if (Directory.Exists(_configuration.OutputFolder))
+            {
+                foreach (var enumerateFile in Directory.EnumerateFiles(_configuration.OutputFolder))
+                {
+                    File.Delete(enumerateFile);
+                }
+            }
+            else
             {
                 Directory.CreateDirectory(_configuration.OutputFolder);
             }
@@ -95,11 +102,11 @@ namespace Kongverge.Common.Helpers
                     Service = service,
                 };
 
-                var yamlOut = JsonConvert.SerializeObject(dataFile, _settings);
+                var json = JsonConvert.SerializeObject(dataFile, _settings);
 
                 var fileName = $"{_configuration.OutputFolder}\\{service.Name}{Settings.FileExtension}";
                 Log.Information("Writing {fileName}", fileName);
-                File.WriteAllText(fileName, yamlOut);
+                File.WriteAllText(fileName, json);
             }
         }
     }
