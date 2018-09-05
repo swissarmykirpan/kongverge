@@ -86,19 +86,29 @@ namespace Kongverge
 
             public ExitCode? Validate()
             {
+                if (!Host.HasValue())
+                {
+                    return ExitCode.MissingHost;
+                }
+
+                if (!Port.HasValue())
+                {
+                    return ExitCode.MissingPort;
+                }
+                
+                if (!int.TryParse(Port.Value(), out var port) || port > MaxPort || port < MinPort)
+                {
+                    return ExitCode.InvalidPort;
+                }
+
                 if (InputFolder.HasValue() && OutputFolder.HasValue())
                 {
                     return ExitCode.IncompatibleArguments;
                 }
 
-                if (Port.HasValue() && (!int.TryParse(Port.Value(), out var port) || port > MaxPort || port < MinPort))
+                if (!InputFolder.HasValue() && !OutputFolder.HasValue())
                 {
-                    return ExitCode.InvalidPort;
-                }
-
-                if (!Host.HasValue())
-                {
-                    return ExitCode.MissingHost;
+                    return ExitCode.IncompatibleArguments;
                 }
 
                 return null;
