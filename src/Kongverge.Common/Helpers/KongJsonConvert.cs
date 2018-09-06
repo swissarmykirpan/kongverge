@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Kongverge.Common.Helpers
 {
@@ -9,7 +11,8 @@ namespace Kongverge.Common.Helpers
         private static readonly JsonSerializerSettings KongSerializerSettings =
             new JsonSerializerSettings
             {
-                NullValueHandling = NullValueHandling.Ignore
+                NullValueHandling = NullValueHandling.Ignore,
+                Converters = new List<JsonConverter>(new[] { new StringEnumConverter() })
             };
 
         public static StringContent Serialize<T>(T data)

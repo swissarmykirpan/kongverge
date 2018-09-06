@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using FluentAssertions;
-using Kongverge.Common.Helpers;
 using Kongverge.Common.Plugins.BuiltIn;
 using Kongverge.Common.Plugins.BuiltIn.RequestTransform;
 using Kongverge.KongPlugin;
@@ -42,6 +41,10 @@ namespace Kongverge.Common.Tests.Plugins
     }
 
     public class RequestTransformerAdvancedPluginTests : PluginTests<RequestTransformerAdvancedPlugin, RequestTransformerAdvancedConfig>
+    {
+    }
+
+    public class StatsDPluginTests : PluginTests<StatsDPlugin, StatsDConfig>
     {
     }
 }
