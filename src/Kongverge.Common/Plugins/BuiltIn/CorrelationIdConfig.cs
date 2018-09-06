@@ -6,13 +6,13 @@ namespace Kongverge.Common.Plugins.BuiltIn
 {
     public enum CorrelationIdGenerator
     {
+        // ReSharper disable InconsistentNaming
         // This is the default, so it comes first
         [Description("uuid#counter")]
-        // ReSharper disable once InconsistentNaming
-        UUIDCounter,
-        // ReSharper disable once InconsistentNaming
-        UUID,
-        Tracker
+        uuidCounter,
+        uuid,
+        tracker
+        // ReSharper restore InconsistentNaming
     }
 
     public class CorrelationIdConfig : IKongPluginConfig
