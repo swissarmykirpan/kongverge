@@ -29,12 +29,12 @@ namespace Kongverge.Common.Plugins.BuiltIn.RequestTransform
         {
             if (other is IRequestTransformerConfig otherConfig)
             {
-                return otherConfig.HttpMethod == HttpMethod
-                       && IsNestedConfigMatch(Remove, otherConfig.Remove)
-                       && IsNestedConfigMatch(Replace, otherConfig.Replace)
-                       && IsNestedConfigMatch(Rename, otherConfig.Rename)
-                       && IsNestedConfigMatch(Add, otherConfig.Add)
-                       && IsNestedConfigMatch(Append, otherConfig.Append);
+                return otherConfig.HttpMethod == HttpMethod &&
+                       IsNestedConfigMatch(Remove, otherConfig.Remove) &&
+                       IsNestedConfigMatch(Replace, otherConfig.Replace) &&
+                       IsNestedConfigMatch(Rename, otherConfig.Rename) &&
+                       IsNestedConfigMatch(Add, otherConfig.Add) &&
+                       IsNestedConfigMatch(Append, otherConfig.Append);
             }
 
             return false;

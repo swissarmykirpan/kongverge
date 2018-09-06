@@ -29,9 +29,9 @@ namespace Kongverge.Common.Plugins.BuiltIn
         {
             if (other is RateLimitingConfig otherConfig)
             {
-                return otherConfig.Limit == Limit
-                       && otherConfig.WindowSize == WindowSize
-                       && otherConfig.Identifier == Identifier;
+                return otherConfig.Limit == Limit &&
+                       otherConfig.WindowSize == WindowSize &&
+                       otherConfig.Identifier == Identifier;
             }
 
             return false;

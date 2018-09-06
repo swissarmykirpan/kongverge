@@ -17,10 +17,10 @@ namespace Kongverge.Common.Plugins.BuiltIn
 
         public bool IsExactMatch(IKongPluginConfig other)
         {
-            if (other is RequestTerminationConfig othRequestTermination)
+            if (other is RequestTerminationConfig otherConfig)
             {
-                return Message == othRequestTermination.Message
-                       && StatusCode == othRequestTermination.StatusCode;
+                return Message == otherConfig.Message &&
+                       StatusCode == otherConfig.StatusCode;
             }
 
             return false;
