@@ -24,7 +24,9 @@ namespace Kongverge.Common.Tests.Plugins
         [Fact]
         public void RoundTripFromConfigWithAllFields()
         {
-            var configIn = new Fixture().Create<TPluginConfig>();
+            var configIn = new Fixture()
+                .Customize(new SupportMutableValueTypesCustomization())
+                .Create<TPluginConfig>();
             var plugin = new TPlugin();
 
             var configOut = RoundTripFromConfig(plugin, configIn);

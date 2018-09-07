@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Kongverge.KongPlugin
@@ -113,6 +114,16 @@ namespace Kongverge.KongPlugin
             return values[key]?.ToString();
         }
 
+        public static HashSet<T> ReadObjectSet<T>(this IDictionary<string, object> values, string key)
+        {
+            if (!values.ContainsKey(key))
+            {
+                return new HashSet<T>();
+            }
+
+            var objects = (JArray)values[key];
+            return new HashSet<T>(objects.Select(x => x.ToObject<T>()).ToArray());
+        }
 
         public static string[] ReadStrings(this IDictionary<string, object> values, string key)
         {

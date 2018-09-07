@@ -93,7 +93,9 @@ namespace Kongverge.Integration.Tests
         {
             get
             {
-                yield return new Fixture().Create<TPluginConfig>();
+                yield return new Fixture()
+                    .Customize(new SupportMutableValueTypesCustomization())
+                    .Create<TPluginConfig>();
             }
         }
 

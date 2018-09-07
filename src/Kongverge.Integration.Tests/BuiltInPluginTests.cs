@@ -55,6 +55,13 @@ namespace Kongverge.Integration.Tests
         }
     }
 
+    public class StatsDPluginTests : PluginTests<StatsDConfig>
+    {
+        public StatsDPluginTests(KongvergeTestFixture kongvergeTestFixture) : base(kongvergeTestFixture)
+        {
+        }
+    }
+
     public abstract class RequestTransformerPluginTests<TPluginConfig> : PluginTests<TPluginConfig>
         where TPluginConfig : RequestTransformerConfig, new()
     {
