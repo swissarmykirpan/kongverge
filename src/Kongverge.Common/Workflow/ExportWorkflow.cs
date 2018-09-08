@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
@@ -13,18 +14,22 @@ namespace Kongverge.Common.Workflow
         public ExportWorkflow(
             IKongAdminReader kongReader,
             IOptions<Settings> configuration,
-            IDataFileHelper fileHelper) :
-            base(kongReader, configuration)
+            IDataFileHelper fileHelper) : base(kongReader, configuration)
         {
             _fileHelper = fileHelper;
         }
 
         public override async Task<int> DoExecute()
         {
-            var existingServices = await KongReader.GetServices().ConfigureAwait(false);
+            var services = await KongReader.GetServices().ConfigureAwait(false);
+            var plugins = await KongReader.GetPlugins().ConfigureAwait(false);
+            var globalConfig = new ExtendibleKongObject
+            {
+                Plugins = plugins.Where(x => x.IsGlobal()).ToArray()
+            };
 
             //Write Output Files
-            _fileHelper.WriteConfigFiles(existingServices);
+            _fileHelper.WriteConfigFiles(services, globalConfig);
             return ExitWithCode.Return(ExitCode.Success);
         }
     }
