@@ -1,85 +1,75 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Tests.Helpers;
-using Kongverge.KongPlugin;
 using Moq;
 using Xunit;
 
 namespace Kongverge.Common.Tests.Workflow
 {
-    public class KongProcessorTests
+    public class KongProcessorTests : KongProcessorTestsBase
     {
         [Fact]
         public async Task NoOpWithNoServicesWorks()
         {
-            var system = new KongProcessorEnvironment();
+            await Processor.Process(Array.Empty<KongService>(), Array.Empty<KongService>(), new ExtendibleKongObject(), new ExtendibleKongObject());
 
-            var existingServices = new List<KongService>();
-            var newServices = new List<KongService>();
-
-            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
-
-            system.VerifyNoActionTaken();
+            VerifyNoActionTaken();
         }
 
         [Fact]
         public async Task NoOpWithOneServicesWorks()
         {
-            var system = new KongProcessorEnvironment();
+            var name = this.Create<string>();
 
-            var existingServices = new List<KongService>
+            var existingServices = new[]
             {
                 new KongService
                 {
-                    Name = "service1"
+                    Name = name
                 }
             };
 
-            var newServices = new List<KongService>
+            var targetServices = new[]
             {
                 new KongService
                 {
-                    Name = "service1"
+                    Name = name
                 }
             };
 
-            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+            await Processor.Process(existingServices, targetServices, new ExtendibleKongObject(), new ExtendibleKongObject());
 
-            system.VerifyNoActionTaken();
+            VerifyNoActionTaken();
         }
 
         [Fact]
         public async Task CanAddService()
         {
-            var system = new KongProcessorEnvironment();
-
-            var existingServices = new List<KongService>();
-            var newServices = new List<KongService>
+            var existingServices = Array.Empty<KongService>();
+            var targetServices = new[]
             {
                 new KongService
                 {
-                    Name = "TestService_A"
+                    Name = this.Create<string>()
                 }
             };
-            
-            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
 
-            system.KongWriter.Verify(k =>
-                k.AddService(newServices.Single()), Times.Once);
-            system.KongWriter.Verify(k =>
-                k.AddRoute(It.IsAny<KongService>(), It.IsAny<KongRoute>()), Times.Never);
+            await Processor.Process(existingServices, targetServices, new ExtendibleKongObject(), new ExtendibleKongObject());
+
+            KongWriter.Verify(x => x.AddService(targetServices.Single()), Times.Once);
+            KongWriter.Verify(x => x.UpdateService(It.IsAny<KongService>()), Times.Never);
+            KongWriter.Verify(x => x.AddRoute(It.IsAny<string>(), It.IsAny<KongRoute>()), Times.Never);
+            KongWriter.Verify(x => x.UpsertPlugin(It.IsAny<KongPlugin>()), Times.Never);
+
+            VerifyNoDeletes();
         }
 
         [Fact]
         public async Task CanRemoveService()
         {
-            var system = new KongProcessorEnvironment();
-
-            var existingServices = new List<KongService>
+            var existingServices = new[]
             {
                 new KongService
                 {
@@ -88,194 +78,171 @@ namespace Kongverge.Common.Tests.Workflow
                 }
             };
 
-            var newServices = new List<KongService>();
+            var targetServices = Array.Empty<KongService>();
 
-            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+            await Processor.Process(existingServices, targetServices, new ExtendibleKongObject(), new ExtendibleKongObject());
 
-            system.KongWriter.Verify(k =>
-                k.AddService(It.IsAny<KongService>()), Times.Never);
-            system.KongWriter.Verify(k =>
-                k.DeleteService(existingServices.Single().Id), Times.Once);
-            system.KongWriter.Verify(k =>
-                k.AddRoute(It.IsAny<KongService>(), It.IsAny<KongRoute>()), Times.Never);
+            KongWriter.Verify(x => x.UpdateService(It.IsAny<KongService>()), Times.Never);
+            KongWriter.Verify(x => x.DeleteService(existingServices.Single().Id), Times.Once);
+            KongWriter.Verify(x => x.AddRoute(It.IsAny<string>(), It.IsAny<KongRoute>()), Times.Never);
+            KongWriter.Verify(x => x.UpsertPlugin(It.IsAny<KongPlugin>()), Times.Never);
+
+            VerifyNoAdds();
         }
 
         [Fact]
         public async Task ConvergeRoutes_WillAddMissingRoutes()
         {
-            var system = new KongProcessorEnvironment();
-            var route1 = new KongRoute();
+            var name = this.Create<string>();
 
-            var existingServices = new List<KongService>
+            var existingServices = new[]
             {
                 new KongService
                 {
-                    Name = "TestService1"
+                    Name = name
                 }
             };
 
-            var newServices = new List<KongService>
+            var targetServices = new[]
             {
                 new KongService
                 {
-                    Name = "TestService1",
-                    Routes = new List<KongRoute>
+                    Name = name,
+                    Routes = new[]
                     {
-                        route1
+                        Build<KongRoute>().Without(x => x.Id).Create()
                     }
                 }
             };
 
-            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+            await Processor.Process(existingServices, targetServices, new ExtendibleKongObject(), new ExtendibleKongObject());
 
-            system.KongWriter.Verify(k => k.AddRoute(newServices.Single(), route1), Times.Once());
+            KongWriter.Verify(x => x.AddRoute(targetServices[0].Id, targetServices[0].Routes[0]), Times.Once());
         }
 
         [Fact]
         public async Task ConvergeRoutes_WillRemoveExcessRoutes()
         {
-            var system = new KongProcessorEnvironment();
-            var route1 = new KongRoute
-            {
-                Id = Guid.NewGuid().ToString()
-            };
+            var name = this.Create<string>();
 
-            var existingServices = new List<KongService>
+            var existingServices = new[]
             {
                 new KongService
                 {
-                    Name = "TestService2",
-                    Routes = new List<KongRoute>
+                    Name = name,
+                    Routes = new[]
                     {
-                        route1
+                        this.Create<KongRoute>()
                     }
                 }
             };
 
-            var newServices = new List<KongService>
+            var targetServices = new[]
             {
                 new KongService
                 {
-                    Name = "TestService2",
-                    Routes = new List<KongRoute>()
+                    Name = name,
+                    Routes = Array.Empty<KongRoute>()
                 }
             };
 
-            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+            await Processor.Process(existingServices, targetServices, new ExtendibleKongObject(), new ExtendibleKongObject());
 
-            system.KongWriter.Verify(k => k.DeleteRoute(route1.Id), Times.Once());
+            KongWriter.Verify(x => x.DeleteRoute(existingServices[0].Routes[0].Id), Times.Once());
         }
 
         [Fact]
         public async Task ConvergePlugins_WillRemoveExcessPlugins()
         {
-            var fixture = new Fixture();
-            var plugin2 = fixture.Create<TestKongConfig>();
-            var plugin1 = fixture.Create<OtherTestKongConfig>();
+            var name = this.Create<string>();
 
-            var existingServices = new List<KongService>
+            var existingServices = new[]
             {
                 new KongService
                 {
-                    Name = "TestService3",
-                    Plugins = new List<IKongPluginConfig>
+                    Name = name,
+                    Plugins = new[]
                     {
-                        plugin1,
-                        plugin2
+                        this.Create<KongPlugin>(),
+                        this.Create<KongPlugin>()
                     }
                 }
             };
 
-            var newServices = new List<KongService>
+            var targetServices = new[]
             {
                 new KongService
                 {
-                    Name = "TestService3"
+                    Name = name
                 }
             };
 
-            var system = new KongProcessorEnvironment();
+            await Processor.Process(existingServices, targetServices, new ExtendibleKongObject(), new ExtendibleKongObject());
 
-            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
-
-            system.KongWriter.Verify(k => k.DeletePlugin(plugin1.id), Times.Once());
-            system.KongWriter.Verify(k => k.DeletePlugin(plugin2.id), Times.Once());
+            KongWriter.Verify(x => x.DeletePlugin(existingServices[0].Plugins[0].Id), Times.Once());
+            KongWriter.Verify(x => x.DeletePlugin(existingServices[0].Plugins[1].Id), Times.Once());
         }
 
         [Fact]
         public async Task ConvergePlugins_WillAddMissingPlugins()
         {
-            var fixture = new Fixture();
-            var plugin2 = fixture.Create<TestKongConfig>();
-            var plugin1 = fixture.Create<OtherTestKongConfig>();
-            var body1 = fixture.Create<PluginBody>();
-            var body2 = fixture.Create<PluginBody>();
+            var name = this.Create<string>();
 
-            var system = new KongProcessorEnvironment();
-
-            system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
-            system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin2)).Returns(body2);
-
-            var existingServices = new List<KongService>
+            var existingServices = new[]
             {
                 new KongService
                 {
-                    Name = "TestService4"
+                    Name = name
                 }
             };
 
-            var newServices = new List<KongService>
+            var targetServices = new[]
             {
                 new KongService
                 {
-                    Name = "TestService4",
-                    Plugins = new List<IKongPluginConfig>
+                    Name = name,
+                    Plugins = new[]
                     {
-                        plugin1,
-                        plugin2
+                        Build<KongPlugin>().Without(x => x.Id).Create(),
+                        Build<KongPlugin>().Without(x => x.Id).Create()
                     }
                 }
             };
 
-            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+            await Processor.Process(existingServices, targetServices, new ExtendibleKongObject(), new ExtendibleKongObject());
 
-            system.KongWriter.Verify(k => k.UpsertPlugin(body1), Times.Once());
-            system.KongWriter.Verify(k => k.UpsertPlugin(body2), Times.Once());
+            KongWriter.Verify(x => x.UpsertPlugin(targetServices[0].Plugins[0]), Times.Once());
+            KongWriter.Verify(x => x.UpsertPlugin(targetServices[0].Plugins[0]), Times.Once());
         }
 
         [Fact]
         public async Task ConvergePlugins_WillUpdateChangedPlugins()
         {
-            var fixture = new Fixture();
-            var plugin2 = fixture.Create<TestKongConfig>();
-            var plugin1 = fixture.Create<TestKongConfig>();
-            var body1 = fixture.Create<PluginBody>();
+            var name = this.Create<string>();
+            var plugin = this.Create<KongPlugin>();
+            var changedPlugin = Build<KongPlugin>().With(x => x.Name, plugin.Name).Create();
 
-            var existingServices = new List<KongService>
+            var existingServices = new[]
             {
                 new KongService
                 {
-                    Name = "TestService5",
-                    Plugins = new List<IKongPluginConfig> { plugin2 }
+                    Name = name,
+                    Plugins = new[] { plugin }
                 }
             };
 
-            var newServices = new List<KongService>
+            var targetServices = new[]
             {
                 new KongService
                 {
-                    Name = "TestService5",
-                    Plugins = new List<IKongPluginConfig> { plugin1 }
+                    Name = name,
+                    Plugins = new[] { changedPlugin }
                 }
             };
 
-            var system = new KongProcessorEnvironment();
+            await Processor.Process(existingServices, targetServices, new ExtendibleKongObject(), new ExtendibleKongObject());
 
-            system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
-
-            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
-
-            system.KongWriter.Verify(k => k.UpsertPlugin(body1), Times.Once());
+            KongWriter.Verify(x => x.UpsertPlugin(changedPlugin), Times.Once());
         }
     }
 }

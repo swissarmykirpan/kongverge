@@ -11,41 +11,46 @@ namespace Kongverge.Common.Helpers
         MissingHost,
         MissingPort,
         InputFolderUnreachable,
-        IncompatibleArguments
+        IncompatibleArguments,
+        InvalidDataFile
     }
 
     public class ExitWithCode
     {
-        public static int Return(ExitCode exitCode)
+        public static int Return(ExitCode exitCode, string message = null)
         {
             switch (exitCode)
             {
                 case ExitCode.Success:
-                    Log.Information("Finished");
+                    Log.Information(message ?? "Finished");
                     break;
 
                 case ExitCode.InvalidPort:
-                    Log.Error("Invalid port specified");
+                    Log.Error(message ?? "Invalid port specified");
                     break;
 
                 case ExitCode.MissingHost:
-                    Log.Error("Host must be specified");
+                    Log.Error(message ?? "Host must be specified");
                     break;
 
                 case ExitCode.MissingPort:
-                    Log.Error("Port must be specified");
+                    Log.Error(message ?? "Port must be specified");
                     break;
 
                 case ExitCode.HostUnreachable:
-                    Log.Error("Specified host unreachable");
+                    Log.Error(message ?? "Specified host unreachable");
                     break;
 
                 case ExitCode.InputFolderUnreachable:
-                    Log.Error("Unable to access input folder");
+                    Log.Error(message ?? "Unable to access input folder");
                     break;
 
                 case ExitCode.IncompatibleArguments:
-                    Log.Error("Incompatible command line arguments");
+                    Log.Error(message ?? "Incompatible command line arguments");
+                    break;
+
+                case ExitCode.InvalidDataFile:
+                    Log.Error(message ?? "Ivalid data file");
                     break;
 
                 default:

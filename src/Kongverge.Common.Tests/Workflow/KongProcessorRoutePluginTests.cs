@@ -1,211 +1,167 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Tests.Helpers;
-using Kongverge.KongPlugin;
 using Moq;
 using Xunit;
 
 namespace Kongverge.Common.Tests.Workflow
 {
-    public class KongProcessorRoutePluginTests
+    public class KongProcessorRoutePluginTests : KongProcessorTestsBase
     {
         [Fact]
         public async Task WhenServiceRouteAndPluginAreAllNew_TheyAreAllAdded()
         {
-            var routeId = Guid.NewGuid().ToString();
-            var fixture = new Fixture();
-            var plugin1 = fixture.Create<OtherTestKongConfig>();
-            var body1 = fixture.Create<PluginBody>();
+            var plugin = this.Create<KongPlugin>();
+            
+            var targetServices = ServiceWithRouteAndPlugin(plugin);
 
-            var system = new KongProcessorEnvironment();
+            await Processor.Process(new KongService[0], targetServices, new ExtendibleKongObject(), new ExtendibleKongObject());
 
-            system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
+            KongWriter.Verify(x => x.AddService(targetServices[0]), Times.Once);
+            KongWriter.Verify(x => x.AddRoute(targetServices[0].Id, targetServices[0].Routes[0]), Times.Once);
+            KongWriter.Verify(x => x.UpsertPlugin(plugin), Times.Once());
 
-            var existingServices = new List<KongService>();
-
-            var newServices = ServiceWithRouteAndPlugin(routeId, plugin1);
-
-            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
-
-            system.KongWriter.Verify(k =>
-                k.AddService(It.IsAny<KongService>()), Times.Once);
-            system.KongWriter.Verify(k =>
-                k.AddRoute(It.IsAny<KongService>(), It.IsAny<KongRoute>()), Times.Once);
-            system.KongWriter.Verify(k => k.UpsertPlugin(body1), Times.Once());
-
-            system.VerifyNoDeletes();
+            VerifyNoDeletes();
         }
 
         [Fact]
         public async Task WhenRouteAndPluginAreNew_TheyAreAdded()
         {
-            var routeId = Guid.NewGuid().ToString();
-            var fixture = new Fixture();
-            var plugin1 = fixture.Create<OtherTestKongConfig>();
-            var body1 = fixture.Create<PluginBody>();
-
-            var system = new KongProcessorEnvironment();
-
-            system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
-
-            var existingServices = new List<KongService>
+            var plugin = this.Create<KongPlugin>();
+            
+            var targetServices = ServiceWithRouteAndPlugin(plugin);
+            var existingServices = new[]
             {
                 new KongService
                 {
-                    Name = "TestService1"
+                    Id = this.Create<string>(),
+                    Name = targetServices[0].Name
                 }
             };
+            
+            await Processor.Process(existingServices, targetServices, new ExtendibleKongObject(), new ExtendibleKongObject());
 
-            var newServices = ServiceWithRouteAndPlugin(routeId, plugin1);
+            KongWriter.Verify(x => x.AddService(targetServices[0]), Times.Never);
+            KongWriter.Verify(x => x.AddRoute(targetServices[0].Id, targetServices[0].Routes[0]), Times.Once);
+            KongWriter.Verify(x => x.UpsertPlugin(plugin), Times.Once());
 
-            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
-
-            system.KongWriter.Verify(k =>
-                k.AddService(It.IsAny<KongService>()), Times.Never);
-            system.KongWriter.Verify(k =>
-                k.AddRoute(It.IsAny<KongService>(), It.IsAny<KongRoute>()), Times.Once);
-            system.KongWriter.Verify(k => k.UpsertPlugin(body1), Times.Once());
-
-            system.VerifyNoDeletes();
+            VerifyNoDeletes();
         }
 
         [Fact]
         public async Task WhenPluginIsNew_ItIsAdded()
         {
-            var fixture = new Fixture();
-            var plugin1 = fixture.Create<OtherTestKongConfig>();
-            var body1 = fixture.Create<PluginBody>();
-            var routeId = Guid.NewGuid().ToString();
+            var plugin = this.Create<KongPlugin>();
 
-            var system = new KongProcessorEnvironment();
-
-            system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
-
+            var targetServices = ServiceWithRouteAndPlugin( plugin);
             var existingServices = new List<KongService>
             {
                 new KongService
                 {
-                    Name = "TestService1",
+                    Id = this.Create<string>(),
+                    Name = targetServices[0].Name,
                     Routes = new List<KongRoute>
                     {
                         new KongRoute
                         {
-                            Id = routeId,
-                            Methods = new List<string> { "GET "},
-                            Paths =  new List<string> { "/foo/bar "}
+                            Id = this.Create<string>(),
+                            Methods = new[] { targetServices[0].Routes[0].Methods.Single() },
+                            Paths =  new[] { targetServices[0].Routes[0].Paths.Single() }
                             // no plugin in the existing state
                         }
                     }
                 }
             };
 
-            var newServices = ServiceWithRouteAndPlugin(routeId, plugin1);
+            await Processor.Process(existingServices, targetServices, new ExtendibleKongObject(), new ExtendibleKongObject());
 
-            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+            KongWriter.Verify(x => x.AddService(It.IsAny<KongService>()), Times.Never);
+            KongWriter.Verify(x => x.AddRoute(It.IsAny<string>(), It.IsAny<KongRoute>()), Times.Never);
+            KongWriter.Verify(x => x.UpsertPlugin(plugin), Times.Once());
 
-            system.KongWriter.Verify(k =>
-                k.AddService(It.IsAny<KongService>()), Times.Never);
-            system.KongWriter.Verify(k =>
-                k.AddRoute(It.IsAny<KongService>(), It.IsAny<KongRoute>()), Times.Never);
-            system.KongWriter.Verify(k => k.UpsertPlugin(body1), Times.Once());
-
-            system.VerifyNoDeletes();
+            VerifyNoDeletes();
         }
 
         [Fact]
         public async Task WhenRoutePluginIsRemoved_ItIsDeleted()
         {
-            var fixture = new Fixture();
-            var plugin1 = fixture.Create<OtherTestKongConfig>();
-            var body1 = fixture.Create<PluginBody>();
-            var routeId = Guid.NewGuid().ToString();
+            var plugin = this.Create<KongPlugin>();
 
-            var system = new KongProcessorEnvironment();
-
-            system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
-
-            var existingServices = ServiceWithRouteAndPlugin(routeId, plugin1);
-
-            var newServices = new List<KongService>
+            var existingServices = ServiceWithRouteAndPlugin(plugin, true);
+            var targetServices = new List<KongService>
             {
                 new KongService
                 {
-                    Name = "TestService1",
+                    Name = existingServices[0].Name,
                     Routes = new List<KongRoute>
                     {
                         new KongRoute
                         {
-                            Id = routeId,
-                            Methods = new List<string> { "GET "},
-                            Paths =  new List<string> { "/foo/bar "}
+                            Methods = new[] { existingServices[0].Routes[0].Methods.Single() },
+                            Paths =  new[] { existingServices[0].Routes[0].Paths.Single() }
                             // no plugin in the new state
                         }
                     }
                 }
             };
 
-            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+            await Processor.Process(existingServices, targetServices, new ExtendibleKongObject(), new ExtendibleKongObject());
 
-            system.VerifyNoAdds();
+            VerifyNoAdds();
 
-            system.KongWriter.Verify(k => k.DeleteService(It.IsAny<string>()), Times.Never);
-            system.KongWriter.Verify(k => k.DeleteRoute(It.IsAny<string>()), Times.Never);
-            system.KongWriter.Verify(k => k.DeletePlugin(plugin1.id), Times.Once());
+            KongWriter.Verify(x => x.DeleteService(It.IsAny<string>()), Times.Never);
+            KongWriter.Verify(x => x.DeleteRoute(It.IsAny<string>()), Times.Never);
+            KongWriter.Verify(x => x.DeletePlugin(plugin.Id), Times.Once());
         }
 
         [Fact]
         public async Task WhenRoutePluginAndRouteAreRemoved_TheyAreDeleted()
         {
-            var fixture = new Fixture();
-            var plugin1 = fixture.Create<OtherTestKongConfig>();
-            var body1 = fixture.Create<PluginBody>();
-            var routeId = Guid.NewGuid().ToString();
+            var plugin = this.Create<KongPlugin>();
 
-            var system = new KongProcessorEnvironment();
-
-            system.KongPluginCollection.Setup(e => e.CreatePluginBody(plugin1)).Returns(body1);
-
-            var existingServices = ServiceWithRouteAndPlugin(routeId, plugin1);
-
-            var newServices = new List<KongService>
+            var existingServices = ServiceWithRouteAndPlugin(plugin, true);
+            var targetServices = new List<KongService>
             {
                 new KongService
                 {
-                    Name = "TestService1"
+                    Name = existingServices[0].Name,
                     // no routes in new state
                 }
             };
 
-            await system.Processor.Process(existingServices, newServices, new GlobalConfig(), new GlobalConfig());
+            await Processor.Process(existingServices, targetServices, new ExtendibleKongObject(), new ExtendibleKongObject());
 
-            system.VerifyNoAdds();
+            VerifyNoAdds();
 
-            system.KongWriter.Verify(k => k.UpsertPlugin(It.IsAny<PluginBody>()), Times.Never);
-
-            system.KongWriter.Verify(k => k.DeleteService(It.IsAny<string>()), Times.Never);
-            system.KongWriter.Verify(k => k.DeleteRoute(It.IsAny<string>()), Times.Once);
+            KongWriter.Verify(x => x.UpsertPlugin(It.IsAny<KongPlugin>()), Times.Never);
+            KongWriter.Verify(x => x.DeleteService(It.IsAny<string>()), Times.Never);
+            KongWriter.Verify(x => x.DeleteRoute(existingServices[0].Routes[0].Id), Times.Once);
         }
 
-        private static List<KongService> ServiceWithRouteAndPlugin(string routeId, OtherTestKongConfig plugin1)
+        private IReadOnlyList<KongService> ServiceWithRouteAndPlugin(KongPlugin plugin, bool existing = false)
         {
-            return new List<KongService>
+            if (!existing)
+            {
+                plugin.Id = null;
+            }
+
+            return new[]
             {
                 new KongService
                 {
-                    Name = "TestService1",
-                    Routes = new List<KongRoute>
+                    Name = this.Create<string>(),
+                    Routes = new[]
                     {
                         new KongRoute
                         {
-                            Id = routeId,
-                            Methods = new List<string> { "GET " },
-                            Paths = new List<string> { "/foo/bar " },
-                            Plugins = new List<IKongPluginConfig>
+                            Id = existing ? this.Create<string>() : null,
+                            Methods = new[] { this.Create<string>() },
+                            Paths = new[] { this.Create<string>() },
+                            Plugins = new[]
                             {
-                                plugin1
+                                plugin
                             }
                         }
                     }
