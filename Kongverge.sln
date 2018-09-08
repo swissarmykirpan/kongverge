@@ -15,13 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Validation.Tests"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7781A389-5975-4D1D-B53D-D121ED676A07}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.KongPlugin", "src\Kongverge.KongPlugin\Kongverge.KongPlugin.csproj", "{F4DE63D3-9361-4648-8B9F-7E3ADEF20764}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Common.Tests", "src\Kongverge.Common.Tests\Kongverge.Common.Tests.csproj", "{1C5B085D-063C-4F9C-94F2-51C63AE6948B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.Integration.Tests", "src\Kongverge.Integration.Tests\Kongverge.Integration.Tests.csproj", "{0A099441-1FCD-4105-AA68-6519C94E1E4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kongverge.TestHelpers", "src\Kongverge.TestHelpers\Kongverge.TestHelpers.csproj", "{E3C727F6-2109-42C3-9BA3-CB2B5F66A87D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongverge.TestHelpers", "src\Kongverge.TestHelpers\Kongverge.TestHelpers.csproj", "{E3C727F6-2109-42C3-9BA3-CB2B5F66A87D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,10 +47,6 @@ Global
 		{B1BBBAA9-08FC-4F00-9E06-2970801A719A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1BBBAA9-08FC-4F00-9E06-2970801A719A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1BBBAA9-08FC-4F00-9E06-2970801A719A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F4DE63D3-9361-4648-8B9F-7E3ADEF20764}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F4DE63D3-9361-4648-8B9F-7E3ADEF20764}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F4DE63D3-9361-4648-8B9F-7E3ADEF20764}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F4DE63D3-9361-4648-8B9F-7E3ADEF20764}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1C5B085D-063C-4F9C-94F2-51C63AE6948B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1C5B085D-063C-4F9C-94F2-51C63AE6948B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C5B085D-063C-4F9C-94F2-51C63AE6948B}.Release|Any CPU.ActiveCfg = Release|Any CPU

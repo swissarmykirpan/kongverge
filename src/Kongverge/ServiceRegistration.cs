@@ -1,14 +1,8 @@
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using Kongverge.Common;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
-using Kongverge.Common.Plugins;
 using Kongverge.Common.Services;
 using Kongverge.Common.Workflow;
-using Kongverge.KongPlugin;
 using Kongverge.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,20 +27,6 @@ namespace Kongverge
             services.AddSingleton<KongAdminWriter>();
             services.AddSingleton<KongvergeWorkflow>();
             services.AddSingleton<ExportWorkflow>();
-
-            var thisAssembly = typeof(ServiceRegistration).Assembly;
-
-            var assemblies = thisAssembly
-                .GetReferencedAssemblies()
-                .Select(Assembly.Load)
-                .Concat(new[] { thisAssembly })
-                .Distinct();
-
-            AddPlugins(services, assemblies);
-
-            services.AddSingleton<PluginConverter>();
-
-            services.AddSingleton<IKongPluginCollection>(s => new KongPluginCollection(s.GetServices<IKongPlugin>()));
 
             services.AddSingleton<IKongAdminReader, KongAdminReader>();
 
@@ -87,23 +67,6 @@ namespace Kongverge
                 .AddEnvironmentVariables()
                 .Build();
             services.Configure<Settings>(set => configuration.Bind(set));
-        }
-
-        private static void AddPlugins(IServiceCollection services, IEnumerable<Assembly> assembliesToScan)
-        {
-            var myInterface = typeof(IKongPlugin);
-
-            var types =
-                assembliesToScan
-                .SelectMany(s => s.GetTypes())
-                .Where(t => !t.IsAbstract && !t.IsInterface)
-                .Where(p => myInterface.IsAssignableFrom(p))
-                .Distinct();
-
-            foreach (var t in types)
-            {
-                services.AddSingleton(myInterface, t);
-            }
         }
     }
 }

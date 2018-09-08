@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Services;
-using Kongverge.KongPlugin;
 
 namespace Kongverge.Integration.Tests
 {
@@ -23,14 +22,14 @@ namespace Kongverge.Integration.Tests
             action.Should().Throw<KongException>().Which.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
-        public static T ShouldHaveOnePlugin<T>(this ExtendibleKongObject service) where T : IKongPluginConfig
+        public static KongPlugin ShouldHaveOnePlugin(this ExtendibleKongObject service, string name)
         {
             service.Should().NotBeNull();
             service.Plugins.Should().NotBeNull();
             service.Plugins.Should().HaveCount(1);
-            service.Plugins.Single().Should().BeOfType<T>();
+            service.Plugins.Single().Name.Should().Be(name);
 
-            return (T)service.Plugins.Single();
+            return service.Plugins.Single();
         }
     }
 }

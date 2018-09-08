@@ -1,8 +1,8 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
-using Kongverge.Common.Plugins;
 using Kongverge.Common.Services;
 using Microsoft.Extensions.Options;
 using Serilog;
@@ -13,45 +13,78 @@ namespace Kongverge.Common.Workflow
     {
         private readonly IKongAdminWriter _kongWriter;
         private readonly IDataFileHelper _fileHelper;
-        private readonly IKongPluginCollection _kongPluginCollection;
 
         public KongvergeWorkflow(
             IKongAdminReader kongReader,
             IOptions<Settings> configuration,
             IKongAdminWriter kongWriter,
-            IDataFileHelper fileHelper,
-            IKongPluginCollection kongPluginCollection)
-            : base(kongReader, configuration)
+            IDataFileHelper fileHelper) : base(kongReader, configuration)
         {
             _kongWriter = kongWriter;
             _fileHelper = fileHelper;
-            _kongPluginCollection = kongPluginCollection;
         }
 
         public override async Task<int> DoExecute()
         {
-            var existingServices = await KongReader.GetServices().ConfigureAwait(false);
-            var existingGlobalConfig = await KongReader.GetGlobalConfig().ConfigureAwait(false);
-
             Log.Information("Reading files from {input}", Configuration.InputFolder);
-            var success =
-                _fileHelper.GetDataFiles(Configuration.InputFolder, out var dataFiles, out var targetGlobalConfig);
+            var success = _fileHelper.GetDataFiles(Configuration.InputFolder, out var targetServices, out var targetGlobalConfig);
             if (!success)
             {
                 return ExitWithCode.Return(ExitCode.InputFolderUnreachable);
             }
+            
+            foreach (var targetService in targetServices)
+            {
+                var valid = await ServiceValidationHelper.Validate(targetService).ConfigureAwait(false);
+                if (!valid)
+                {
+                    return ExitWithCode.Return(ExitCode.InvalidDataFile, $"Invalid Data File: {targetService.Name}{Settings.FileExtension}");
+                }
+            }
 
-            //Process Input Files
-            var targetServices = dataFiles
-                .Select(f => f.Service)
-                .ToList();
+            var plugins = await KongReader.GetPlugins().ConfigureAwait(false);
+            var existingServices = await GetExistingServices(plugins).ConfigureAwait(false);
+            var existingGlobalConfig = GetExistingGlobalConfig(plugins);
+            
+            var processor = new KongProcessor(_kongWriter);
 
-            var processor = new KongProcessor(_kongWriter, _kongPluginCollection);
-
-            await processor.Process(existingServices, targetServices, existingGlobalConfig, targetGlobalConfig)
-                .ConfigureAwait(false);
+            await processor.Process(existingServices, targetServices, existingGlobalConfig, targetGlobalConfig).ConfigureAwait(false);
 
             return ExitWithCode.Return(ExitCode.Success);
+        }
+
+        private async Task<IReadOnlyCollection<KongService>> GetExistingServices(IReadOnlyCollection<KongPlugin> plugins)
+        {
+            var services = await KongReader.GetServices().ConfigureAwait(false);
+            var routes = await KongReader.GetRoutes().ConfigureAwait(false);
+
+            foreach (var existingService in services)
+            {
+                PopulateServiceTree(existingService, routes, plugins);
+            }
+
+            return services;
+        }
+
+        private void PopulateServiceTree(
+            KongService service,
+            IReadOnlyCollection<KongRoute> routes,
+            IReadOnlyCollection<KongPlugin> plugins)
+        {
+            service.Plugins = plugins.Where(x => x.ServiceId == service.Id).ToArray();
+            service.Routes = routes.Where(x => x.Service.Id == service.Id).ToArray();
+            foreach (var serviceRoute in service.Routes)
+            {
+                serviceRoute.Plugins = plugins.Where(x => x.RouteId == serviceRoute.Id).ToArray();
+            }
+        }
+
+        private ExtendibleKongObject GetExistingGlobalConfig(IReadOnlyCollection<KongPlugin> plugins)
+        {
+            return new ExtendibleKongObject
+            {
+                Plugins = plugins.Where(x => x.IsGlobal()).ToArray()
+            };
         }
     }
 }
