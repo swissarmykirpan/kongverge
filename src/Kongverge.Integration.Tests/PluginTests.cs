@@ -1,17 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoFixture;
 using FluentAssertions;
 using FluentAssertions.Equivalency;
 using FluentAssertions.Execution;
-using Kongverge.KongPlugin;
+using Kongverge.Common.DTOs;
 using Xunit;
 
 namespace Kongverge.Integration.Tests
 {
-    public abstract class PluginTests<TPluginConfig> : IClassFixture<KongvergeTestFixture>
-        where TPluginConfig : IKongPluginConfig, new()
+    public abstract class PluginTests : IClassFixture<KongvergeTestFixture>
     {
         private readonly KongvergeTestFixture _fixture;
 
@@ -34,11 +32,11 @@ namespace Kongverge.Integration.Tests
 
                 var serviceReadFromKong = await _fixture.KongAdminReader.GetService(service.Id);
 
-                var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin<TPluginConfig>();
+                var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin(plugin.Name);
 
                 pluginOut.Should()
                     .BeEquivalentTo(plugin, opt => opt
-                        .Excluding(p => p.id)
+                        .Excluding(p => p.Id)
                         .Using<string>(CompareStringsWithoutNull).WhenTypeIs<string>());
             }
         }
@@ -60,11 +58,11 @@ namespace Kongverge.Integration.Tests
 
                 serviceReadFromKong.Routes.Should().HaveCount(1);
 
-                var pluginOut = serviceReadFromKong.Routes.First().ShouldHaveOnePlugin<TPluginConfig>();
+                var pluginOut = serviceReadFromKong.Routes.First().ShouldHaveOnePlugin(plugin.Name);
 
                 pluginOut.Should()
                     .BeEquivalentTo(plugin, opt => opt
-                        .Excluding(p => p.id)
+                        .Excluding(p => p.Id)
                         .Using<string>(CompareStringsWithoutNull).WhenTypeIs<string>());
             }
         }
@@ -74,30 +72,22 @@ namespace Kongverge.Integration.Tests
         {
             foreach (var plugin in Permutations)
             {
-                var pluginBody = _fixture.PluginCollection.CreatePluginBody(plugin);
-                await _fixture.UpsertPlugin(pluginBody);
-                var globalConfig = await _fixture.KongAdminReader.GetGlobalConfig();
+                await _fixture.UpsertPlugin(plugin);
+                var plugins = await _fixture.KongAdminReader.GetPlugins();
+                var globalPlugins = plugins.Where(x => x.IsGlobal()).ToArray();
 
-                globalConfig.Plugins.Single(x => x.id == pluginBody.id).Should()
+                globalPlugins.Single(x => x.Id == plugin.Id).Should()
                     .BeEquivalentTo(plugin, opt => opt
-                        .Excluding(p => p.id)
+                        .Excluding(p => p.Id)
                         .Using<string>(CompareStringsWithoutNull).WhenTypeIs<string>());
 
                 // We need to delete the globally added plugin because the some plugins for e.g. request-transfomer plugin 
                 // cannot be added as a global plugin multiple times.
-                await _fixture.DeleteGlobalPlugin(pluginBody.id);
+                await _fixture.DeleteGlobalPlugin(plugin.Id);
             }
         }
 
-        protected virtual IEnumerable<TPluginConfig> Permutations
-        {
-            get
-            {
-                yield return new Fixture()
-                    .Customize(new SupportMutableValueTypesCustomization())
-                    .Create<TPluginConfig>();
-            }
-        }
+        protected abstract IEnumerable<KongPlugin> Permutations { get; }
 
         /// <summary>
         /// Treat null string and empty string as equivalent
