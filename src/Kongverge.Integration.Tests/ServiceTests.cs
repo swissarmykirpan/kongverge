@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Kongverge.Common.DTOs;
 using Xunit;
 
 namespace Kongverge.Integration.Tests
@@ -75,9 +74,10 @@ namespace Kongverge.Integration.Tests
 
             await _fixture.AddServiceAndChildren(service);
 
-            var serviceReadFromKong = await _fixture.KongAdminReader.GetService(service.Id);
-            serviceReadFromKong.Routes.Should().HaveCount(1);
-            serviceReadFromKong.Routes.First().Paths.Should().BeEquivalentTo(paths);
+            var routesReadFromKong = await _fixture.KongAdminReader.GetRoutes();
+            var routesForService = routesReadFromKong.Where(x => x.Service.Id == service.Id).ToArray();
+            routesForService.Should().HaveCount(1);
+            routesForService.First().Paths.Should().BeEquivalentTo(paths);
         }
         
         [Fact]

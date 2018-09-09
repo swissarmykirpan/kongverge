@@ -1,16 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
-using Kongverge.Common.Helpers;
-using Kongverge.KongPlugin;
 using Newtonsoft.Json;
 
 namespace Kongverge.Common.DTOs
 {
-    public sealed class KongRoute : ExtendibleKongObject
+    public sealed class KongRoute : ExtendibleKongObject, IKongEquatable<KongRoute>
     {
         private int _regexPriority;
         private const int DefaultRegexMultiplier = 10;
 
+        [JsonProperty("service")]
+        public ServiceReference Service { get; set; }
+        
         [JsonProperty("hosts")]
         public IEnumerable<string> Hosts { get; set; } = new List<string>();
 
@@ -23,6 +24,8 @@ namespace Kongverge.Common.DTOs
         [JsonProperty("paths")]
         public IEnumerable<string> Paths { get; set; } = new List<string>();
 
+        // TODO: This property has a default value. Therefore if it isn't specified in config files, it won't round-trip properly.
+        // Consider making this nullable and then checking if the returned value from Kong is the same as the default, and if so, setting it to null when StripPersistedValues() is invoked.
         [JsonProperty("regex_priority")]
         public int RegexPriority
         {
@@ -33,47 +36,44 @@ namespace Kongverge.Common.DTOs
         [JsonProperty("strip_path")]
         public bool StripPath { get; set; }
 
-        public bool Equals(KongRoute other)
+        public override string ToString()
         {
-            var result = Protocols.SafeEquivalent(other.Protocols)
-                          && Hosts.SafeEquivalent(other.Hosts)
-                          && Methods.SafeEquivalent(other.Methods)
-                          && Paths.SafeEquivalent(other.Paths)
-                          && RegexPriority == other.RegexPriority
-                          && StripPath == other.StripPath;
-            return result;
+            return $"Id: {Id}, Paths: {string.Join(", ", Paths)}";
         }
 
-        public override bool Equals(object obj)
+        public override void StripPersistedValues()
         {
-#pragma warning disable IDE0041 // Use 'is null' check
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (!(obj is KongRoute)) return false;
-            return Equals((KongRoute)obj);
-#pragma warning restore IDE0041 // Use 'is null' check
+            base.StripPersistedValues();
+            Service = null;
         }
 
-        public override int GetHashCode()
+        public override void AssignParentId(KongPlugin plugin)
         {
-            unchecked
+            base.AssignParentId(plugin);
+            plugin.RouteId = Id;
+        }
+
+        public object[] GetEqualityValues() =>
+            new object[]
             {
-#pragma warning disable RCS1212 // Remove redundant assignment.
-                var hashCode = Protocols.SequenceHash();
-                hashCode = (hashCode * 397) ^ Hosts.SequenceHash();
-                hashCode = (hashCode * 397) ^ Methods.SequenceHash();
-                hashCode = (hashCode * 397) ^ Paths.SequenceHash();
-                hashCode = (hashCode * 397) ^ RegexPriority;
-                hashCode = (hashCode * 397) ^ StripPath.GetHashCode();
-#pragma warning restore RCS1212 // Remove redundant assignment.
-                return hashCode;
-            }
-        }
+                Hosts,
+                Protocols,
+                Methods,
+                Paths,
+                RegexPriority,
+                StripPath
+            };
 
-        protected override PluginBody DoDecoratePluginBody(PluginBody body)
+        public bool Equals(KongRoute other) => this.KongEquals(other);
+
+        public override bool Equals(object obj) => this.KongEqualsObject(obj);
+
+        public override int GetHashCode() => this.GetKongHashCode();
+
+        public class ServiceReference
         {
-            body.route_id = Id;
-            return body;
+            [JsonProperty("id")]
+            public string Id { get; set; }
         }
     }
 }

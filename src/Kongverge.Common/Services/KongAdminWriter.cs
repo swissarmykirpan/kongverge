@@ -4,8 +4,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
-using Kongverge.Common.Plugins;
-using Kongverge.KongPlugin;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Serilog;
@@ -14,30 +12,21 @@ namespace Kongverge.Common.Services
 {
     public class KongAdminWriter : KongAdminReader, IKongAdminWriter
     {
-        public KongAdminWriter(
-            IOptions<Settings> configuration,
-            KongAdminHttpClient httpClient,
-            IKongPluginCollection kongPluginCollection,
-            PluginConverter converter) : base(configuration, httpClient, kongPluginCollection, converter)
+        public KongAdminWriter(IOptions<Settings> configuration, KongAdminHttpClient httpClient)
+            : base(configuration, httpClient)
         {
         }
 
         public async Task AddService(KongService service)
         {
-            var routes = service.Routes;
-            var plugins = service.Plugins;
-            service.Routes = null;
-            service.Plugins = null;
-            var content = KongJsonConvert.Serialize(service);
-            service.Routes = routes;
-            service.Plugins = plugins;
+            var content = service.ToJsonStringContent();
 
             try
             {
                 var response = await HttpClient.PostAsync("/services/", content).ConfigureAwait(false);
                 var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var apiservice = JsonConvert.DeserializeObject<KongService>(responseBody);
-                service.Id = apiservice.Id;
+                var added = JsonConvert.DeserializeObject<KongService>(responseBody);
+                service.Id = added.Id;
             }
             catch (Exception e)
             {
@@ -48,17 +37,8 @@ namespace Kongverge.Common.Services
 
         public async Task UpdateService(KongService service)
         {
-            Log.Information("Updating service {name} to config {data}", service.Name, service);
             var requestUri = new Uri($"/services/{service.Name}", UriKind.Relative);
-
-            var routes = service.Routes;
-            var plugins = service.Plugins;
-            service.Routes = null;
-            service.Plugins = null;
-            var content = KongJsonConvert.Serialize(service);
-            service.Routes = routes;
-            service.Plugins = plugins;
-
+            var content = service.ToJsonStringContent();
             var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri)
             {
                 Content = content
@@ -80,12 +60,13 @@ namespace Kongverge.Common.Services
 
         public async Task DeleteService(string serviceId)
         {
-            var requestUri = $"/services/{serviceId}";
+            await DeleteRoutes(serviceId).ConfigureAwait(false);
 
+            var requestUri = $"/services/{serviceId}";
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
+
             try
             {
-                await DeleteRoutes(serviceId).ConfigureAwait(false);
                 await HttpClient.SendAsync(request).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -95,26 +76,17 @@ namespace Kongverge.Common.Services
             }
         }
 
-        public async Task AddRoute(KongService service, KongRoute route)
+        public async Task AddRoute(string serviceId, KongRoute route)
         {
-            Log.Information(@"Adding Route
-    Route Paths: {paths}
-    Methods    : {methods}
-    Protocols  : {protocols}",
-                route.Paths, route.Methods, route.Protocols);
-
-            var plugins = route.Plugins;
-            route.Plugins = null;
-            var content = KongJsonConvert.Serialize(route);
-            route.Plugins = plugins;
+            var content = route.ToJsonStringContent();
 
             try
             {
-                var result = await HttpClient.PostAsync($"/services/{service.Id ?? service.Name}/routes", content).ConfigureAwait(false);
-                var responseBody = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var addedRoute = JsonConvert.DeserializeObject<KongRoute>(responseBody);
-                route.Id = addedRoute.Id;
-                Log.Information("Added route {route}", addedRoute);
+                var response = await HttpClient.PostAsync($"/services/{serviceId}/routes", content).ConfigureAwait(false);
+                var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var added = JsonConvert.DeserializeObject<KongRoute>(responseBody);
+                route.Id = added.Id;
+                route.Service = added.Service;
             }
             catch (Exception e)
             {
@@ -126,8 +98,8 @@ namespace Kongverge.Common.Services
         public async Task DeleteRoute(string routeId)
         {
             var requestUri = $"/routes/{routeId}";
-
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
+
             try
             {
                 await HttpClient.SendAsync(request).ConfigureAwait(false);
@@ -139,17 +111,16 @@ namespace Kongverge.Common.Services
             }
         }
 
-        public async Task UpsertPlugin(PluginBody plugin)
+        public async Task UpsertPlugin(KongPlugin plugin)
         {
-            var content = KongJsonConvert.Serialize(plugin);
+            var content = plugin.ToJsonStringContent();
 
             try
             {
                 var response = await HttpClient.PutAsync("/plugins", content).ConfigureAwait(false);
                 var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var updated = JsonConvert.DeserializeObject<PluginBody>(responseBody);
-                plugin.id = updated.id;
-                Log.Information("Successfully added plugin {name} to route {id}", plugin.name, plugin.consumer_id ?? plugin.service_id ?? plugin.route_id);
+                var updated = JsonConvert.DeserializeObject<KongPlugin>(responseBody);
+                plugin.Id = updated.Id;
             }
             catch (Exception e)
             {
@@ -161,12 +132,11 @@ namespace Kongverge.Common.Services
         public async Task DeletePlugin(string pluginId)
         {
             var requestUri = $"/plugins/{pluginId}";
-
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
+
             try
             {
-                var response = await HttpClient.SendAsync(request).ConfigureAwait(false);
-                Log.Information("Called delete for plugin {id}, result {response}", pluginId, response.StatusCode);
+                await HttpClient.SendAsync(request).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -177,8 +147,8 @@ namespace Kongverge.Common.Services
 
         private async Task DeleteRoutes(string serviceId)
         {
-            var routes = await GetRoutes(serviceId).ConfigureAwait(false);
-            await Task.WhenAll(routes.Select(r => DeleteRoute(r.Id))).ConfigureAwait(false);
+            var routes = await GetServiceRoutes(serviceId).ConfigureAwait(false);
+            await Task.WhenAll(routes.Select(x => DeleteRoute(x.Id))).ConfigureAwait(false);
         }
     }
 }

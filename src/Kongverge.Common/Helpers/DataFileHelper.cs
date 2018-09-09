@@ -15,98 +15,90 @@ namespace Kongverge.Common.Helpers
 
         private readonly Settings _configuration;
 
-        public DataFileHelper(IOptions<Settings> configuration, PluginConverter converter)
+        public DataFileHelper(IOptions<Settings> configuration)
         {
             _configuration = configuration.Value;
             _settings = new JsonSerializerSettings
             {
                 DefaultValueHandling = DefaultValueHandling.Ignore,
                 NullValueHandling = NullValueHandling.Ignore,
-                Converters = new[] { converter },
                 Formatting = Formatting.Indented
             };
         }
 
-        public KongDataFile ParseFile(string filename)
+        public bool GetDataFiles(string dataPath, out IReadOnlyCollection<KongService> services, out ExtendibleKongObject globalConfig)
         {
-            var text = File.ReadAllText(filename);
-            KongDataFile data;
             try
             {
-                data = JsonConvert.DeserializeObject<KongDataFile>(text, _settings);
+                services = Directory
+                    .EnumerateFiles(dataPath, $"*{Settings.FileExtension}", SearchOption.AllDirectories)
+                    .Where(d => !d.EndsWith(Settings.GlobalConfigPath))
+                    .Select(ParseFile<KongService>)
+                    .ToArray();
+
+                var globalConfigPath = Path.Combine(dataPath, Settings.GlobalConfigPath);
+                globalConfig = File.Exists(globalConfigPath) ? ParseFile<ExtendibleKongObject>(globalConfigPath) : new ExtendibleKongObject();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error occurred while reading from {path}", dataPath);
+                services = Array.Empty<KongService>();
+                globalConfig = new ExtendibleKongObject();
+                return false;
+            }
+            return true;
+        }
+
+        private T ParseFile<T>(string path) where T : ExtendibleKongObject
+        {
+            var text = File.ReadAllText(path);
+            T data;
+            try
+            {
+                data = JsonConvert.DeserializeObject<T>(text, _settings);
             }
             catch (FormatException ex)
             {
-                Log.Error(ex, "Invalid Syntax in {filename}", filename);
+                Log.Error(ex, "Invalid Syntax in {path}", path);
                 throw;
             }
             
             return data;
         }
 
-        public bool GetDataFiles(string dataPath, out IReadOnlyCollection<KongDataFile> dataFiles, out GlobalConfig globalConfig)
+        public void WriteConfigFiles(IEnumerable<KongService> services, ExtendibleKongObject globalConfig)
         {
-            try
-            {
-                dataFiles =
-                    Directory.EnumerateFiles(dataPath, $"*{Settings.FileExtension}", SearchOption.AllDirectories)
-                    .Where(d => !d.EndsWith(Settings.GlobalConfigPath))
-                    .Select(ParseFile)
-                    .ToList();
+            PrepareOutputFolder();
 
-                var globalPluginsFile = Path.Combine(dataPath, Settings.GlobalConfigPath);
-                globalConfig = File.Exists(globalPluginsFile) ? ParseGlobalConfig(globalPluginsFile) : new GlobalConfig();
-            }
-            catch (Exception ex)
+            foreach (var service in services)
             {
-                Log.Error(ex, "Error occurred while reading from {path}", dataPath);
-                dataFiles = new List<KongDataFile>();
-                globalConfig = new GlobalConfig();
-                return false;
+                WriteConfigObject(service, $"{service.Name}{Settings.FileExtension}");
             }
-            return true;
+
+            WriteConfigObject(globalConfig, $"{Settings.GlobalConfigPath}");
         }
 
-        private GlobalConfig ParseGlobalConfig(string path)
+        private void WriteConfigObject(ExtendibleKongObject configObject, string name)
         {
-            var text = File.ReadAllText(path);
-            try
-            {
-                return JsonConvert.DeserializeObject<GlobalConfig>(text, _settings);
-            }
-            catch (FormatException ex)
-            {
-                Log.Error(ex, "Invalid Syntax in global config file: {filename}", path);
-                throw;
-            }
+            configObject.StripPersistedValues();
+            var json = JsonConvert.SerializeObject(configObject, _settings);
+            var path = $"{_configuration.OutputFolder}\\{name}";
+            Log.Information("Writing {fileName}", path);
+            File.WriteAllText(path, json);
         }
 
-        public void WriteConfigFiles(IEnumerable<KongService> existingServices)
+        private void PrepareOutputFolder()
         {
             if (Directory.Exists(_configuration.OutputFolder))
             {
-                foreach (var enumerateFile in Directory.EnumerateFiles(_configuration.OutputFolder))
+                foreach (var path in Directory.EnumerateFiles(_configuration.OutputFolder))
                 {
-                    File.Delete(enumerateFile);
+                    File.Delete(path);
                 }
             }
             else
             {
                 Directory.CreateDirectory(_configuration.OutputFolder);
-            }
-
-            foreach (var service in existingServices)
-            {
-                var dataFile = new KongDataFile
-                {
-                    Service = service,
-                };
-
-                var json = JsonConvert.SerializeObject(dataFile, _settings);
-
-                var fileName = $"{_configuration.OutputFolder}\\{service.Name}{Settings.FileExtension}";
-                Log.Information("Writing {fileName}", fileName);
-                File.WriteAllText(fileName, json);
             }
         }
     }

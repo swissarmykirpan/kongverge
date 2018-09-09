@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Kongverge.KongPlugin;
 using Newtonsoft.Json;
 
 namespace Kongverge.Common.DTOs
 {
-    public sealed class KongService : ExtendibleKongObject
+    public sealed class KongService : ExtendibleKongObject, IKongEquatable<KongService>
     {
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -15,97 +12,83 @@ namespace Kongverge.Common.DTOs
         [JsonProperty("host")]
         public string Host { get; set; }
 
+        // TODO: This is not a Kong property. Therefore if it is specified in config files, it won't round-trip properly.
+        // Consider implementing this functionality another way (perhaps as part of service tests).
         [JsonProperty("validate-host")]
-        public bool ValidateHost { get; set; }
+        public bool? ValidateHost { get; set; }
 
+        // TODO: This property has a default value. Therefore if it isn't specified in config files, it won't round-trip properly.
+        // Consider making this nullable and then checking if the returned value from Kong is the same as the default, and if so, setting it to null when StripPersistedValues() is invoked.
         [JsonProperty("port")]
         public int Port { get; set; } = 80;
 
         [JsonProperty("protocol")]
         public string Protocol { get; set; } = "http";
 
+        // TODO: This property has a default value. Therefore if it isn't specified in config files, it won't round-trip properly.
+        // Consider making this nullable and then checking if the returned value from Kong is the same as the default, and if so, setting it to null when StripPersistedValues() is invoked.
         [JsonProperty("retries")]
         public int Retries { get; set; } = 5;
 
+        // TODO: This property has a default value. Therefore if it isn't specified in config files, it won't round-trip properly.
+        // Consider making this nullable and then checking if the returned value from Kong is the same as the default, and if so, setting it to null when StripPersistedValues() is invoked.
         [JsonProperty("connect_timeout")]
         public int ConnectTimeout { get; set; } = 300;
 
+        // TODO: This property has a default value. Therefore if it isn't specified in config files, it won't round-trip properly.
+        // Consider making this nullable and then checking if the returned value from Kong is the same as the default, and if so, setting it to null when StripPersistedValues() is invoked.
         [JsonProperty("write_timeout")]
         public int WriteTimeout { get; set; } = 100;
 
+        // TODO: This property has a default value. Therefore if it isn't specified in config files, it won't round-trip properly.
+        // Consider making this nullable and then checking if the returned value from Kong is the same as the default, and if so, setting it to null when StripPersistedValues() is invoked.
         [JsonProperty("read_timeout")]
         public int ReadTimeout { get; set; } = 1500;
 
         [JsonProperty("path")]
         public string Path { get; set; }
-
+        
+        [JsonProperty("routes")]
         public IReadOnlyList<KongRoute> Routes { get; set; } = Array.Empty<KongRoute>();
-
-        public bool Equals(KongService other)
-        {
-            if (other == null)
-            {
-                return false;
-            }
-
-            return
-                string.Equals(Name, other.Name)
-                && string.Equals(Host, other.Host)
-                && Port == other.Port
-                && string.Equals(Protocol, other.Protocol)
-                && Retries == other.Retries
-                && ConnectTimeout == other.ConnectTimeout
-                && WriteTimeout == other.WriteTimeout
-                && ReadTimeout == other.ReadTimeout
-                && string.Equals(Path, other.Path);
-        }
-
-        public override bool Equals(object obj)
-        {
-#pragma warning disable IDE0041 // Use 'is null' check
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != GetType())
-            {
-                return false;
-            }
-
-            return Equals(obj as KongService);
-#pragma warning restore IDE0041 // Use 'is null' check
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var nameBytes = Encoding.ASCII.GetBytes(Name);
-                return nameBytes.Aggregate(0, (current, nameChar) => (current * 397) ^ nameChar);
-            }
-        }
 
         public override string ToString()
         {
             return $"Id: {Id}, Name: {Name}";
         }
 
-        protected override PluginBody DoDecoratePluginBody(PluginBody body)
+        public override void StripPersistedValues()
         {
-            body.service_id = Id;
-
-            return body;
+            base.StripPersistedValues();
+            foreach (var route in Routes)
+            {
+                route.StripPersistedValues();
+            }
         }
 
-        public bool ShouldSerializeValidateHost()
+        public override void AssignParentId(KongPlugin plugin)
         {
-            return false;   
+            base.AssignParentId(plugin);
+            plugin.ServiceId = Id;
         }
+
+        public object[] GetEqualityValues() =>
+            new object[]
+            {
+                Name,
+                Host,
+                Port,
+                Protocol,
+                Retries,
+                ConnectTimeout,
+                WriteTimeout,
+                ReadTimeout,
+                Path
+            };
+
+        public bool Equals(KongService other) => this.KongEquals(other);
+
+        public override bool Equals(object obj) => this.KongEqualsObject(obj);
+
+        public override int GetHashCode() => this.GetKongHashCode();
     }
 }
