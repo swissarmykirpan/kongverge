@@ -4,10 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Helpers;
-using Kongverge.Common.Plugins;
 using Kongverge.Common.Services;
-using Kongverge.KongPlugin;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -23,10 +20,7 @@ namespace Kongverge.Integration.Tests
         private readonly IList<KongService> _cleanUp;
         private readonly IKongAdminWriter _kongAdminWriter;
 
-        public IDataFileHelper DataFileHelper => _serviceProvider.GetService<IDataFileHelper>();
         public IKongAdminReader KongAdminReader => _serviceProvider.GetService<IKongAdminReader>();
-        public Settings Settings => _serviceProvider.GetRequiredService<IOptions<Settings>>().Value;
-        public IKongPluginCollection PluginCollection => new KongPluginCollection(_serviceProvider.GetServices<IKongPlugin>());
         public ServiceBuilder ServiceBuilder = new ServiceBuilder(TestServiceNamePrefix);
 
         public KongvergeTestFixture()
@@ -55,10 +49,11 @@ namespace Kongverge.Integration.Tests
 
         private async Task<bool> DeleteExistingGlobalPlugins()
         {
-            var globalConfig = await KongAdminReader.GetGlobalConfig();
-            foreach (var plugin in globalConfig.Plugins)
+            var plugins = await KongAdminReader.GetPlugins();
+            var globalPlugins = plugins.Where(x => x.IsGlobal());
+            foreach (var plugin in globalPlugins)
             {
-                await _kongAdminWriter.DeletePlugin(plugin.id);
+                await _kongAdminWriter.DeletePlugin(plugin.Id);
             }
 
             return true;
@@ -69,11 +64,6 @@ namespace Kongverge.Integration.Tests
             var services = await KongAdminReader.GetServices();
             foreach (var service in services.Where(s => s.Name.StartsWith(TestServiceNamePrefix)))
             {
-                foreach (var route in service.Routes)
-                {
-                    await _kongAdminWriter.DeleteRoute(route.Id);
-                }
-
                 await _kongAdminWriter.DeleteService(service.Id);
             }
 
@@ -89,10 +79,8 @@ namespace Kongverge.Integration.Tests
             {
                 foreach (var plugin in service.Plugins)
                 {
-                    var pluginBody = PluginCollection.CreatePluginBody(plugin);
-                    pluginBody.service_id = service.Id;
-
-                    await UpsertPlugin(pluginBody);
+                    service.AssignParentId(plugin);
+                    await UpsertPlugin(plugin);
                 }
             }
 
@@ -100,16 +88,13 @@ namespace Kongverge.Integration.Tests
             {
                 foreach (var route in service.Routes)
                 {
-                    await _kongAdminWriter.AddRoute(service, route);
+                    await _kongAdminWriter.AddRoute(service.Id, route);
                     route.Id.Should().NotBeNullOrEmpty();
 
                     foreach (var plugin in route.Plugins)
                     {
-                        var pluginBody = PluginCollection.CreatePluginBody(plugin);
-                        pluginBody.service_id = service.Id;
-                        pluginBody.route_id = route.Id;
-
-                        await UpsertPlugin(pluginBody);
+                        route.AssignParentId(plugin);
+                        await UpsertPlugin(plugin);
                     }
                 }
             }
@@ -128,10 +113,10 @@ namespace Kongverge.Integration.Tests
             await _kongAdminWriter.DeletePlugin(id);
         }
 
-        public async Task UpsertPlugin(PluginBody pluginBody)
+        public async Task UpsertPlugin(KongPlugin plugin)
         {
-            await _kongAdminWriter.UpsertPlugin(pluginBody);
-            pluginBody.id.Should().NotBeNullOrEmpty();
+            await _kongAdminWriter.UpsertPlugin(plugin);
+            plugin.Id.Should().NotBeNullOrEmpty();
         }
 
         public void Dispose()

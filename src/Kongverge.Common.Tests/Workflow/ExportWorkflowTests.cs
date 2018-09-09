@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using Kongverge.Common.DTOs;
@@ -43,13 +45,34 @@ namespace Kongverge.Common.Tests.Workflow
             var system = new ExportWorkflowSut();
 
             system.MockKongReader.Setup(k => k.KongIsReachable()).ReturnsAsync(true);
-            var services = new List<KongService>();
+            var services = Array.Empty<KongService>();
             system.MockKongReader.Setup(k => k.GetServices()).ReturnsAsync(services);
+            var consumerPlugin = new KongPlugin
+            {
+                ConsumerId = Guid.NewGuid().ToString()
+            };
+            var servicePlugin = new KongPlugin
+            {
+                ServiceId = Guid.NewGuid().ToString()
+            };
+            var routePlugin = new KongPlugin
+            {
+                RouteId = Guid.NewGuid().ToString()
+            };
+            var globalPlugin = new KongPlugin();
+            var plugins = new[]
+            {
+                consumerPlugin,
+                servicePlugin,
+                routePlugin,
+                globalPlugin
+            };
+            system.MockKongReader.Setup(k => k.GetPlugins()).ReturnsAsync(plugins);
 
             await system.Sut.Execute();
 
-            system.MockKongReader.Verify(k => k.GetServices(), Times.Once());
-            system.MockDataFiles.Verify(f => f.WriteConfigFiles(services), Times.Once());
+            system.MockKongReader.Verify(k => k.GetServices(), Times.Once);
+            system.MockDataFiles.Verify(f => f.WriteConfigFiles(services, It.Is<ExtendibleKongObject>(x => x.Plugins.Single().Equals(globalPlugin))), Times.Once);
         }
 
         [Fact]
@@ -61,8 +84,8 @@ namespace Kongverge.Common.Tests.Workflow
 
             await system.Sut.Execute();
 
-            system.MockKongReader.Verify(k => k.GetServices(), Times.Never());
-            system.MockDataFiles.Verify(f => f.WriteConfigFiles(It.IsAny<List<KongService>>()), Times.Never());
+            system.MockKongReader.Verify(k => k.GetServices(), Times.Never);
+            system.MockDataFiles.Verify(f => f.WriteConfigFiles(It.IsAny<List<KongService>>(), It.IsAny<ExtendibleKongObject>()), Times.Never);
         }
     }
 }

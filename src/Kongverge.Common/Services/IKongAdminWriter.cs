@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
-using Kongverge.KongPlugin;
 
 namespace Kongverge.Common.Services
 {
@@ -12,11 +11,11 @@ namespace Kongverge.Common.Services
 
         Task DeleteService(string serviceId);
 
-        Task AddRoute(KongService service, KongRoute route);
+        Task AddRoute(string serviceId, KongRoute route);
 
         Task DeleteRoute(string routeId);
 
-        Task UpsertPlugin(PluginBody plugin);
+        Task UpsertPlugin(KongPlugin plugin);
 
         Task DeletePlugin(string pluginId);
     }

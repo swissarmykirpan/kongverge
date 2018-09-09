@@ -1,21 +1,27 @@
+using System.Threading.Tasks;
+using AutoFixture;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Plugins;
 using Kongverge.Common.Services;
 using Kongverge.Common.Workflow;
-using Kongverge.KongPlugin;
 using Moq;
 
 namespace Kongverge.Common.Tests.Workflow
 {
-    internal class KongProcessorEnvironment
+    public abstract class KongProcessorTestsBase : Fixture
     {
         public readonly Mock<IKongAdminWriter> KongWriter = new Mock<IKongAdminWriter>();
-        public readonly Mock<IKongPluginCollection> KongPluginCollection = new Mock<IKongPluginCollection>();
         public KongProcessor Processor { get; }
 
-        public KongProcessorEnvironment()
+        public KongProcessorTestsBase()
         {
-            Processor = new KongProcessor(KongWriter.Object, KongPluginCollection.Object);
+            KongWriter
+                .Setup(x => x.AddService(It.IsAny<KongService>()))
+                .Returns<KongService>(x =>
+                {
+                    x.Id = this.Create<string>();
+                    return Task.CompletedTask;
+                });
+            Processor = new KongProcessor(KongWriter.Object);
         }
 
         public void VerifyNoActionTaken()
@@ -34,8 +40,8 @@ namespace Kongverge.Common.Tests.Workflow
         public void VerifyNoAdds()
         {
             KongWriter.Verify(k => k.AddService(It.IsAny<KongService>()), Times.Never);
-            KongWriter.Verify(k => k.AddRoute(It.IsAny<KongService>(), It.IsAny<KongRoute>()), Times.Never);
-            KongWriter.Verify(k => k.UpsertPlugin(It.IsAny<PluginBody>()), Times.Never);
+            KongWriter.Verify(k => k.AddRoute(It.IsAny<string>(), It.IsAny<KongRoute>()), Times.Never);
+            KongWriter.Verify(k => k.UpsertPlugin(It.IsAny<KongPlugin>()), Times.Never);
         }
     }
 }
