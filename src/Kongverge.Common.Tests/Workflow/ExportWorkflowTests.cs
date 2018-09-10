@@ -72,7 +72,10 @@ namespace Kongverge.Common.Tests.Workflow
             await system.Sut.Execute();
 
             system.MockKongReader.Verify(k => k.GetServices(), Times.Once);
-            system.MockDataFiles.Verify(f => f.WriteConfigFiles(services, It.Is<ExtendibleKongObject>(x => x.Plugins.Single().Equals(globalPlugin))), Times.Once);
+            system.MockDataFiles.Verify(f =>
+                f.WriteConfiguration(It.Is<KongvergeConfiguration>(x =>
+                    x.Services == services && x.GlobalConfig.Plugins.Single().Equals(globalPlugin)
+                ), system.Settings.OutputFolder), Times.Once);
         }
 
         [Fact]
@@ -85,7 +88,7 @@ namespace Kongverge.Common.Tests.Workflow
             await system.Sut.Execute();
 
             system.MockKongReader.Verify(k => k.GetServices(), Times.Never);
-            system.MockDataFiles.Verify(f => f.WriteConfigFiles(It.IsAny<List<KongService>>(), It.IsAny<ExtendibleKongObject>()), Times.Never);
+            system.MockDataFiles.Verify(f => f.WriteConfiguration(It.IsAny<KongvergeConfiguration>(), It.IsAny<string>()), Times.Never);
         }
     }
 }

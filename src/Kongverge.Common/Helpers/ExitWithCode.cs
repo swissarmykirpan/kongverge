@@ -12,7 +12,8 @@ namespace Kongverge.Common.Helpers
         MissingPort,
         InputFolderUnreachable,
         IncompatibleArguments,
-        InvalidDataFile
+        InvalidConfigurationFile,
+        UnspecifiedError
     }
 
     public class ExitWithCode
@@ -49,15 +50,18 @@ namespace Kongverge.Common.Helpers
                     Log.Error(message ?? "Incompatible command line arguments");
                     break;
 
-                case ExitCode.InvalidDataFile:
-                    Log.Error(message ?? "Ivalid data file");
+                case ExitCode.InvalidConfigurationFile:
+                    Log.Error(message ?? "Invalid configuration file");
+                    break;
+
+                case ExitCode.UnspecifiedError:
                     break;
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(exitCode), exitCode, null);
             }
 
-            return  (int)exitCode;
+            return (int)exitCode;
         }
     }
 }
