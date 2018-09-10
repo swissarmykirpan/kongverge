@@ -49,7 +49,7 @@ namespace Kongverge.Common.Helpers
 
         public static async Task<bool> Validate(KongService service)
         {
-            var reachable = !service.ValidateHost || await HostIsReachable(service).ConfigureAwait(false);
+            var reachable = !(service.ValidateHost ?? false) || await HostIsReachable(service).ConfigureAwait(false);
             return reachable && RoutesAreValid(service);
         }
 
