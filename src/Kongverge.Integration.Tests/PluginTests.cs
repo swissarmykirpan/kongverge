@@ -1,21 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoFixture;
 using FluentAssertions;
-using FluentAssertions.Equivalency;
-using FluentAssertions.Execution;
-using Kongverge.KongPlugin;
+using Kongverge.Common.DTOs;
 using Xunit;
 
 namespace Kongverge.Integration.Tests
 {
-    public abstract class PluginTests<TPluginConfig> : IClassFixture<KongvergeTestFixture>
-        where TPluginConfig : IKongPluginConfig, new()
+    public class PluginTests : IClassFixture<KongvergeTestFixture>
     {
         private readonly KongvergeTestFixture _fixture;
 
-        protected PluginTests(KongvergeTestFixture kongvergeTestFixture)
+        public PluginTests(KongvergeTestFixture kongvergeTestFixture)
         {
             _fixture = kongvergeTestFixture;
         }
@@ -32,14 +28,10 @@ namespace Kongverge.Integration.Tests
 
                 await _fixture.AddServiceAndChildren(service);
 
-                var serviceReadFromKong = await _fixture.KongAdminReader.GetService(service.Id);
+                var plugins = await _fixture.KongAdminReader.GetPlugins();
+                var pluginOut = plugins.SingleOrDefault(x => x.ServiceId == service.Id);
 
-                var pluginOut = serviceReadFromKong.ShouldHaveOnePlugin<TPluginConfig>();
-
-                pluginOut.Should()
-                    .BeEquivalentTo(plugin, opt => opt
-                        .Excluding(p => p.id)
-                        .Using<string>(CompareStringsWithoutNull).WhenTypeIs<string>());
+                plugin.Equals(pluginOut).Should().BeTrue();
             }
         }
 
@@ -56,16 +48,10 @@ namespace Kongverge.Integration.Tests
 
                 await _fixture.AddServiceAndChildren(service);
 
-                var serviceReadFromKong = await _fixture.KongAdminReader.GetService(service.Id);
+                var plugins = await _fixture.KongAdminReader.GetPlugins();
+                var pluginOut = plugins.SingleOrDefault(x => x.RouteId == service.Routes[0].Id);
 
-                serviceReadFromKong.Routes.Should().HaveCount(1);
-
-                var pluginOut = serviceReadFromKong.Routes.First().ShouldHaveOnePlugin<TPluginConfig>();
-
-                pluginOut.Should()
-                    .BeEquivalentTo(plugin, opt => opt
-                        .Excluding(p => p.id)
-                        .Using<string>(CompareStringsWithoutNull).WhenTypeIs<string>());
+                plugin.Equals(pluginOut).Should().BeTrue();
             }
         }
 
@@ -74,42 +60,32 @@ namespace Kongverge.Integration.Tests
         {
             foreach (var plugin in Permutations)
             {
-                var pluginBody = _fixture.PluginCollection.CreatePluginBody(plugin);
-                await _fixture.UpsertPlugin(pluginBody);
-                var globalConfig = await _fixture.KongAdminReader.GetGlobalConfig();
+                await _fixture.UpsertPlugin(plugin);
+                var plugins = await _fixture.KongAdminReader.GetPlugins();
+                var globalPlugins = plugins.Where(x => x.IsGlobal()).ToArray();
 
-                globalConfig.Plugins.Single(x => x.id == pluginBody.id).Should()
-                    .BeEquivalentTo(plugin, opt => opt
-                        .Excluding(p => p.id)
-                        .Using<string>(CompareStringsWithoutNull).WhenTypeIs<string>());
+                globalPlugins.Single(x => x.Id == plugin.Id).Equals(plugin).Should().BeTrue();
 
                 // We need to delete the globally added plugin because the some plugins for e.g. request-transfomer plugin 
                 // cannot be added as a global plugin multiple times.
-                await _fixture.DeleteGlobalPlugin(pluginBody.id);
+                await _fixture.DeleteGlobalPlugin(plugin.Id);
             }
         }
 
-        protected virtual IEnumerable<TPluginConfig> Permutations
+        protected IEnumerable<KongPlugin> Permutations
         {
             get
             {
-                yield return new Fixture()
-                    .Customize(new SupportMutableValueTypesCustomization())
-                    .Create<TPluginConfig>();
+                // TODO: Figure out a way to generate valid plugin config for all supported plugins
+                yield return new KongPlugin
+                {
+                    Name = "je-request-delay",
+                    Config = new Dictionary<string, object>
+                    {
+                        { "delay", 1000 }
+                    }
+                };
             }
-        }
-
-        /// <summary>
-        /// Treat null string and empty string as equivalent
-        /// </summary>
-        private static void CompareStringsWithoutNull(IAssertionContext<string> ctx)
-        {
-            var equal = (ctx.Subject ?? string.Empty).Equals(ctx.Expectation ?? string.Empty);
-
-            Execute.Assertion
-                .BecauseOf(ctx.Because, ctx.BecauseArgs)
-                .ForCondition(equal)
-                .FailWith("Expected {context:string} to be {0}{reason}, but found {1}", ctx.Subject, ctx.Expectation);
         }
     }
 }

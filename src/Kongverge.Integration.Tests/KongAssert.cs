@@ -1,11 +1,8 @@
 using System;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Kongverge.Common.DTOs;
 using Kongverge.Common.Services;
-using Kongverge.KongPlugin;
 
 namespace Kongverge.Integration.Tests
 {
@@ -21,16 +18,6 @@ namespace Kongverge.Integration.Tests
         {
             Func<Task> action = async () => await kongReader.GetService(id);
             action.Should().Throw<KongException>().Which.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        }
-
-        public static T ShouldHaveOnePlugin<T>(this ExtendibleKongObject service) where T : IKongPluginConfig
-        {
-            service.Should().NotBeNull();
-            service.Plugins.Should().NotBeNull();
-            service.Plugins.Should().HaveCount(1);
-            service.Plugins.Single().Should().BeOfType<T>();
-
-            return (T)service.Plugins.Single();
         }
     }
 }

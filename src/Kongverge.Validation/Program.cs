@@ -8,7 +8,6 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Services;
-using Kongverge.KongPlugin;
 using Kongverge.Validation.Helpers;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.AspNetCore;
@@ -68,34 +67,35 @@ namespace Kongverge.Validation
 
                 if (testsFolderOption.HasValue())
                     configuration.TestFolder = testsFolderOption.Value();
-
                 
                 //Setup HTTP Logging Plugin
                 var localIp = GetMostLikelyIpAddress().ToString();
                 var httpEndpoint = $"http://{localIp}:{configuration.TestPort}";
-                var config = new Dictionary<string, object> {{"http_endpoint", httpEndpoint}};
                 Log.Information($"Adding HTTP Logging Plugin with url: {httpEndpoint}");
-                var pluginBody = new PluginBody("http-log", config);
-                await _kongAdminService.UpsertPlugin(pluginBody);
-                _pluginId = pluginBody.id;
+                var plugin = new KongPlugin
+                {
+                    Name = "http-log",
+                    Config = new Dictionary<string, object>
+                    {
+                        { "http_endpoint", httpEndpoint }
+                    }
+                };
+                await _kongAdminService.UpsertPlugin(plugin);
+                _pluginId = plugin.Id;
 
                 await Task.Delay(5000);
 
                 //Start Logging Webserver
                 BuildWebhost(args, testTracker, configuration.TestPort).Start();
                 await WaitForWebserver(configuration.TestPort);
-
-
+                
                 _testHelper.PopulateTests();
                 await _testHelper.RunTests().ConfigureAwait(false);
                 await _testHelper.Validate().ConfigureAwait(false);
-
-
 #if DEBUG
                 Console.WriteLine("Press any key to continue");
                 Console.ReadKey();
 #endif
-
                 return 0;
             });
 
@@ -116,6 +116,7 @@ namespace Kongverge.Validation
         {
             RemovePlugin();
         }
+
         private static void RemovePlugin()
         {
             Log.Information($"Removing HTTP Logging Plugin {_pluginId}");
@@ -138,6 +139,7 @@ namespace Kongverge.Validation
 
             throw new Exception("Unable to determine monitoring IP Address.");
         }
+
         public static IPAddress GetDefaultGateway()
         {
             return NetworkInterface
@@ -190,6 +192,5 @@ namespace Kongverge.Validation
                 })
                 .Build();
         }
-
     }
 }

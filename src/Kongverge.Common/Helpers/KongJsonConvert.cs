@@ -1,24 +1,30 @@
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using Kongverge.Common.DTOs;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace Kongverge.Common.Helpers
 {
     public static class KongJsonConvert
     {
-        private static readonly JsonSerializerSettings KongSerializerSettings =
+        public static readonly JsonSerializerSettings SerializerSettings =
             new JsonSerializerSettings
             {
+                DefaultValueHandling = DefaultValueHandling.Ignore,
                 NullValueHandling = NullValueHandling.Ignore,
-                Converters = new List<JsonConverter>(new[] { new StringEnumConverter() })
+                Formatting = Formatting.Indented
             };
 
-        public static StringContent Serialize<T>(T data)
+        public static StringContent AsJsonStringContent(this string json) =>
+            new StringContent(json, Encoding.UTF8, "application/json");
+
+        public static T ToKongObject<T>(this string json) where T : ExtendibleKongObject =>
+            JsonConvert.DeserializeObject<T>(json, SerializerSettings);
+
+        public static string ToConfigJson(this ExtendibleKongObject kongObject)
         {
-            var json = JsonConvert.SerializeObject(data, KongSerializerSettings);
-            return new StringContent(json, Encoding.UTF8, "application/json");
+            kongObject.StripPersistedValues();
+            return JsonConvert.SerializeObject(kongObject, SerializerSettings);
         }
     }
 }
