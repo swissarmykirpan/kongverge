@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Kongverge.Common.DTOs;
-using Kongverge.KongPlugin;
 
 namespace Kongverge.Integration.Tests
 {
@@ -43,13 +40,13 @@ namespace Kongverge.Integration.Tests
             return this;
         }
 
-        public ServiceBuilder WithPlugin(IKongPluginConfig plugin)
+        public ServiceBuilder WithPlugin(KongPlugin plugin)
         {
             _service.Plugins = _service.Plugins.Concat(new [] { plugin }).ToArray();
             return this;
         }
         
-        public ServiceBuilder WithRoutePlugin(IKongPluginConfig plugin)
+        public ServiceBuilder WithRoutePlugin(KongPlugin plugin)
         {
             var route = _service.Routes.First();
 

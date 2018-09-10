@@ -1,29 +1,25 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Plugins;
 using Kongverge.Common.Services;
-using Kongverge.KongPlugin;
 
 namespace Kongverge.Common.Workflow
 {
     public class PluginProcessor
     {
         private readonly IKongAdminWriter _kongWriter;
-        private readonly IKongPluginCollection _kongPluginCollection;
 
-        public PluginProcessor(IKongAdminWriter kongWriter, IKongPluginCollection kongPluginCollection)
+        public PluginProcessor(IKongAdminWriter kongWriter)
         {
             _kongWriter = kongWriter;
-            _kongPluginCollection = kongPluginCollection;
         }
 
         public async Task Process(ExtendibleKongObject existing, ExtendibleKongObject target)
         {
-            var newSet = PluginTypeMap(target?.Plugins);
-            var existingSet = PluginTypeMap(existing?.Plugins);
+            target.Id = existing?.Id;
+            var newSet = PluginNameMap(target.Plugins);
+            var existingSet = PluginNameMap(existing?.Plugins);
 
             var changes = newSet.Keys.Union(existingSet.Keys)
                 .Select(key =>
@@ -37,31 +33,19 @@ namespace Kongverge.Common.Workflow
             {
                 if (change.Target == null)
                 {
-                    await _kongWriter.DeletePlugin(change.Existing.id).ConfigureAwait(false);
+                    await _kongWriter.DeletePlugin(change.Existing.Id).ConfigureAwait(false);
                 }
-                else if (change.Existing == null)
+                else if (change.Existing == null || !change.Target.Equals(change.Existing))
                 {
-                    var content = _kongPluginCollection.CreatePluginBody(change.Target);
-
-                    await _kongWriter.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
-                }
-                else if(!change.Target.IsExactMatch(change.Existing))
-                {
-                    var content = _kongPluginCollection.CreatePluginBody(change.Target);
-
-                    content.id = change.Existing.id;
-
-                    // TODO: Same problem here - target has come from a file, and it doesn't have the Created info to feed into created_at
-                    target.Created = existing.Created;
-
-                    await _kongWriter.UpsertPlugin(target.DecoratePluginBody(content)).ConfigureAwait(false);
+                    target.AssignParentId(change.Target);
+                    await _kongWriter.UpsertPlugin(change.Target).ConfigureAwait(false);
                 }
             }
         }
 
-        private static Dictionary<Type, IKongPluginConfig> PluginTypeMap(IReadOnlyCollection<IKongPluginConfig> plugins)
+        private static Dictionary<string, KongPlugin> PluginNameMap(IEnumerable<KongPlugin> plugins)
         {
-            return plugins?.ToDictionary(e => e.GetType()) ?? new Dictionary<Type, IKongPluginConfig>();
+            return plugins?.ToDictionary(e => e.Name) ?? new Dictionary<string, KongPlugin>();
         }
     }
 }

@@ -2,9 +2,6 @@ using System.IO;
 using System.Net.Http;
 using Kongverge.Common.Services;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Helpers;
-using Kongverge.Common.Plugins;
-using Kongverge.KongPlugin;
 using Kongverge.Validation.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,14 +33,7 @@ namespace Kongverge.Validation
             services.AddSingleton<IKongAdminWriter, KongAdminWriter>();
             services.AddSingleton<ITestFileHelper, TestFileHelper>();
             services.AddSingleton<KongAdminHttpClient>();
-
-
-            services.AddSingleton<PluginConverter>();
-            services.AddSingleton<IKongPluginCollection>(s => new KongPluginCollection(s.GetServices<IKongPlugin>()));
-
-
-            services.AddSingleton<HttpClient>();
-
+            
             services.AddSingleton<ITestHelper, TestHelper>();
             //services.AddSingleton(_testTracker);
 

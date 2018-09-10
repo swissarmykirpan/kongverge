@@ -1,10 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Helpers;
-using Kongverge.Common.Plugins;
 using Kongverge.Common.Services;
-using Kongverge.KongPlugin;
 using Microsoft.Extensions.Options;
 using Serilog;
 
@@ -12,22 +9,19 @@ namespace Kongverge.Services
 {
     public class KongAdminDryRun : KongAdminReader, IKongAdminWriter
     {
-        public KongAdminDryRun(
-            IOptions<Settings> configuration,
-            KongAdminHttpClient httpClient,
-            IKongPluginCollection kongPluginCollection,
-            PluginConverter converter) : base(configuration, httpClient, kongPluginCollection, converter)
+        public KongAdminDryRun(IOptions<Settings> configuration, KongAdminHttpClient httpClient)
+            : base(configuration, httpClient)
         {
         }
 
-        public Task UpsertPlugin(PluginBody plugin)
+        public Task UpsertPlugin(KongPlugin plugin)
         {
-            Log.Information("Adding plugin {plugin}\n\tWith config {config}", plugin.name, plugin.config);
-            plugin.id = Guid.NewGuid().ToString();
+            Log.Information("Adding plugin {plugin}\n\tWith config {config}", plugin.Name, plugin.Config);
+            plugin.Id = Guid.NewGuid().ToString();
             return Task.CompletedTask;
         }
 
-        public Task AddRoute(KongService service, KongRoute route)
+        public Task AddRoute(string serviceId, KongRoute route)
         {
             Log.Information(@"Adding Route
     Route Paths: {path}

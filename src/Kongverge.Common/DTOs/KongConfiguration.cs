@@ -8,7 +8,7 @@ namespace Kongverge.Common.DTOs
     {
         [JsonProperty("plugins")]
         public Plugins Plugins { get; set; }
-
+        
         [JsonProperty("tagline")]
         public string Tagline { get; set; }
 

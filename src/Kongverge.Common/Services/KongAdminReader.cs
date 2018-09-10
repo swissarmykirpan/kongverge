@@ -1,11 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Helpers;
-using Kongverge.Common.Plugins;
-using Kongverge.KongPlugin;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Serilog;
@@ -20,17 +16,14 @@ namespace Kongverge.Common.Services
         private const string PluginsRoute = "/plugins";
 
         protected readonly KongAdminHttpClient HttpClient;
-        private readonly IKongPluginCollection _kongPluginCollection;
 
-        public KongAdminReader(IOptions<Settings> configuration, KongAdminHttpClient httpClient, IKongPluginCollection kongPluginCollection, PluginConverter converter)
+        public KongAdminReader(IOptions<Settings> configuration, KongAdminHttpClient httpClient)
         {
             HttpClient = httpClient;
             if (HttpClient.BaseAddress == null)
             {
                 HttpClient.BaseAddress = new Uri($"http://{configuration.Value.Admin.Host}:{configuration.Value.Admin.Port}");
             }
-
-            _kongPluginCollection = kongPluginCollection;
         }
 
         public async Task<bool> KongIsReachable()
@@ -51,126 +44,28 @@ namespace Kongverge.Common.Services
         public async Task<KongConfiguration> GetConfiguration()
         {
             var response = await HttpClient.GetAsync(ConfigurationRoute).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
-
             var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var configurationResult = JsonConvert.DeserializeObject<KongConfiguration>(value);
-
-            return configurationResult;
-        }
-
-        public async Task<IReadOnlyCollection<KongService>> GetServices()
-        {
-            var services = await GetPagedResponse<KongService>(ServicesRoute).ConfigureAwait(false);
-
-            await PopulateServiceRoutes(services).ConfigureAwait(false);
-            await PopulatePluginInfo(services).ConfigureAwait(false);
-
-            return services;
+            return JsonConvert.DeserializeObject<KongConfiguration>(value);
         }
 
         public async Task<KongService> GetService(string serviceId)
         {
-            var requestUri = $"{ServicesRoute}/{serviceId}";
-            var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
-
-            response.EnsureSuccessStatusCode();
-
+            var response = await HttpClient.GetAsync($"{ServicesRoute}/{serviceId}").ConfigureAwait(false);
             var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var service = JsonConvert.DeserializeObject<KongService>(value);
-
-            var plugins = await GetServicePlugins(service.Id).ConfigureAwait(false);
-            service.Plugins = TranslateToConfig(plugins);
-
-            service.Routes = await GetRoutes(service.Id).ConfigureAwait(false);
-
-            foreach (var route in service.Routes)
-            {
-                var pluginsRead = await GetRoutePlugins(route.Id).ConfigureAwait(false);
-                route.Plugins = TranslateToConfig(pluginsRead);
-            }
-
-            return service;
+            return JsonConvert.DeserializeObject<KongService>(value);
         }
 
-        private Task<IReadOnlyList<PluginBody>> GetServicePlugins(string serviceId)
-        {
-            return GetPagedResponse<PluginBody>($"{PluginsRoute}?service_id={serviceId}");
-        }
+        public async Task<IReadOnlyCollection<KongService>> GetServices() =>
+            await GetPagedResponse<KongService>(ServicesRoute).ConfigureAwait(false);
 
-        private Task<IReadOnlyList<PluginBody>> GetRoutePlugins(string routeId)
-        {
-            return GetPagedResponse<PluginBody>($"{PluginsRoute}?route_id={routeId}");
-        }
+        public async Task<IReadOnlyCollection<KongRoute>> GetRoutes() =>
+            await GetPagedResponse<KongRoute>(RoutesRoute).ConfigureAwait(false);
 
-        private async Task PopulatePluginInfo(IReadOnlyCollection<KongService> services)
-        {
-            var plugins = await GetAllPlugins().ConfigureAwait(false);
+        public async Task<IReadOnlyCollection<KongPlugin>> GetPlugins() =>
+            await GetPagedResponse<KongPlugin>(PluginsRoute).ConfigureAwait(false);
 
-            GroupPlugins(services, plugins);
-        }
-
-        private Task<IReadOnlyList<PluginBody>> GetAllPlugins()
-        {
-            return GetPagedResponse<PluginBody>(PluginsRoute);
-        }
-
-        private void GroupPlugins(IReadOnlyCollection<KongService> services, IReadOnlyCollection<PluginBody> plugins)
-        {
-            var serviceGroups = plugins.GroupBy(p => p.service_id).Where(g => !string.IsNullOrEmpty(g.Key)).ToDictionary(g => g.Key, g => g);
-
-            var routeGroups = plugins.GroupBy(p => p.route_id)
-                .Where(g => !string.IsNullOrEmpty(g.Key))
-                .ToDictionary(g => g.Key, g => g);
-
-            foreach (var service in services)
-            {
-                if (serviceGroups.ContainsKey(service.Id))
-                {
-                    service.Plugins = TranslateToConfig(serviceGroups[service.Id]);
-                }
-
-                foreach (var route in service.Routes ?? Enumerable.Empty<KongRoute>())
-                {
-                    if (routeGroups.ContainsKey(route.Id))
-                    {
-                        route.Plugins = TranslateToConfig(routeGroups[route.Id]);
-                    }
-                }
-            }
-        }
-
-        public async Task PopulateServiceRoutes(IReadOnlyCollection<KongService> services)
-        {
-            foreach (var service in services)
-            {
-                service.Routes = await GetRoutes(service.Id).ConfigureAwait(false);
-            }
-        }
-
-        public Task<IReadOnlyList<KongRoute>> GetRoutes(string serviceId)
-        {
-            return GetPagedResponse<KongRoute>($"/services/{serviceId}/routes");
-        }
-
-        public async Task<GlobalConfig> GetGlobalConfig()
-        {
-            var plugins = await GetAllPlugins().ConfigureAwait(false);
-
-            var globalPlugins = plugins.Where(p => null == (p.consumer_id ?? p.service_id ?? p.route_id));
-
-            return new GlobalConfig
-            {
-                Plugins = TranslateToConfig(globalPlugins)
-            };
-        }
-
-        private IReadOnlyList<IKongPluginConfig> TranslateToConfig(IEnumerable<PluginBody> plugins)
-        {
-            return plugins.Select(_kongPluginCollection.TranslateToConfig)
-                          .Where(p => p != null)
-                          .ToArray();
-        }
+        protected Task<IReadOnlyList<KongRoute>> GetServiceRoutes(string serviceId) =>
+            GetPagedResponse<KongRoute>($"/services/{serviceId}/routes");
 
         private async Task<IReadOnlyList<T>> GetPagedResponse<T>(string requestUri)
         {
@@ -180,7 +75,6 @@ namespace Kongverge.Common.Services
             do
             {
                 var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
-
                 var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var pagedResponse = JsonConvert.DeserializeObject<PagedResponse<T>>(value);
 
