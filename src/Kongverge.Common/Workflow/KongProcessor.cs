@@ -18,28 +18,24 @@ namespace Kongverge.Common.Workflow
             _pluginProcessor = new PluginProcessor(_kongWriter);
         }
 
-        public async Task Process(
-            IReadOnlyCollection<KongService> existingServices,
-            IReadOnlyCollection<KongService> targetServices,
-            ExtendibleKongObject existingGlobalConfig,
-            ExtendibleKongObject targetGlobalConfig)
+        public async Task Process(KongvergeConfiguration existingConfiguration, KongvergeConfiguration targetConfiguration)
         {
-            var existingServiceNames = existingServices.Select(x => x.Name).ToArray();
-            var targetServiceNames = targetServices.Select(x => x.Name).ToArray();
+            var existingServiceNames = existingConfiguration.Services.Select(x => x.Name).ToArray();
+            var targetServiceNames = targetConfiguration.Services.Select(x => x.Name).ToArray();
 
-            var toAdd = targetServices.Where(x => !existingServiceNames.Contains(x.Name));
-            var toRemove = existingServices.Where(x => !targetServiceNames.Contains(x.Name));
+            var toAdd = targetConfiguration.Services.Where(x => !existingServiceNames.Contains(x.Name));
+            var toRemove = existingConfiguration.Services.Where(x => !targetServiceNames.Contains(x.Name));
 
             await Task.WhenAll(toRemove.Select(x => _kongWriter.DeleteService(x.Id))).ConfigureAwait(false);
             await Task.WhenAll(toAdd.Select(x => _kongWriter.AddService(x))).ConfigureAwait(false);
 
-            foreach (var target in targetServices)
+            foreach (var target in targetConfiguration.Services)
             {
-                var existing = existingServices.SingleOrDefault(x => x.Name == target.Name);
+                var existing = existingConfiguration.Services.SingleOrDefault(x => x.Name == target.Name);
                 await ProcessService(existing, target).ConfigureAwait(false);
             }
 
-            await _pluginProcessor.Process(existingGlobalConfig, targetGlobalConfig).ConfigureAwait(false);
+            await _pluginProcessor.Process(existingConfiguration.GlobalConfig, targetConfiguration.GlobalConfig).ConfigureAwait(false);
         }
 
         private async Task ProcessService(KongService existing, KongService target)

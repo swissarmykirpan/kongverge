@@ -45,7 +45,15 @@ namespace Kongverge
                 return await workflow.Execute().ConfigureAwait(false);
             });
 
-            return app.Execute(args);
+            try
+            {
+                return app.Execute(args);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error running program: {message}", ex.Message);
+                return ExitWithCode.Return(ExitCode.UnspecifiedError);
+            }
         }
 
         private class Options
