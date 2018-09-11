@@ -256,9 +256,21 @@ namespace Kongverge.Common.Tests.Workflow
             };
         }
 
-        protected async Task InvokingProcess() =>
-            await Subject.Process(ExistingServices, TargetServices, ExistingGlobalConfig, TargetGlobalConfig);
-        
+        protected async Task InvokingProcess()
+        {
+            var existingConfiguration = new KongvergeConfiguration
+            {
+                Services = ExistingServices,
+                GlobalConfig = ExistingGlobalConfig
+            };
+            var targetConfiguration = new KongvergeConfiguration
+            {
+                Services = TargetServices,
+                GlobalConfig = TargetGlobalConfig
+            };
+            await Subject.Process(existingConfiguration, targetConfiguration);
+        }
+
         protected void NoServicesAreAdded() =>
             GetMock<IKongAdminWriter>().Verify(x => x.AddService(It.IsAny<KongService>()), Times.Never);
 

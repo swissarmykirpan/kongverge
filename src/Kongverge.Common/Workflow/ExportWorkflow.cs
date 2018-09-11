@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
@@ -21,15 +20,12 @@ namespace Kongverge.Common.Workflow
 
         public override async Task<int> DoExecute()
         {
-            var services = await KongReader.GetServices().ConfigureAwait(false);
-            var plugins = await KongReader.GetPlugins().ConfigureAwait(false);
-            var globalConfig = new ExtendibleKongObject
-            {
-                Plugins = plugins.Where(x => x.IsGlobal()).ToArray()
-            };
+            var existingConfiguration = await GetExistingConfiguration().ConfigureAwait(false);
 
-            //Write Output Files
-            _fileHelper.WriteConfigFiles(services, globalConfig);
+            await _fileHelper
+                .WriteConfiguration(existingConfiguration, Configuration.OutputFolder)
+                .ConfigureAwait(false);
+
             return ExitWithCode.Return(ExitCode.Success);
         }
     }
