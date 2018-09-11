@@ -2,94 +2,103 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Serilog;
 
 namespace Kongverge.Common.Helpers
 {
     public class DataFileHelper : IDataFileHelper
     {
-        private readonly Settings _configuration;
-
-        public DataFileHelper(IOptions<Settings> configuration)
+        public async Task<KongvergeConfiguration> ReadConfiguration(string folderPath)
         {
-            _configuration = configuration.Value;
+            var filePaths = Directory.EnumerateFiles(folderPath, $"*{Settings.FileExtension}", SearchOption.AllDirectories);
+
+            var services = new List<KongService>();
+            foreach (var serviceFilePath in filePaths)
+            {
+                services.Add(await ParseFile<KongService>(serviceFilePath).ConfigureAwait(false));
+            }
+
+            var globalConfigFilePath = Path.Combine(folderPath, Settings.GlobalConfigPath);
+            var globalConfiguration = File.Exists(globalConfigFilePath)
+                ? await ParseFile<ExtendibleKongObject>(globalConfigFilePath).ConfigureAwait(false)
+                : new ExtendibleKongObject();
+            
+            return new KongvergeConfiguration
+            {
+                Services = services.AsReadOnly(),
+                GlobalConfig = globalConfiguration
+            };
         }
 
-        public bool GetDataFiles(string dataPath, out IReadOnlyCollection<KongService> services, out ExtendibleKongObject globalConfig)
+        private static async Task<T> ParseFile<T>(string path) where T : ExtendibleKongObject
         {
-            try
+            string text;
+            using (var reader = File.OpenText(path))
             {
-                services = Directory
-                    .EnumerateFiles(dataPath, $"*{Settings.FileExtension}", SearchOption.AllDirectories)
-                    .Where(d => !d.EndsWith(Settings.GlobalConfigPath))
-                    .Select(ParseFile<KongService>)
-                    .ToArray();
-
-                var globalConfigPath = Path.Combine(dataPath, Settings.GlobalConfigPath);
-                globalConfig = File.Exists(globalConfigPath) ? ParseFile<ExtendibleKongObject>(globalConfigPath) : new ExtendibleKongObject();
+                text = await reader.ReadToEndAsync().ConfigureAwait(false);
             }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Error occurred while reading from {path}", dataPath);
-                services = Array.Empty<KongService>();
-                globalConfig = new ExtendibleKongObject();
-                return false;
-            }
-            return true;
-        }
 
-        private T ParseFile<T>(string path) where T : ExtendibleKongObject
-        {
-            var text = File.ReadAllText(path);
             T data;
+            var errorMessages = new List<string>();
             try
             {
                 data = text.ToKongObject<T>();
+                await data.Validate(errorMessages).ConfigureAwait(false);
             }
-            catch (FormatException ex)
+            catch (Exception ex)
             {
-                Log.Error(ex, "Invalid Syntax in {path}", path);
-                throw;
+                throw new InvalidConfigurationFileException(path, ex.Message, ex);
+            }
+
+            if (errorMessages.Any())
+            {
+                throw new InvalidConfigurationFileException(path, string.Join(Environment.NewLine, errorMessages));
             }
             
             return data;
         }
 
-        public void WriteConfigFiles(IEnumerable<KongService> services, ExtendibleKongObject globalConfig)
+        public async Task WriteConfiguration(KongvergeConfiguration configuration, string folderPath)
         {
-            PrepareOutputFolder();
+            PrepareOutputFolder(folderPath);
 
-            foreach (var service in services)
+            foreach (var service in configuration.Services)
             {
-                WriteConfigObject(service, $"{service.Name}{Settings.FileExtension}");
+                await WriteConfigObject(service, folderPath, $"{service.Name}{Settings.FileExtension}").ConfigureAwait(false);
             }
 
-            WriteConfigObject(globalConfig, $"{Settings.GlobalConfigPath}");
+            if (configuration.GlobalConfig.Plugins.Any())
+            {
+                await WriteConfigObject(configuration.GlobalConfig, folderPath, $"{Settings.GlobalConfigPath}").ConfigureAwait(false);
+            }
         }
 
-        private void WriteConfigObject(ExtendibleKongObject configObject, string name)
+        private static async Task WriteConfigObject(ExtendibleKongObject configObject, string folderPath, string fileName)
         {
             var json = configObject.ToConfigJson();
-            var path = $"{_configuration.OutputFolder}\\{name}";
-            Log.Information("Writing {fileName}", path);
-            File.WriteAllText(path, json);
+            var path = $"{folderPath}\\{fileName}";
+            Log.Information("Writing {path}", path);
+            using (var stream = File.OpenWrite(path))
+            using (var writer = new StreamWriter(stream))
+            {
+                await writer.WriteAsync(json).ConfigureAwait(false);
+            }
         }
 
-        private void PrepareOutputFolder()
+        private void PrepareOutputFolder(string folderPath)
         {
-            if (Directory.Exists(_configuration.OutputFolder))
+            if (Directory.Exists(folderPath))
             {
-                foreach (var path in Directory.EnumerateFiles(_configuration.OutputFolder))
+                foreach (var path in Directory.EnumerateFiles(folderPath))
                 {
                     File.Delete(path);
                 }
             }
             else
             {
-                Directory.CreateDirectory(_configuration.OutputFolder);
+                Directory.CreateDirectory(folderPath);
             }
         }
     }

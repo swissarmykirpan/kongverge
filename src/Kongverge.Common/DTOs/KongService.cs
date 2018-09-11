@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Kongverge.Common.Helpers;
 using Newtonsoft.Json;
 
@@ -88,6 +90,48 @@ namespace Kongverge.Common.DTOs
         {
             base.AssignParentId(plugin);
             plugin.ServiceId = Id;
+        }
+
+        public override async Task Validate(ICollection<string> errorMessages)
+        {
+            if (ValidateHost == true)
+            {
+                await ValidateHostIsReachable(errorMessages).ConfigureAwait(false);
+            }
+
+            await ValidateRoutesAreValid(errorMessages).ConfigureAwait(false);
+        }
+
+        private async Task ValidateHostIsReachable(ICollection<string> errorMessages)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri($"http://{Host}:{Port}");
+                try
+                {
+                    var response = await client.GetAsync("/").ConfigureAwait(false);
+                    response.EnsureSuccessStatusCode();
+                }
+                catch (Exception)
+                {
+                    errorMessages.Add($"Unable to contact host: {client.BaseAddress}");
+                }
+            }
+        }
+
+        private async Task ValidateRoutesAreValid(ICollection<string> errorMessages)
+        {
+            if (Routes == null || !Routes.Any())
+            {
+                errorMessages.Add("Routes cannot be null or empty");
+                return;
+            }
+            foreach (var route in Routes)
+            {
+                await route.Validate(errorMessages).ConfigureAwait(false);
+            }
+
+            // TODO: Check if routes Clash
         }
 
         public object[] GetEqualityValues() =>
