@@ -23,11 +23,13 @@ namespace Kongverge.Common.Tests.Workflow
 
         public static bool CorrespondsToKongService(this KongPlugin kongPlugin, KongService kongService) =>
             kongPlugin.ServiceId == kongService.Id &&
+            !string.IsNullOrWhiteSpace(kongPlugin.ServiceId) &&
             kongPlugin.ConsumerId == null &&
             kongPlugin.RouteId == null;
 
         public static bool CorrespondsToKongRoute(this KongPlugin kongPlugin, KongRoute kongRoute) =>
             kongPlugin.RouteId == kongRoute.Id &&
+            !string.IsNullOrWhiteSpace(kongPlugin.RouteId) &&
             kongPlugin.ConsumerId == null &&
             kongPlugin.ServiceId == null;
 

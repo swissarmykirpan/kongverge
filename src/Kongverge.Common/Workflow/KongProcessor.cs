@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
 using Kongverge.Common.Services;
+using Serilog;
 
 namespace Kongverge.Common.Workflow
 {
@@ -45,6 +46,12 @@ namespace Kongverge.Common.Workflow
                 await _kongWriter.UpdateService(target).ConfigureAwait(false);
             }
 
+            if (existing != null)
+            {
+                target.Id = existing.Id;
+            }
+
+            Log.Information($"Processing plugins and routes for service {target.Name}");
             await _pluginProcessor.Process(existing, target).ConfigureAwait(false);
             await ConvergeRoutes(existing, target).ConfigureAwait(false);
         }
@@ -62,6 +69,11 @@ namespace Kongverge.Common.Workflow
             foreach (var targetRoute in target.Routes)
             {
                 var existingRoute = existingRoutes.SingleOrDefault(x => x.Equals(targetRoute));
+                if (existingRoute != null)
+                {
+                    targetRoute.Id = existingRoute.Id;
+                }
+
                 await _pluginProcessor.Process(existingRoute, targetRoute).ConfigureAwait(false);
             }
         }
