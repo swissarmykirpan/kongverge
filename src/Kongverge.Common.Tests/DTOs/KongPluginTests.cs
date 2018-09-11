@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using Kongverge.Common.DTOs;
@@ -13,6 +15,22 @@ namespace Kongverge.Common.Tests.DTOs
         {
             var instance = this.Create<KongPlugin>();
             var otherInstance = instance.Clone();
+
+            instance.Equals(otherInstance).Should().BeTrue();
+            instance.GetHashCode().Equals(otherInstance.GetHashCode()).Should().BeTrue();
+        }
+
+        [Fact]
+        public void Equals_WithSameValuesInDifferentOrder_IsTrue()
+        {
+            var configValues = new[]
+            {
+                new KeyValuePair<string, object>(this.Create<string>(), this.Create<string>()),
+                new KeyValuePair<string, object>(this.Create<string>(), this.Create<string>())
+            };
+            var instance = Build<KongPlugin>().With(x => x.Config, new Dictionary<string, object>(configValues)).Create();
+            var otherInstance = instance.Clone();
+            otherInstance.Config = new Dictionary<string, object>(configValues.Reverse());
 
             instance.Equals(otherInstance).Should().BeTrue();
             instance.GetHashCode().Equals(otherInstance.GetHashCode()).Should().BeTrue();
