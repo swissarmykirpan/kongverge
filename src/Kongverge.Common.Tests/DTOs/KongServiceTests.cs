@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Kongverge.Common.DTOs;
@@ -40,6 +42,30 @@ namespace Kongverge.Common.Tests.DTOs
 
             instance.Equals(otherInstance).Should().BeTrue();
             instance.GetHashCode().Equals(otherInstance.GetHashCode()).Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task RoutePathsCannotBeEmpty()
+        {
+            //Arrange
+            var data = new KongService
+            {
+                Routes = new[]
+                {
+                    new KongRoute
+                    {
+                        Paths = null
+                    }
+                }
+            };
+
+            var errorMessages = new List<string>();
+
+            //Act
+            await data.Validate(errorMessages);
+
+            //Assert
+            errorMessages.Count.Should().BeGreaterThan(0);
         }
     }
 }

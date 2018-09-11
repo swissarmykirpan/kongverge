@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
@@ -26,65 +25,28 @@ namespace Kongverge.Common.Workflow
 
         public override async Task<int> DoExecute()
         {
-            Log.Information("Reading files from {input}", Configuration.InputFolder);
-            var success = _fileHelper.GetDataFiles(Configuration.InputFolder, out var targetServices, out var targetGlobalConfig);
-            if (!success)
+            Log.Information("Reading files from {inputFolder}", Configuration.InputFolder);
+
+            KongvergeConfiguration targetConfiguration;
+            try
             {
-                return ExitWithCode.Return(ExitCode.InputFolderUnreachable);
+                targetConfiguration = await _fileHelper.ReadConfiguration(Configuration.InputFolder).ConfigureAwait(false);
             }
-            
-            foreach (var targetService in targetServices)
+            catch (DirectoryNotFoundException ex)
             {
-                var valid = await ServiceValidationHelper.Validate(targetService).ConfigureAwait(false);
-                if (!valid)
-                {
-                    return ExitWithCode.Return(ExitCode.InvalidDataFile, $"Invalid Data File: {targetService.Name}{Settings.FileExtension}");
-                }
+                return ExitWithCode.Return(ExitCode.InputFolderUnreachable, ex.Message);
+            }
+            catch (InvalidConfigurationFileException ex)
+            {
+                return ExitWithCode.Return(ExitCode.InvalidConfigurationFile, ex.Message);
             }
 
-            var plugins = await KongReader.GetPlugins().ConfigureAwait(false);
-            var existingServices = await GetExistingServices(plugins).ConfigureAwait(false);
-            var existingGlobalConfig = GetExistingGlobalConfig(plugins);
+            var existingConfiguration = await GetExistingConfiguration().ConfigureAwait(false);
             
             var processor = new KongProcessor(_kongWriter);
-
-            await processor.Process(existingServices, targetServices, existingGlobalConfig, targetGlobalConfig).ConfigureAwait(false);
+            await processor.Process(existingConfiguration, targetConfiguration).ConfigureAwait(false);
 
             return ExitWithCode.Return(ExitCode.Success);
-        }
-
-        private async Task<IReadOnlyCollection<KongService>> GetExistingServices(IReadOnlyCollection<KongPlugin> plugins)
-        {
-            var services = await KongReader.GetServices().ConfigureAwait(false);
-            var routes = await KongReader.GetRoutes().ConfigureAwait(false);
-
-            foreach (var existingService in services)
-            {
-                PopulateServiceTree(existingService, routes, plugins);
-            }
-
-            return services;
-        }
-
-        private void PopulateServiceTree(
-            KongService service,
-            IReadOnlyCollection<KongRoute> routes,
-            IReadOnlyCollection<KongPlugin> plugins)
-        {
-            service.Plugins = plugins.Where(x => x.ServiceId == service.Id).ToArray();
-            service.Routes = routes.Where(x => x.Service.Id == service.Id).ToArray();
-            foreach (var serviceRoute in service.Routes)
-            {
-                serviceRoute.Plugins = plugins.Where(x => x.RouteId == serviceRoute.Id).ToArray();
-            }
-        }
-
-        private static ExtendibleKongObject GetExistingGlobalConfig(IReadOnlyCollection<KongPlugin> plugins)
-        {
-            return new ExtendibleKongObject
-            {
-                Plugins = plugins.Where(x => x.IsGlobal()).ToArray()
-            };
         }
     }
 }
