@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace Kongverge.Common.DTOs
@@ -23,6 +25,11 @@ namespace Kongverge.Common.DTOs
             plugin.ConsumerId = null;
             plugin.ServiceId = null;
             plugin.RouteId = null;
+        }
+
+        public virtual Task Validate(ICollection<string> errorMessages)
+        {
+            return Task.CompletedTask;
         }
     }
 }

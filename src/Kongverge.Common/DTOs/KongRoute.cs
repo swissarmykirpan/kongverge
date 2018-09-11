@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Kongverge.Common.Helpers;
 using Newtonsoft.Json;
 
@@ -67,6 +68,22 @@ namespace Kongverge.Common.DTOs
         {
             base.AssignParentId(plugin);
             plugin.RouteId = Id;
+        }
+
+        public override Task Validate(ICollection<string> errorMessages)
+        {
+            if (Paths == null || !Paths.Any())
+            {
+                errorMessages.Add("Route Paths cannot be null or empty");
+                return Task.CompletedTask;
+            }
+
+            if (Paths.Any(string.IsNullOrWhiteSpace))
+            {
+                errorMessages.Add("Route Paths cannot contain null or empty values");
+            }
+
+            return Task.CompletedTask;
         }
 
         public object[] GetEqualityValues() =>
