@@ -1,4 +1,5 @@
 using System;
+using Kongverge.Common.Helpers;
 using Newtonsoft.Json;
 
 namespace Kongverge.Common.DTOs
@@ -21,8 +22,8 @@ namespace Kongverge.Common.DTOs
             if (other.GetType() != instance.GetType())
                 return false;
 
-            var instanceSerialized = JsonConvert.SerializeObject(instance.GetEqualityValues());
-            var otherSerialized = JsonConvert.SerializeObject(other.GetEqualityValues());
+            var instanceSerialized = KongJsonConvert.SerializeObject(instance.GetEqualityValues());
+            var otherSerialized = KongJsonConvert.SerializeObject(other.GetEqualityValues());
 
             return otherSerialized == instanceSerialized;
         }
@@ -39,6 +40,6 @@ namespace Kongverge.Common.DTOs
         }
 
         internal static int GetKongHashCode<T>(this IKongEquatable<T> instance) where T : KongObject =>
-            JsonConvert.SerializeObject(instance.GetEqualityValues()).GetHashCode();
+            KongJsonConvert.SerializeObject(instance.GetEqualityValues()).GetHashCode();
     }
 }
