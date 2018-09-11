@@ -23,6 +23,7 @@ namespace Kongverge.Common.Services
 
             try
             {
+                Log.Information($"Adding service {service.Name}");
                 var response = await HttpClient.PostAsync("/services/", content).ConfigureAwait(false);
                 var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var added = JsonConvert.DeserializeObject<KongService>(responseBody);
@@ -37,6 +38,7 @@ namespace Kongverge.Common.Services
 
         public async Task UpdateService(KongService service)
         {
+            Log.Information($"Updating service {service.Name}");
             var requestUri = new Uri($"/services/{service.Name}", UriKind.Relative);
             var content = service.ToJsonStringContent();
             var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri)
@@ -113,6 +115,7 @@ namespace Kongverge.Common.Services
 
         public async Task UpsertPlugin(KongPlugin plugin)
         {
+            Log.Information(string.IsNullOrWhiteSpace(plugin.Id) ? $"Adding plugin {plugin.Name}" : $"Updating plugin {plugin.Name}");
             var content = plugin.ToJsonStringContent();
 
             try
