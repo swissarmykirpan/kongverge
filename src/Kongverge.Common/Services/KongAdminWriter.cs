@@ -38,6 +38,7 @@ namespace Kongverge.Common.Services
 
         public async Task UpdateService(KongService service)
         {
+            Log.Information($"Updating service {service.Name}");
             var requestUri = new Uri($"/services/{service.Name}", UriKind.Relative);
             var content = service.ToJsonStringContent();
             var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri)

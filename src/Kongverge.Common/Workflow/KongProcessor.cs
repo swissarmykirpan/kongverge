@@ -43,16 +43,15 @@ namespace Kongverge.Common.Workflow
         {
             if (ServiceHasChanged(existing, target))
             {
-                Log.Information($"Updating service {target.Name}");
                 await _kongWriter.UpdateService(target).ConfigureAwait(false);
             }
-            Log.Information($"Processing plugins and routes for service {target.Name}");
 
-            if (string.IsNullOrWhiteSpace(target.Id))
+            if (existing != null)
             {
-                target.Id = existing?.Id;
+                target.Id = existing.Id;
             }
 
+            Log.Information($"Processing plugins and routes for service {target.Name}");
             await _pluginProcessor.Process(existing, target).ConfigureAwait(false);
             await ConvergeRoutes(existing, target).ConfigureAwait(false);
         }
@@ -70,9 +69,9 @@ namespace Kongverge.Common.Workflow
             foreach (var targetRoute in target.Routes)
             {
                 var existingRoute = existingRoutes.SingleOrDefault(x => x.Equals(targetRoute));
-                if (string.IsNullOrWhiteSpace(targetRoute.Id))
+                if (existingRoute != null)
                 {
-                    targetRoute.Id = existingRoute?.Id;
+                    targetRoute.Id = existingRoute.Id;
                 }
 
                 await _pluginProcessor.Process(existingRoute, targetRoute).ConfigureAwait(false);
