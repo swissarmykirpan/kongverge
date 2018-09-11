@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
 using Kongverge.Common.Services;
+using Serilog;
 
 namespace Kongverge.Common.Workflow
 {
@@ -15,9 +16,8 @@ namespace Kongverge.Common.Workflow
             _kongWriter = kongWriter;
         }
 
-        public async Task Process(ExtendibleKongObject existing, ExtendibleKongObject target)
+        public async Task Process<T>(T existing, T target) where T :  ExtendibleKongObject
         {
-            target.Id = existing?.Id;
             var newSet = PluginNameMap(target.Plugins);
             var existingSet = PluginNameMap(existing?.Plugins);
 
@@ -33,11 +33,14 @@ namespace Kongverge.Common.Workflow
             {
                 if (change.Target == null)
                 {
+                    Log.Information($"Deleting plugin {change.Existing.Name}");
                     await _kongWriter.DeletePlugin(change.Existing.Id).ConfigureAwait(false);
                 }
                 else if (change.Existing == null || !change.Target.Equals(change.Existing))
                 {
                     target.AssignParentId(change.Target);
+                    change.Target.Id = change.Existing?.Id;
+                    change.Target.CreatedAt = change.Existing?.CreatedAt;
                     await _kongWriter.UpsertPlugin(change.Target).ConfigureAwait(false);
                 }
             }
