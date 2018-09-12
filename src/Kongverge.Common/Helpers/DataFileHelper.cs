@@ -15,7 +15,7 @@ namespace Kongverge.Common.Helpers
             var filePaths = Directory.EnumerateFiles(folderPath, $"*{Settings.FileExtension}", SearchOption.AllDirectories);
 
             var services = new List<KongService>();
-            foreach (var serviceFilePath in filePaths)
+            foreach (var serviceFilePath in filePaths.Where(x => !x.EndsWith(Settings.GlobalConfigPath)))
             {
                 services.Add(await ParseFile<KongService>(serviceFilePath).ConfigureAwait(false));
             }

@@ -38,6 +38,11 @@ namespace Kongverge.Common.Workflow
                 }
                 else if (change.Existing == null || !change.Target.Equals(change.Existing))
                 {
+                    if (existing != null && target.Id == null)
+                    {
+                        target.Id = existing.Id;
+                    }
+
                     target.AssignParentId(change.Target);
                     change.Target.Id = change.Existing?.Id;
                     change.Target.CreatedAt = change.Existing?.CreatedAt;
