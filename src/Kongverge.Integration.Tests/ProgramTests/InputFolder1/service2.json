@@ -1,0 +1,59 @@
+{
+  "name": "service2",
+  "host": "www.service2.com",
+  "port": 80,
+  "protocol": "http",
+  "retries": 2,
+  "connect_timeout": 20000,
+  "read_timeout": 20000,
+  "write_timeout": 20000,
+  "plugins": [
+    {
+      "name": "rate-limiting-advanced",
+      "config": {
+        "dictionary_name": "kong_rate_limiting_counters",
+        "hide_client_headers": false,
+        "identifier": "ip",
+        "limit": [
+          200,
+          300
+        ],
+        "namespace": "QEOGDnOExCDnqt39t1xzV4D5KiWq7jFx",
+        "strategy": "cluster",
+        "sync_rate": 200,
+        "window_size": [
+          400,
+          500
+        ],
+        "window_type": "sliding"
+      }
+    },
+    {
+      "name": "request-termination",
+      "config": {
+        "message": "request-terminated",
+        "status_code": 403
+      }
+    },
+    {
+      "name": "je-justsaying-defaults",
+      "config": {
+        "raisingcomponent": "component-2",
+        "tenant": "tenant-2"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "paths": [
+        "/resource2-1"
+      ],
+      "protocols": [
+        "http",
+        "https"
+      ],
+      "regex_priority": 20,
+      "strip_path": true
+    }
+  ]
+}
