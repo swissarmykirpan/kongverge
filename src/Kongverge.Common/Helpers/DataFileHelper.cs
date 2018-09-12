@@ -12,18 +12,17 @@ namespace Kongverge.Common.Helpers
     {
         public async Task<KongvergeConfiguration> ReadConfiguration(string folderPath)
         {
-            var filePaths = Directory.EnumerateFiles(folderPath, $"*{Settings.FileExtension}", SearchOption.AllDirectories);
-
-            var services = new List<KongService>();
-            foreach (var serviceFilePath in filePaths)
-            {
-                services.Add(await ParseFile<KongService>(serviceFilePath).ConfigureAwait(false));
-            }
-
             var globalConfigFilePath = Path.Combine(folderPath, Settings.GlobalConfigPath);
             var globalConfiguration = File.Exists(globalConfigFilePath)
                 ? await ParseFile<ExtendibleKongObject>(globalConfigFilePath).ConfigureAwait(false)
                 : new ExtendibleKongObject();
+
+            var filePaths = Directory.EnumerateFiles(folderPath, $"*{Settings.FileExtension}", SearchOption.AllDirectories);
+            var services = new List<KongService>();
+            foreach (var serviceFilePath in filePaths.Where(x => x != globalConfigFilePath))
+            {
+                services.Add(await ParseFile<KongService>(serviceFilePath).ConfigureAwait(false));
+            }
             
             return new KongvergeConfiguration
             {
