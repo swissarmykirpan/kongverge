@@ -9,9 +9,9 @@ using Serilog;
 
 namespace Kongverge
 {
-    internal class Program
+    public class Program
     {
-        private static int Main(string[] args)
+        public static int Main(string[] args)
         {
             var app = new CommandLineApplication
             {
