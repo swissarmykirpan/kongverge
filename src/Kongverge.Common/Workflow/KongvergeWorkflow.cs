@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
@@ -38,7 +39,7 @@ namespace Kongverge.Common.Workflow
             }
             catch (InvalidConfigurationFileException ex)
             {
-                return ExitWithCode.Return(ExitCode.InvalidConfigurationFile, ex.Message);
+                return ExitWithCode.Return(ExitCode.InvalidConfigurationFile, $"Invalid configuration file {ex.Path}{Environment.NewLine}{ex.Message}");
             }
 
             var existingConfiguration = await GetExistingConfiguration().ConfigureAwait(false);
