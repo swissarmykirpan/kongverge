@@ -1,0 +1,192 @@
+{
+  "name": "service1",
+  "host": "www.service1.com",
+  "port": 8080,
+  "protocol": "http",
+  "retries": 2,
+  "connect_timeout": 20000,
+  "read_timeout": 20000,
+  "write_timeout": 20000,
+  "routes": [
+    {
+      "paths": [
+        "/resource1-1-changed"
+      ],
+      "protocols": [
+        "http"
+      ],
+      "regex_priority": 20,
+      "strip_path": true,
+      "plugins": [
+        {
+          "name": "request-transformer-advanced",
+          "config": {
+            "http_method": "get",
+            "add": {
+              "body": [
+                "value-1:a-changed",
+                "value-2:b-changed"
+              ],
+              "headers": [
+                "header-1:a-changed",
+                "header-2:b-changed"
+              ],
+              "querystring": [
+                "param-1:a-changed",
+                "param-2:b-changed"
+              ]
+            },
+            "append": {
+              "body": [
+                "value-1:a-changed",
+                "value-2:b-changed"
+              ],
+              "headers": [
+                "header-1:a-changed",
+                "header-2:b-changed"
+              ],
+              "querystring": [
+                "param-1:a-changed",
+                "param-2:b-changed"
+              ]
+            },
+            "remove": {
+              "body": [
+                "value-3-changed",
+                "value-4-changed"
+              ],
+              "headers": [
+                "header-3-changed",
+                "header-4-changed"
+              ],
+              "querystring": [
+                "param-3-changed",
+                "param-4-changed"
+              ]
+            },
+            "rename": {
+              "body": [
+                "value-5:value-7-changed",
+                "value-6:value-8-changed"
+              ],
+              "headers": [
+                "header-5:header-7-changed",
+                "header-6:header-8-changed"
+              ],
+              "querystring": [
+                "param-5:param-7-changed",
+                "param-6:param-8-changed"
+              ]
+            },
+            "replace": {
+              "uri": "/resource1-1-replaced-changed",
+              "body": [
+                "value-10:b-changed",
+                "value-9:a-changed"
+              ],
+              "headers": [
+                "header-10:b-changed",
+                "header-9:a-changed"
+              ],
+              "querystring": [
+                "param-10:b-changed",
+                "param-9:a-changed"
+              ]
+            }
+          }
+        },
+        {
+          "name": "correlation-id",
+          "config": {
+            "echo_downstream": true,
+            "generator": "uuid#counter",
+            "header_name": "x-correlation-id"
+          }
+        },
+        {
+          "name": "request-termination",
+          "config": {
+            "message": "request-terminated",
+            "status_code": 403
+          }
+        }
+      ]
+    },
+    {
+      "paths": [
+        "/resource1-2"
+      ],
+      "protocols": [
+        "http",
+        "https"
+      ],
+      "regex_priority": 30,
+      "strip_path": true,
+      "plugins": [
+        {
+          "name": "rate-limiting-advanced",
+          "config": {
+            "dictionary_name": "kong_rate_limiting_counters",
+            "hide_client_headers": true,
+            "identifier": "consumer",
+            "limit": [
+              500,
+              600
+            ],
+            "namespace": "JI1TuoFwdrcRsk8xnbhCYUfcKY4BIOZP",
+            "strategy": "cluster",
+            "sync_rate": 200,
+            "window_size": [
+              700,
+              800
+            ],
+            "window_type": "sliding"
+          }
+        },
+        {
+          "name": "request-termination",
+          "config": {
+            "message": "request-terminated",
+            "status_code": 401
+          }
+        },
+        {
+          "name": "correlation-id",
+          "config": {
+            "echo_downstream": false,
+            "generator": "tracker",
+            "header_name": "x-correlation-id"
+          }
+        }
+      ]
+    },
+    {
+      "paths": [
+        "/resource1-4-added"
+      ],
+      "protocols": [
+        "http",
+        "https"
+      ],
+      "regex_priority": 50,
+      "strip_path": true
+    }
+  ],
+  "plugins": [
+    {
+      "name": "request-termination",
+      "config": {
+        "message": "request-terminated",
+        "status_code": 401
+      }
+    },
+    {
+      "name": "correlation-id",
+      "config": {
+        "echo_downstream": true,
+        "generator": "uuid",
+        "header_name": "x-correlation-id"
+      }
+    }
+  ]
+}
