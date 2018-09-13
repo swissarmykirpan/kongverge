@@ -1,15 +1,11 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Kongverge.Common.Helpers
+namespace Kongverge.Common.Services
 {
     [Serializable]
     public class InvalidConfigurationFileException : Exception
     {
-        public InvalidConfigurationFileException()
-        {
-        }
-
         public InvalidConfigurationFileException(string path, string message) : base(message)
         {
             Path = path;

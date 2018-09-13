@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Kongverge.Common.Helpers;
+using Kongverge.Common.Services;
 
 namespace Kongverge.Integration.Tests.ProgramTests
 {
@@ -82,9 +83,9 @@ namespace Kongverge.Integration.Tests.ProgramTests
         {
             Debug.WriteLine(Directory.GetCurrentDirectory());
 
-            var dataFileHelper = new DataFileHelper();
-            var inputConfiguration = await dataFileHelper.ReadConfiguration(InputFolder);
-            var outputConfiguration = await dataFileHelper.ReadConfiguration(OutputFolder);
+            var configReader = new ConfigFileReader();
+            var inputConfiguration = await configReader.ReadConfiguration(InputFolder);
+            var outputConfiguration = await configReader.ReadConfiguration(OutputFolder);
 
             outputConfiguration.GlobalConfig.Plugins.Should().BeEquivalentTo(inputConfiguration.GlobalConfig.Plugins);
             outputConfiguration.Services.Should().BeEquivalentTo(inputConfiguration.Services);

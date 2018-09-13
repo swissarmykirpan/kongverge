@@ -1,6 +1,4 @@
-using System.IO;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Helpers;
 using Kongverge.Common.Services;
 using Kongverge.Common.Workflow;
 using Kongverge.Services;
@@ -23,6 +21,12 @@ namespace Kongverge
 
         public static void AddServices(IServiceCollection services)
         {
+            var configuration = new ConfigurationBuilder().AddEnvironmentVariables().Build();
+            services.Configure<Settings>(x => configuration.Bind(x));
+
+            services.AddSingleton<ConfigFileReader>();
+            services.AddSingleton<ConfigFileWriter>();
+            services.AddSingleton<KongAdminHttpClient>();
             services.AddSingleton<KongAdminDryRun>();
             services.AddSingleton<KongAdminWriter>();
             services.AddSingleton<KongvergeWorkflow>();
@@ -57,16 +61,6 @@ namespace Kongverge
                 Log.Information("Exporting information from Kong");
                 return s.GetService<ExportWorkflow>();
             });
-
-            services.AddSingleton<IDataFileHelper, DataFileHelper>();
-            services.AddSingleton<KongAdminHttpClient>();
-            services.AddOptions();
-
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddEnvironmentVariables()
-                .Build();
-            services.Configure<Settings>(set => configuration.Bind(set));
         }
     }
 }
