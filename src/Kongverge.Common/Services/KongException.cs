@@ -7,10 +7,6 @@ namespace Kongverge.Common.Services
     [Serializable]
     public class KongException : Exception
     {
-        public KongException()
-        {
-        }
-
         public KongException(HttpStatusCode statusCode, string message) : base(message)
         {
             StatusCode = statusCode;
