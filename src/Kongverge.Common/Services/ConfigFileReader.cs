@@ -15,22 +15,30 @@ namespace Kongverge.Common.Services
         {
             Log.Information("Reading files from {folderPath}", folderPath);
 
-            var globalConfigFilePath = Path.Combine(folderPath, Settings.GlobalConfigPath);
-            var globalConfiguration = File.Exists(globalConfigFilePath)
-                ? await ParseFile<ExtendibleKongObject>(globalConfigFilePath).ConfigureAwait(false)
-                : new ExtendibleKongObject();
-
             var filePaths = Directory.EnumerateFiles(folderPath, $"*{Settings.FileExtension}", SearchOption.AllDirectories);
+
             var services = new List<KongService>();
-            foreach (var serviceFilePath in filePaths.Where(x => x != globalConfigFilePath))
+            ExtendibleKongObject globalConfig = null;
+            foreach (var configFilePath in filePaths)
             {
-                services.Add(await ParseFile<KongService>(serviceFilePath).ConfigureAwait(false));
+                if (configFilePath.EndsWith(Settings.GlobalConfigFileName))
+                {
+                    if (globalConfig != null)
+                    {
+                        throw new InvalidConfigurationFileException(configFilePath, $"Cannot have more than one {Settings.GlobalConfigFileName} file.");
+                    }
+                    globalConfig = await ParseFile<ExtendibleKongObject>(configFilePath).ConfigureAwait(false);
+                }
+                else
+                {
+                    services.Add(await ParseFile<KongService>(configFilePath).ConfigureAwait(false));
+                }
             }
             
             return new KongvergeConfiguration
             {
                 Services = services.AsReadOnly(),
-                GlobalConfig = globalConfiguration
+                GlobalConfig = globalConfig ?? new ExtendibleKongObject()
             };
         }
 

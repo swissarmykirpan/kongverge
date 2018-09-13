@@ -6,18 +6,14 @@ using TestStack.BDDfy.Xunit;
 // ReSharper disable once CheckNamespace
 namespace Kongverge.Integration.Tests
 {
-    public class ProgramWorkflowScenarios : ProgramSteps
+    public class ProgramWorkflowSuccessScenarios : ProgramSteps
     {
-        public ProgramWorkflowScenarios()
-        {
-            KongIsInABlankState();
-        }
-
-        [BddfyFact(DisplayName = nameof(AValidHost) + Plus + nameof(AValidPort) + Plus  + nameof(InputFolderIs) + InputFolder1)]
+        [BddfyFact(DisplayName = nameof(KongIsInABlankState) + And + nameof(AValidHost) + And + nameof(AValidPort) + And  + nameof(InputFolderIs) + A)]
         public void Scenario1() =>
-            this.Given(x => x.AValidHost())
+            this.Given(x => x.KongIsInABlankState())
+                .And(x => x.AValidHost())
                 .And(x => x.AValidPort())
-                .And(x => x.InputFolderIs(InputFolder1))
+                .And(x => x.InputFolderIs(A))
                 .When(x => x.InvokingMain())
                 .And(x => x.InvokingMainAgainForExport())
                 .Then(x => x.TheExitCodeIs(ExitCode.Success))
@@ -25,11 +21,12 @@ namespace Kongverge.Integration.Tests
                 .TearDownWith(s => KongIsInABlankState())
                 .BDDfy();
 
-        [BddfyFact(DisplayName = nameof(AValidHost) + Plus + nameof(AValidPort) + Plus  + nameof(InputFolderIs) + InputFolder2)]
+        [BddfyFact(DisplayName = nameof(KongIsInABlankState) + And + nameof(AValidHost) + And + nameof(AValidPort) + And  + nameof(InputFolderIs) + B)]
         public void Scenario2() =>
-            this.Given(x => x.AValidHost())
+            this.Given(x => x.KongIsInABlankState())
+                .And(x => x.AValidHost())
                 .And(x => x.AValidPort())
-                .And(x => x.InputFolderIs(InputFolder2))
+                .And(x => x.InputFolderIs(B))
                 .When(x => x.InvokingMain())
                 .And(x => x.InvokingMainAgainForExport())
                 .Then(x => x.TheExitCodeIs(ExitCode.Success))
@@ -37,12 +34,12 @@ namespace Kongverge.Integration.Tests
                 .TearDownWith(s => KongIsInABlankState())
                 .BDDfy();
 
-        [BddfyFact(DisplayName = nameof(KongIsInAStateMatchingInputFolder) + InputFolder1 + Plus + nameof(AValidHost) + Plus + nameof(AValidPort) + Plus  + nameof(InputFolderIs) + InputFolder2)]
+        [BddfyFact(DisplayName = nameof(KongIsInAStateMatchingInputFolder) + A + And + nameof(AValidHost) + And + nameof(AValidPort) + And + nameof(InputFolderIs) + B)]
         public void Scenario3() =>
-            this.Given(x => x.KongIsInAStateMatchingInputFolder(InputFolder1))
+            this.Given(x => x.KongIsInAStateMatchingInputFolder(A))
                 .And(x => x.AValidHost())
                 .And(x => x.AValidPort())
-                .And(x => x.InputFolderIs(InputFolder2))
+                .And(x => x.InputFolderIs(B))
                 .When(x => x.InvokingMain())
                 .And(x => x.InvokingMainAgainForExport())
                 .Then(x => x.TheExitCodeIs(ExitCode.Success))
@@ -50,12 +47,12 @@ namespace Kongverge.Integration.Tests
                 .TearDownWith(s => KongIsInABlankState())
                 .BDDfy();
 
-        [BddfyFact(DisplayName = nameof(KongIsInAStateMatchingInputFolder) + InputFolder2 + Plus + nameof(AValidHost) + Plus + nameof(AValidPort) + Plus  + nameof(InputFolderIs) + InputFolder1)]
+        [BddfyFact(DisplayName = nameof(KongIsInAStateMatchingInputFolder) + B + And + nameof(AValidHost) + And + nameof(AValidPort) + And + nameof(InputFolderIs) + A)]
         public void Scenario4() =>
-            this.Given(x => x.KongIsInAStateMatchingInputFolder(InputFolder2))
+            this.Given(x => x.KongIsInAStateMatchingInputFolder(B))
                 .And(x => x.AValidHost())
                 .And(x => x.AValidPort())
-                .And(x => x.InputFolderIs(InputFolder1))
+                .And(x => x.InputFolderIs(A))
                 .When(x => x.InvokingMain())
                 .And(x => x.InvokingMainAgainForExport())
                 .Then(x => x.TheExitCodeIs(ExitCode.Success))

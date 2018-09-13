@@ -21,7 +21,7 @@ namespace Kongverge.Common.Services
 
             if (configuration.GlobalConfig.Plugins.Any())
             {
-                await WriteConfigObject(configuration.GlobalConfig, folderPath, $"{Settings.GlobalConfigPath}").ConfigureAwait(false);
+                await WriteConfigObject(configuration.GlobalConfig, folderPath, $"{Settings.GlobalConfigFileName}").ConfigureAwait(false);
             }
         }
 
