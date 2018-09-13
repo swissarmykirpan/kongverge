@@ -40,7 +40,7 @@ namespace Kongverge
 
                 var workflow = serviceProvider.GetService<Workflow>();
 
-                Log.Information($"*************\n* {app.Name} *\n*************");
+                Log.Information($"************** {app.Name} **************");
 
                 return await workflow.Execute().ConfigureAwait(false);
             });

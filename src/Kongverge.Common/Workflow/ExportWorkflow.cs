@@ -8,23 +8,21 @@ namespace Kongverge.Common.Workflow
 {
     public class ExportWorkflow : Workflow
     {
-        private readonly IDataFileHelper _fileHelper;
+        private readonly ConfigFileWriter _configWriter;
 
         public ExportWorkflow(
             IKongAdminReader kongReader,
             IOptions<Settings> configuration,
-            IDataFileHelper fileHelper) : base(kongReader, configuration)
+            ConfigFileWriter configWriter) : base(kongReader, configuration)
         {
-            _fileHelper = fileHelper;
+            _configWriter = configWriter;
         }
 
         public override async Task<int> DoExecute()
         {
             var existingConfiguration = await GetExistingConfiguration().ConfigureAwait(false);
 
-            await _fileHelper
-                .WriteConfiguration(existingConfiguration, Configuration.OutputFolder)
-                .ConfigureAwait(false);
+            await _configWriter.WriteConfiguration(existingConfiguration, Configuration.OutputFolder).ConfigureAwait(false);
 
             return ExitWithCode.Return(ExitCode.Success);
         }

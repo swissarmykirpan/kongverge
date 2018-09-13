@@ -5,33 +5,30 @@ using Kongverge.Common.DTOs;
 using Kongverge.Common.Helpers;
 using Kongverge.Common.Services;
 using Microsoft.Extensions.Options;
-using Serilog;
 
 namespace Kongverge.Common.Workflow
 {
     public class KongvergeWorkflow : Workflow
     {
         private readonly IKongAdminWriter _kongWriter;
-        private readonly IDataFileHelper _fileHelper;
+        private readonly ConfigFileReader _configReader;
 
         public KongvergeWorkflow(
             IKongAdminReader kongReader,
             IOptions<Settings> configuration,
             IKongAdminWriter kongWriter,
-            IDataFileHelper fileHelper) : base(kongReader, configuration)
+            ConfigFileReader configReader) : base(kongReader, configuration)
         {
             _kongWriter = kongWriter;
-            _fileHelper = fileHelper;
+            _configReader = configReader;
         }
 
         public override async Task<int> DoExecute()
         {
-            Log.Information("Reading files from {inputFolder}", Configuration.InputFolder);
-
             KongvergeConfiguration targetConfiguration;
             try
             {
-                targetConfiguration = await _fileHelper.ReadConfiguration(Configuration.InputFolder).ConfigureAwait(false);
+                targetConfiguration = await _configReader.ReadConfiguration(Configuration.InputFolder).ConfigureAwait(false);
             }
             catch (DirectoryNotFoundException ex)
             {

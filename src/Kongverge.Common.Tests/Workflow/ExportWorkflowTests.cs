@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Helpers;
 using Kongverge.Common.Services;
 using Kongverge.Common.Workflow;
 using Microsoft.Extensions.Options;
@@ -19,7 +17,7 @@ namespace Kongverge.Common.Tests.Workflow
         {
             private static readonly Fixture Fixture = new Fixture();
 
-            public Mock<IDataFileHelper> MockDataFiles = new Mock<IDataFileHelper>();
+            public Mock<ConfigFileWriter> MockConfigWriter = new Mock<ConfigFileWriter>();
             public Mock<IKongAdminReader> MockKongReader = new Mock<IKongAdminReader>();
 
             public Settings Settings { get; }
@@ -35,7 +33,7 @@ namespace Kongverge.Common.Tests.Workflow
                 var configuration = new Mock<IOptions<Settings>>();
                 configuration.Setup(c => c.Value).Returns(Settings);
 
-                Sut = new ExportWorkflow(MockKongReader.Object, configuration.Object, MockDataFiles.Object);
+                Sut = new ExportWorkflow(MockKongReader.Object, configuration.Object, MockConfigWriter.Object);
             }
         }
 
@@ -72,7 +70,7 @@ namespace Kongverge.Common.Tests.Workflow
             await system.Sut.Execute();
 
             system.MockKongReader.Verify(k => k.GetServices(), Times.Once);
-            system.MockDataFiles.Verify(f =>
+            system.MockConfigWriter.Verify(f =>
                 f.WriteConfiguration(It.Is<KongvergeConfiguration>(x =>
                     x.Services == services && x.GlobalConfig.Plugins.Single().Equals(globalPlugin)
                 ), system.Settings.OutputFolder), Times.Once);
@@ -88,7 +86,7 @@ namespace Kongverge.Common.Tests.Workflow
             await system.Sut.Execute();
 
             system.MockKongReader.Verify(k => k.GetServices(), Times.Never);
-            system.MockDataFiles.Verify(f => f.WriteConfiguration(It.IsAny<KongvergeConfiguration>(), It.IsAny<string>()), Times.Never);
+            system.MockConfigWriter.Verify(f => f.WriteConfiguration(It.IsAny<KongvergeConfiguration>(), It.IsAny<string>()), Times.Never);
         }
     }
 }

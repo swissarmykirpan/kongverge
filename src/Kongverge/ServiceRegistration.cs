@@ -1,6 +1,4 @@
-using System.IO;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Helpers;
 using Kongverge.Common.Services;
 using Kongverge.Common.Workflow;
 using Kongverge.Services;
@@ -23,6 +21,12 @@ namespace Kongverge
 
         public static void AddServices(IServiceCollection services)
         {
+            var configuration = new ConfigurationBuilder().AddEnvironmentVariables().Build();
+            services.Configure<Settings>(x => configuration.Bind(x));
+
+            services.AddSingleton<ConfigFileReader>();
+            services.AddSingleton<ConfigFileWriter>();
+            services.AddSingleton<KongAdminHttpClient>();
             services.AddSingleton<KongAdminDryRun>();
             services.AddSingleton<KongAdminWriter>();
             services.AddSingleton<KongvergeWorkflow>();
@@ -36,11 +40,11 @@ namespace Kongverge
 
                 if (config.Value.DryRun)
                 {
-                    Log.Information("Performing Dry Run.\n\tNo Writes to Kong will occur");
+                    Log.Information("Performing dry run. No writes to Kong will occur.");
                     return s.GetService<KongAdminDryRun>();
                 }
 
-                Log.Information("Performing live integration.\n\tChanges will be made to {host}", config.Value.Admin.Host);
+                Log.Information("Performing live integration. Changes will be made to {host}.", config.Value.Admin.Host);
                 return s.GetService<KongAdminWriter>();
             });
 
@@ -54,19 +58,9 @@ namespace Kongverge
                     return s.GetService<KongvergeWorkflow>();
                 }
 
-                Log.Information("Exporting information from Kong");
+                Log.Information("Exporting information from Kong.");
                 return s.GetService<ExportWorkflow>();
             });
-
-            services.AddSingleton<IDataFileHelper, DataFileHelper>();
-            services.AddSingleton<KongAdminHttpClient>();
-            services.AddOptions();
-
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddEnvironmentVariables()
-                .Build();
-            services.Configure<Settings>(set => configuration.Bind(set));
         }
     }
 }

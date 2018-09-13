@@ -14,7 +14,7 @@ namespace Kongverge.Common.Tests.Workflow
 {
     public class KongProcessorScenarios : ScenarioFor<KongProcessor>
     {
-        protected const string Plus = "+";
+        protected const string And = "_";
 
         protected IReadOnlyList<KongService> ExistingServices;
         protected ExtendibleKongObject ExistingGlobalConfig;
@@ -59,7 +59,7 @@ namespace Kongverge.Common.Tests.Workflow
                 });
         }
 
-        [BddfyFact(DisplayName = nameof(NoExistingServicesOrGlobalConfig) + Plus + nameof(NoTargetServicesOrGlobalConfig))]
+        [BddfyFact(DisplayName = nameof(NoExistingServicesOrGlobalConfig) + And + nameof(NoTargetServicesOrGlobalConfig))]
         public void Scenario1() =>
             this.Given(s => s.NoExistingServicesOrGlobalConfig())
                 .And(s => s.NoTargetServicesOrGlobalConfig())
@@ -73,7 +73,7 @@ namespace Kongverge.Common.Tests.Workflow
                 .And(s => s.NoPluginsAreDeleted())
                 .BDDfy();
 
-        [BddfyFact(DisplayName = nameof(NoExistingServicesOrGlobalConfig) + Plus + nameof(AnAssortmentOfTargetServicesAndGlobalConfig))]
+        [BddfyFact(DisplayName = nameof(NoExistingServicesOrGlobalConfig) + And + nameof(AnAssortmentOfTargetServicesAndGlobalConfig))]
         public void Scenario2() =>
             this.Given(s => s.NoExistingServicesOrGlobalConfig())
                 .And(s => s.AnAssortmentOfTargetServicesAndGlobalConfig())
@@ -87,7 +87,7 @@ namespace Kongverge.Common.Tests.Workflow
                 .And(s => s.NoPluginsAreDeleted())
                 .BDDfy();
 
-        [BddfyFact(DisplayName = nameof(AnAssortmentOfExistingServicesAndGlobalConfig) + Plus + nameof(NoTargetServicesOrGlobalConfig))]
+        [BddfyFact(DisplayName = nameof(AnAssortmentOfExistingServicesAndGlobalConfig) + And + nameof(NoTargetServicesOrGlobalConfig))]
         public void Scenario3() =>
             this.Given(s => s.AnAssortmentOfExistingServicesAndGlobalConfig())
                 .And(s => s.NoTargetServicesOrGlobalConfig())
@@ -101,7 +101,7 @@ namespace Kongverge.Common.Tests.Workflow
                 .And(s => s.TheExistingPluginsAreDeleted())
                 .BDDfy();
 
-        [BddfyFact(DisplayName = nameof(AnAssortmentOfExistingServicesAndGlobalConfig) + Plus + nameof(AnAssortmentOfTargetServicesAndGlobalConfig))]
+        [BddfyFact(DisplayName = nameof(AnAssortmentOfExistingServicesAndGlobalConfig) + And + nameof(AnAssortmentOfTargetServicesAndGlobalConfig))]
         public void Scenario4() =>
             this.Given(s => s.AnAssortmentOfExistingServicesAndGlobalConfig())
                 .And(s => s.AnAssortmentOfTargetServicesAndGlobalConfig())
