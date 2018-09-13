@@ -1,6 +1,5 @@
 using System;
 using Kongverge.Common.Helpers;
-using Newtonsoft.Json;
 
 namespace Kongverge.Common.DTOs
 {
