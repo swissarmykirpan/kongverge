@@ -4,14 +4,17 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
+using Kongverge.Common.Helpers;
 using Serilog;
 
-namespace Kongverge.Common.Helpers
+namespace Kongverge.Common.Services
 {
-    public class DataFileHelper : IDataFileHelper
+    public class ConfigFileReader
     {
-        public async Task<KongvergeConfiguration> ReadConfiguration(string folderPath)
+        public virtual async Task<KongvergeConfiguration> ReadConfiguration(string folderPath)
         {
+            Log.Information("Reading files from {folderPath}", folderPath);
+
             var globalConfigFilePath = Path.Combine(folderPath, Settings.GlobalConfigPath);
             var globalConfiguration = File.Exists(globalConfigFilePath)
                 ? await ParseFile<ExtendibleKongObject>(globalConfigFilePath).ConfigureAwait(false)
@@ -33,6 +36,7 @@ namespace Kongverge.Common.Helpers
 
         private static async Task<T> ParseFile<T>(string path) where T : ExtendibleKongObject
         {
+            Log.Information("Reading {path}", path);
             string text;
             using (var reader = File.OpenText(path))
             {
@@ -57,48 +61,6 @@ namespace Kongverge.Common.Helpers
             }
             
             return data;
-        }
-
-        public async Task WriteConfiguration(KongvergeConfiguration configuration, string folderPath)
-        {
-            PrepareOutputFolder(folderPath);
-
-            foreach (var service in configuration.Services)
-            {
-                await WriteConfigObject(service, folderPath, $"{service.Name}{Settings.FileExtension}").ConfigureAwait(false);
-            }
-
-            if (configuration.GlobalConfig.Plugins.Any())
-            {
-                await WriteConfigObject(configuration.GlobalConfig, folderPath, $"{Settings.GlobalConfigPath}").ConfigureAwait(false);
-            }
-        }
-
-        private static async Task WriteConfigObject(ExtendibleKongObject configObject, string folderPath, string fileName)
-        {
-            var json = configObject.ToConfigJson();
-            var path = $"{folderPath}\\{fileName}";
-            Log.Information("Writing {path}", path);
-            using (var stream = File.OpenWrite(path))
-            using (var writer = new StreamWriter(stream))
-            {
-                await writer.WriteAsync(json).ConfigureAwait(false);
-            }
-        }
-
-        private void PrepareOutputFolder(string folderPath)
-        {
-            if (Directory.Exists(folderPath))
-            {
-                foreach (var path in Directory.EnumerateFiles(folderPath))
-                {
-                    File.Delete(path);
-                }
-            }
-            else
-            {
-                Directory.CreateDirectory(folderPath);
-            }
         }
     }
 }
