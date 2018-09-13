@@ -23,7 +23,7 @@ namespace Kongverge.Common.Workflow
 
         public async Task<int> Execute()
         {
-            Log.Information("Getting existing services from {host}\n", Configuration.Admin.Host);
+            Log.Information("Getting existing services from {host}", Configuration.Admin.Host);
 
             var reachable = await KongReader.KongIsReachable().ConfigureAwait(false);
             if (!reachable)
