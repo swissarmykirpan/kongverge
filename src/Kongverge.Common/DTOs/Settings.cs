@@ -7,8 +7,6 @@ namespace Kongverge.Common.DTOs
         public bool DryRun { get; set; } = false;
         public string OutputFolder { get; set; }
         public static string FileExtension { get; } = ".json";
-        public string TestFolder { get; set; } = "tests";
-        public int TestPort { get; set; } = 65150;
         public static string GlobalConfigFileName { get; } = "global.json";
     }
 
