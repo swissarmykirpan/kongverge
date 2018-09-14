@@ -25,25 +25,5 @@ namespace Kongverge.Common.Helpers
                 .Where(v => v.Existing?.Equals(v.New) == false)
                 .ToList();
         }
-
-        public static int SequenceHash<T>(this IEnumerable<T> target)
-        {
-            return target?.Aggregate(0, (accumulator, item) => accumulator + item.GetHashCode()) ?? 0;
-        }
-
-        public static bool SafeEquivalent<T>(this IEnumerable<T> first, IEnumerable<T> second)
-        {
-            if (first == null)
-            {
-                return second?.Any() != true;
-            }
-
-            if (second == null)
-            {
-                return !first.Any();
-            }
-
-            return first.SequenceEqual(second);
-        }
     }
 }

@@ -41,18 +41,5 @@ namespace Kongverge.Common.Tests.Helpers
             Assert.Equal(obj1Paths, paths.Existing);
             Assert.Equal(obj2Paths, paths.New);
         }
-
-        [Fact]
-        public void SequenceHash()
-        {
-            //Arrange
-            var list = new[] {'1','2'};
-
-            //Act
-            var result = list.SequenceHash();
-
-            //Assert
-            Assert.Equal(6488163, result);
-        }
     }
 }
