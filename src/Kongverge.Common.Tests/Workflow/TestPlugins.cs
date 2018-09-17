@@ -16,6 +16,7 @@ namespace Kongverge.Common.Tests.Workflow
             fixture
                 .Build<KongPlugin>()
                 .Without(x => x.Id)
+                .Without(x => x.CreatedAt)
                 .Create();
 
         public static bool IsTheSameAs(this KongPlugin kongPlugin, KongPlugin expectedKongPlugin) =>
@@ -33,17 +34,11 @@ namespace Kongverge.Common.Tests.Workflow
             kongPlugin.ConsumerId == null &&
             kongPlugin.ServiceId == null;
 
-        public static KongPlugin AsExisting(this KongPlugin kongPlugin) =>
-            kongPlugin.Clone().WithId();
-
-        public static KongPlugin WithId(this KongPlugin kongPlugin)
-        {
-            if (kongPlugin.Id == null)
-            {
-                kongPlugin.Id = Guid.NewGuid().ToString();
-            }
-            return kongPlugin;
-        }
+        public static bool CorrespondsToExistingPlugin(this KongPlugin kongPlugin, KongPlugin existingKongPlugin) =>
+            kongPlugin.Id == existingKongPlugin.Id &&
+            !string.IsNullOrWhiteSpace(kongPlugin.Id) &&
+            kongPlugin.CreatedAt == existingKongPlugin.CreatedAt &&
+            kongPlugin.CreatedAt.HasValue;
 
         public static KongPlugin AsTarget(this KongPlugin kongPlugin, bool modified = false)
         {

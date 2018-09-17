@@ -64,6 +64,11 @@ namespace Kongverge.Common.DTOs
             Service = null;
         }
 
+        public override bool IsMatch<T>(T other)
+        {
+            return other is KongRoute kongRoute && Equals(kongRoute);
+        }
+
         public override void AssignParentId(KongPlugin plugin)
         {
             base.AssignParentId(plugin);

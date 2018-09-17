@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Helpers;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Serilog;
