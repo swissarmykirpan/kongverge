@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
@@ -32,7 +32,7 @@ namespace Kongverge.Common.Workflow
 
             foreach (var target in targetConfiguration.Services)
             {
-                var existing = existingConfiguration.Services.SingleOrDefault(x => x.Name == target.Name);
+                var existing = target.MatchWithExisting(existingConfiguration.Services);
                 await ProcessService(existing, target).ConfigureAwait(false);
             }
 
@@ -53,7 +53,7 @@ namespace Kongverge.Common.Workflow
 
         private async Task ConvergeRoutes(KongService existing, KongService target)
         {
-            var existingRoutes = existing?.Routes ?? new List<KongRoute>();
+            var existingRoutes = existing?.Routes ?? Array.Empty<KongRoute>();
 
             var toAdd = target.Routes.Except(existingRoutes);
             var toRemove = existingRoutes.Except(target.Routes);
@@ -63,7 +63,7 @@ namespace Kongverge.Common.Workflow
 
             foreach (var targetRoute in target.Routes)
             {
-                var existingRoute = existingRoutes.SingleOrDefault(x => x.Equals(targetRoute));
+                var existingRoute = targetRoute.MatchWithExisting(existingRoutes);
                 await _pluginProcessor.Process(existingRoute, targetRoute).ConfigureAwait(false);
             }
         }
