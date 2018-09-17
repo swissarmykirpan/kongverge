@@ -16,19 +16,11 @@ namespace Kongverge.Common.Tests.Workflow
             fixture
                 .Build<KongService>()
                 .Without(x => x.Id)
+                .Without(x => x.CreatedAt)
                 .With(x => x.ValidateHost, false)
                 .Without(x => x.Routes)
                 .Without(x => x.Plugins)
                 .Create();
-
-        public static KongService AsExisting(this KongService kongService) =>
-            kongService.Clone().WithId();
-
-        public static KongService WithId(this KongService kongService)
-        {
-            kongService.Id = Guid.NewGuid().ToString();
-            return kongService;
-        }
 
         public static KongService AsTarget(this KongService kongService, bool modified = false)
         {

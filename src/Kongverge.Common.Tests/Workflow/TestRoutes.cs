@@ -16,17 +16,9 @@ namespace Kongverge.Common.Tests.Workflow
             fixture
                 .Build<KongRoute>()
                 .Without(x => x.Id)
+                .Without(x => x.CreatedAt)
                 .Without(x => x.Plugins)
                 .Create();
-
-        public static KongRoute AsExisting(this KongRoute kongRoute) =>
-            kongRoute.Clone().WithId();
-
-        public static KongRoute WithId(this KongRoute kongRoute)
-        {
-            kongRoute.Id = Guid.NewGuid().ToString();
-            return kongRoute;
-        }
 
         public static KongRoute AsTarget(this KongRoute kongRoute, bool modified = false)
         {

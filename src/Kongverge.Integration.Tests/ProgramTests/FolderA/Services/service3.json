@@ -7,6 +7,15 @@
   "connect_timeout": 30000,
   "read_timeout": 30000,
   "write_timeout": 30000,
+  "plugins": [
+    {
+      "name": "request-termination",
+      "config": {
+        "message": "request-terminated",
+        "status_code": 401
+      }
+    }
+  ],
   "routes": [
     {
       "protocols": [
