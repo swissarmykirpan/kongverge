@@ -86,6 +86,11 @@ namespace Kongverge.Common.DTOs
             }
         }
 
+        public override bool IsMatch<T>(T other)
+        {
+            return other is KongService kongService && kongService.Name == Name;
+        }
+
         public override void AssignParentId(KongPlugin plugin)
         {
             base.AssignParentId(plugin);

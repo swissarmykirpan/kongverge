@@ -26,6 +26,8 @@ namespace Kongverge.Common.Tests.Workflow
         protected IReadOnlyList<KongRoute> Routes;
         protected IReadOnlyList<KongPlugin> Plugins;
 
+        protected List<KongPlugin> InsertedPlugins = new List<KongPlugin>();
+
         public KongProcessorScenarios()
         {
             var fixture = new Fixture();
@@ -38,7 +40,11 @@ namespace Kongverge.Common.Tests.Workflow
                 .Setup(x => x.AddRoute(It.IsAny<string>(), It.IsAny<KongRoute>()))
                 .Returns<string, KongRoute>((serviceId, route) =>
                 {
-                    route.WithId();
+                    if (serviceId == null)
+                    {
+                        throw new InvalidOperationException();
+                    }
+                    route.WithIdAndCreatedAt();
                     return Task.CompletedTask;
                 });
 
@@ -46,7 +52,11 @@ namespace Kongverge.Common.Tests.Workflow
                 .Setup(x => x.UpsertPlugin(It.IsAny<KongPlugin>()))
                 .Returns<KongPlugin>(x =>
                 {
-                    x.WithId();
+                    if (x.Id == null)
+                    {
+                        InsertedPlugins.Add(x);
+                    }
+                    x.WithIdAndCreatedAt();
                     return Task.CompletedTask;
                 });
 
@@ -54,7 +64,7 @@ namespace Kongverge.Common.Tests.Workflow
                 .Setup(x => x.AddService(It.IsAny<KongService>()))
                 .Returns<KongService>(x =>
                 {
-                    x.WithId();
+                    x.WithIdAndCreatedAt();
                     return Task.CompletedTask;
                 });
         }
@@ -117,6 +127,7 @@ namespace Kongverge.Common.Tests.Workflow
                 .And(s => s.TheUnchangedPluginsAreNotUpserted())
                 .And(s => s.NoneOfThePluginsOfChangedOrDeletedRoutesAreUpserted())
                 .And(s => s.TheRemovedPluginsAreDeleted())
+                .And(s => s.NoneOfThePluginsOfDeletedServicesAreDeleted())
                 .And(s => s.NoneOfThePluginsOfChangedOrDeletedRoutesAreDeleted())
                 .BDDfy();
 
@@ -133,6 +144,13 @@ namespace Kongverge.Common.Tests.Workflow
                 Services[0].AsExisting(),
                 Services[1].AsExisting(),
                 Services[2].AsExisting()
+            };
+
+            ExistingServices[0].Plugins = new[]
+            {
+                Plugins[3].AsExisting(),
+                Plugins[4].AsExisting(),
+                Plugins[5].AsExisting()
             };
 
             ExistingServices[0].Routes = new[]
@@ -158,13 +176,11 @@ namespace Kongverge.Common.Tests.Workflow
             {
                 Routes[3].AsExisting()
             };
-            ExistingServices[1].Plugins = new[]
+
+            ExistingServices[2].Plugins = new[]
             {
-                Plugins[3].AsExisting(),
-                Plugins[4].AsExisting(),
-                Plugins[5].AsExisting()
+                Plugins[0].AsExisting()
             };
-            
             ExistingServices[2].Routes = new[]
             {
                 Routes[4].AsExisting(),
@@ -196,6 +212,14 @@ namespace Kongverge.Common.Tests.Workflow
                 Services[3].AsTarget() // Added
             };
 
+            TargetServices[0].Plugins = new[]
+            {
+                Plugins[3].AsTarget(true), // Changed
+                Plugins[4].AsTarget(), // Same
+                // Plugins[5] Removed
+                Plugins[6].AsTarget() // Added
+            };
+
             TargetServices[0].Routes = new[]
             {
                 Routes[0].AsTarget(true), // Changed
@@ -223,13 +247,6 @@ namespace Kongverge.Common.Tests.Workflow
                 // Routes[3] Removed
                 Routes[4].AsTarget() // Added
             };
-            TargetServices[1].Plugins = new[]
-            {
-                Plugins[3].AsTarget(true), // Changed
-                Plugins[4].AsTarget(), // Same
-                // Plugins[5] Removed
-                Plugins[6].AsTarget() // Added
-            };
 
             TargetServices[2].Routes = new[]
             {
@@ -239,11 +256,6 @@ namespace Kongverge.Common.Tests.Workflow
             {
                 Plugins[0].AsTarget(), // Added
                 Plugins[1].AsTarget() // Added
-            };
-            TargetServices[0].Plugins = new[]
-            {
-                Plugins[2].AsTarget(), // Added
-                Plugins[3].AsTarget() // Added
             };
 
             TargetGlobalConfig = GlobalConfigs[1];
@@ -371,7 +383,7 @@ namespace Kongverge.Common.Tests.Workflow
         {
             GetMock<IKongAdminWriter>().Verify(x => x.AddRoute(TargetServices[0].Id, TargetServices[0].Routes[0]), Times.Once);
             GetMock<IKongAdminWriter>().Verify(x => x.AddRoute(TargetServices[0].Id, TargetServices[0].Routes[2]), Times.Once);
-            GetMock<IKongAdminWriter>().Verify(x => x.AddRoute(TargetServices[1].Id, TargetServices[1].Routes[0]), Times.Once);
+            GetMock<IKongAdminWriter>().Verify(x => x.AddRoute(ExistingServices[1].Id, TargetServices[1].Routes[0]), Times.Once);
             GetMock<IKongAdminWriter>().Verify(x => x.AddRoute(TargetServices[2].Id, TargetServices[2].Routes[0]), Times.Once);
         }
 
@@ -390,35 +402,37 @@ namespace Kongverge.Common.Tests.Workflow
         protected void TheChangedOrNewPluginsAreUpserted()
         {
             GetMock<IKongAdminWriter>().Verify(x => x.UpsertPlugin(It.Is<KongPlugin>(p =>
+                p.IsTheSameAs(TargetServices[0].Plugins[0]) &&
+                p.CorrespondsToKongService(TargetServices[0]) &&
+                p.CorrespondsToExistingPlugin(ExistingServices[0].Plugins[0]))), Times.Once);
+            GetMock<IKongAdminWriter>().Verify(x => x.UpsertPlugin(It.Is<KongPlugin>(p =>
+                p.IsTheSameAs(TargetServices[0].Plugins[2]) &&
+                p.CorrespondsToKongService(TargetServices[0]) &&
+                InsertedPlugins.Contains(p))), Times.Once);
+            GetMock<IKongAdminWriter>().Verify(x => x.UpsertPlugin(It.Is<KongPlugin>(p =>
                 p.IsTheSameAs(TargetServices[0].Routes[1].Plugins[0]) &&
-                p.CorrespondsToKongRoute(TargetServices[0].Routes[1]))), Times.Once);
+                p.CorrespondsToKongRoute(TargetServices[0].Routes[1]) &&
+                p.CorrespondsToExistingPlugin(ExistingServices[0].Routes[1].Plugins[0]))), Times.Once);
             GetMock<IKongAdminWriter>().Verify(x => x.UpsertPlugin(It.Is<KongPlugin>(p =>
                 p.IsTheSameAs(TargetServices[0].Routes[1].Plugins[2]) &&
-                p.CorrespondsToKongRoute(TargetServices[0].Routes[1]))), Times.Once);
-            GetMock<IKongAdminWriter>().Verify(x => x.UpsertPlugin(It.Is<KongPlugin>(p =>
-                p.IsTheSameAs(TargetServices[1].Plugins[0]) &&
-                p.CorrespondsToKongService(TargetServices[1]))), Times.Once);
-            GetMock<IKongAdminWriter>().Verify(x => x.UpsertPlugin(It.Is<KongPlugin>(p =>
-                p.IsTheSameAs(TargetServices[1].Plugins[2]) &&
-                p.CorrespondsToKongService(TargetServices[1]))), Times.Once);
+                p.CorrespondsToKongRoute(TargetServices[0].Routes[1]) &&
+                InsertedPlugins.Contains(p))), Times.Once);
             GetMock<IKongAdminWriter>().Verify(x => x.UpsertPlugin(It.Is<KongPlugin>(p =>
                 p.IsTheSameAs(TargetServices[2].Routes[0].Plugins[0]) &&
-                p.CorrespondsToKongRoute(TargetServices[2].Routes[0]))), Times.Once);
+                p.CorrespondsToKongRoute(TargetServices[2].Routes[0]) &&
+                InsertedPlugins.Contains(p))), Times.Once);
             GetMock<IKongAdminWriter>().Verify(x => x.UpsertPlugin(It.Is<KongPlugin>(p =>
                 p.IsTheSameAs(TargetServices[2].Routes[0].Plugins[1]) &&
-                p.CorrespondsToKongRoute(TargetServices[2].Routes[0]))), Times.Once);
-            GetMock<IKongAdminWriter>().Verify(x => x.UpsertPlugin(It.Is<KongPlugin>(p =>
-                p.IsTheSameAs(TargetServices[0].Plugins[0]) &&
-                p.CorrespondsToKongService(TargetServices[0]))), Times.Once);
-            GetMock<IKongAdminWriter>().Verify(x => x.UpsertPlugin(It.Is<KongPlugin>(p =>
-                p.IsTheSameAs(TargetServices[0].Plugins[1]) &&
-                p.CorrespondsToKongService(TargetServices[0]))), Times.Once);
+                p.CorrespondsToKongRoute(TargetServices[2].Routes[0]) &&
+                InsertedPlugins.Contains(p))), Times.Once);
             GetMock<IKongAdminWriter>().Verify(x => x.UpsertPlugin(It.Is<KongPlugin>(p =>
                 p.IsTheSameAs(TargetGlobalConfig.Plugins[0]) &&
-                p.IsGlobal())), Times.Once);
+                p.IsGlobal() &&
+                p.CorrespondsToExistingPlugin(ExistingGlobalConfig.Plugins[0]))), Times.Once);
             GetMock<IKongAdminWriter>().Verify(x => x.UpsertPlugin(It.Is<KongPlugin>(p =>
                 p.IsTheSameAs(TargetGlobalConfig.Plugins[2]) &&
-                p.IsGlobal())), Times.Once);
+                p.IsGlobal() &&
+                InsertedPlugins.Contains(p))), Times.Once);
         }
 
         protected void TheUnchangedPluginsAreNotUpserted()
@@ -427,8 +441,8 @@ namespace Kongverge.Common.Tests.Workflow
                 p.IsTheSameAs(TargetServices[0].Routes[1].Plugins[1]) &&
                 p.CorrespondsToKongRoute(TargetServices[0].Routes[1]))), Times.Never);
             GetMock<IKongAdminWriter>().Verify(x => x.UpsertPlugin(It.Is<KongPlugin>(p =>
-                p.IsTheSameAs(TargetServices[1].Plugins[1]) &&
-                p.CorrespondsToKongService(TargetServices[1]))), Times.Never);
+                p.IsTheSameAs(TargetServices[0].Plugins[1]) &&
+                p.CorrespondsToKongService(TargetServices[0]))), Times.Never);
             GetMock<IKongAdminWriter>().Verify(x => x.UpsertPlugin(It.Is<KongPlugin>(p =>
                 p.IsTheSameAs(TargetGlobalConfig.Plugins[1]) &&
                 p.IsGlobal())), Times.Never);
@@ -449,10 +463,13 @@ namespace Kongverge.Common.Tests.Workflow
 
         protected void TheRemovedPluginsAreDeleted()
         {
+            GetMock<IKongAdminWriter>().Verify(x => x.DeletePlugin(ExistingServices[0].Plugins[2].Id), Times.Once);
             GetMock<IKongAdminWriter>().Verify(x => x.DeletePlugin(ExistingServices[0].Routes[1].Plugins[2].Id), Times.Once);
-            GetMock<IKongAdminWriter>().Verify(x => x.DeletePlugin(ExistingServices[1].Plugins[2].Id), Times.Once);
             GetMock<IKongAdminWriter>().Verify(x => x.DeletePlugin(ExistingGlobalConfig.Plugins[2].Id), Times.Once);
         }
+
+        protected void NoneOfThePluginsOfDeletedServicesAreDeleted() =>
+            GetMock<IKongAdminWriter>().Verify(x => x.DeletePlugin(ExistingServices[2].Plugins[0].Id), Times.Never);
 
         protected void NoneOfThePluginsOfChangedOrDeletedRoutesAreDeleted()
         {

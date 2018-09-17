@@ -7,57 +7,6 @@
   "connect_timeout": 20000,
   "read_timeout": 20000,
   "write_timeout": 20000,
-  "plugins": [
-    {
-      "name": "rate-limiting-advanced",
-      "config": {
-        "dictionary_name": "kong_rate_limiting_counters",
-        "hide_client_headers": true,
-        "identifier": "credential",
-        "limit": [
-          600,
-          700
-        ],
-        "namespace": "QEOGDnOExCDnqt39t1xzV4D5KiWq7jFx",
-        "strategy": "cluster",
-        "sync_rate": 200,
-        "window_size": [
-          800,
-          900
-        ],
-        "window_type": "fixed"
-      }
-    },
-    {
-      "name": "request-termination",
-      "config": {
-        "message": "request-terminated",
-        "status_code": 403
-      }
-    },
-    {
-      "name": "statsd",
-      "config": {
-        "host": "www.stats-server.com",
-        "port": 8001,
-        "prefix": "kong-stat-",
-        "metrics": [
-          {
-            "name": "latency",
-            "stat_type": "meter",
-            "sample_rate": 100,
-            "customer_identifier": "username"
-          },
-          {
-            "name": "request_size",
-            "stat_type": "histogram",
-            "sample_rate": 200,
-            "customer_identifier": "custom_id"
-          }
-        ]
-      }
-    }
-  ],
   "routes": [
     {
       "paths": [

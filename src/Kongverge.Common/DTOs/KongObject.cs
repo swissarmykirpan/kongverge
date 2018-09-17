@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Kongverge.Common.DTOs
@@ -15,5 +17,18 @@ namespace Kongverge.Common.DTOs
             Id = null;
             CreatedAt = null;
         }
+
+        public T MatchWithExisting<T>(IEnumerable<T> existingObjects) where T : KongObject
+        {
+            var existing = existingObjects.SingleOrDefault(x => x.IsMatch(this));
+            if (existing != null)
+            {
+                Id = existing.Id;
+                CreatedAt = existing.CreatedAt;
+            }
+            return existing;
+        }
+
+        public abstract bool IsMatch<T>(T other) where T : KongObject;
     }
 }
