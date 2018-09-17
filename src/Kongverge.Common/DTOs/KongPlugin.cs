@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using Kongverge.Common.Helpers;
 using Newtonsoft.Json;
@@ -41,6 +42,11 @@ namespace Kongverge.Common.DTOs
             ConsumerId = null;
             ServiceId = null;
             RouteId = null;
+        }
+
+        public override bool IsMatch<T>(T other)
+        {
+            return other is KongPlugin kongPlugin && kongPlugin.Name == Name;
         }
 
         public object[] GetEqualityValues() =>

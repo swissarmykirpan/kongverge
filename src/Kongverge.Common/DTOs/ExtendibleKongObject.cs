@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -18,6 +17,11 @@ namespace Kongverge.Common.DTOs
             {
                 plugin.StripPersistedValues();
             }
+        }
+
+        public override bool IsMatch<T>(T other)
+        {
+            throw new NotImplementedException();
         }
 
         public virtual void AssignParentId(KongPlugin plugin)
