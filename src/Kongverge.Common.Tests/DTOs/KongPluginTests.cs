@@ -1,65 +1,36 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
-using FluentAssertions;
 using Kongverge.Common.DTOs;
-using Kongverge.TestHelpers;
-using Xunit;
+using TestStack.BDDfy;
+using TestStack.BDDfy.Xunit;
 
 namespace Kongverge.Common.Tests.DTOs
 {
-    public class KongPluginTests : Fixture
+    public class KongPluginEqualityScenarios : EqualityScenarios<KongPlugin>
     {
-        [Fact]
-        public void Equals_WithSameValues_IsTrue()
-        {
-            var instance = this.Create<KongPlugin>();
-            var otherInstance = instance.Clone();
+        [BddfyFact(DisplayName = nameof(ARandomInstance) + And + nameof(AnotherInstanceClonedFromTheFirst) + And + nameof(ConfigValuesAreShuffled))]
+        public void Scenario4() =>
+            this.Given(x => x.ARandomInstance())
+                .And(x => x.AnotherInstanceClonedFromTheFirst())
+                .And(x => x.ConfigValuesAreShuffled())
+                .When(x => x.CheckingEquality())
+                .And(x => x.CheckingHashCodes())
+                .Then(x => x.TheyAreEqual())
+                .BDDfy();
 
-            instance.Equals(otherInstance).Should().BeTrue();
-            instance.GetHashCode().Equals(otherInstance.GetHashCode()).Should().BeTrue();
+        protected void ConfigValuesAreShuffled()
+        {
+            OtherInstance.Config = new Dictionary<string, object>(OtherInstance.Config.Reverse());
         }
 
-        [Fact]
-        public void Equals_WithSameValuesInDifferentOrder_IsTrue()
+        protected override void OnlyThePersistenceValuesAreDifferent()
         {
-            var configValues = new[]
-            {
-                new KeyValuePair<string, object>(this.Create<string>(), this.Create<string>()),
-                new KeyValuePair<string, object>(this.Create<string>(), this.Create<string>())
-            };
-            var instance = Build<KongPlugin>().With(x => x.Config, new Dictionary<string, object>(configValues)).Create();
-            var otherInstance = instance.Clone();
-            otherInstance.Config = new Dictionary<string, object>(configValues.Reverse());
-
-            instance.Equals(otherInstance).Should().BeTrue();
-            instance.GetHashCode().Equals(otherInstance.GetHashCode()).Should().BeTrue();
-        }
-
-        [Fact]
-        public void Equals_WithAllDifferentValues_IsFalse()
-        {
-            var instance = this.Create<KongPlugin>();
-            var otherInstance = this.Create<KongPlugin>();
-
-            instance.Equals(otherInstance).Should().BeFalse();
-            instance.GetHashCode().Equals(otherInstance.GetHashCode()).Should().BeFalse();
-        }
-
-        [Fact]
-        public void Equals_WithDifferentValuesForPersistence_IsTrue()
-        {
-            var instance = this.Create<KongPlugin>();
-            var otherInstance = instance.Clone();
-
-            otherInstance.Id = this.Create<string>();
-            otherInstance.CreatedAt = this.Create<long>();
-            otherInstance.ConsumerId = this.Create<string>();
-            otherInstance.ServiceId = this.Create<string>();
-            otherInstance.RouteId = this.Create<string>();
-
-            instance.Equals(otherInstance).Should().BeTrue();
-            instance.GetHashCode().Equals(otherInstance.GetHashCode()).Should().BeTrue();
+            OtherInstance.Id = this.Create<string>();
+            OtherInstance.CreatedAt = this.Create<long>();
+            OtherInstance.ConsumerId = this.Create<string>();
+            OtherInstance.ServiceId = this.Create<string>();
+            OtherInstance.RouteId = this.Create<string>();
         }
     }
 }

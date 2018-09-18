@@ -1,85 +1,36 @@
 using System.Linq;
 using AutoFixture;
-using FluentAssertions;
 using Kongverge.Common.DTOs;
-using Kongverge.TestHelpers;
-using Xunit;
+using TestStack.BDDfy;
+using TestStack.BDDfy.Xunit;
 
 namespace Kongverge.Common.Tests.DTOs
 {
-    public class KongRouteTests : Fixture
+    public class KongRouteEqualityScenarios : EqualityScenarios<KongRoute>
     {
-        [Fact]
-        public void Equals_WithSameValues_IsTrue()
-        {
-            var instance = this.Create<KongRoute>();
-            var otherInstance = instance.Clone();
+        [BddfyFact(DisplayName = nameof(ARandomInstance) + And + nameof(AnotherInstanceClonedFromTheFirst) + And + nameof(ListValuesAreShuffled))]
+        public void Scenario4() =>
+            this.Given(x => x.ARandomInstance())
+                .And(x => x.AnotherInstanceClonedFromTheFirst())
+                .And(x => x.ListValuesAreShuffled())
+                .When(x => x.CheckingEquality())
+                .And(x => x.CheckingHashCodes())
+                .Then(x => x.TheyAreEqual())
+                .BDDfy();
 
-            instance.Equals(otherInstance).Should().BeTrue();
-            instance.GetHashCode().Equals(otherInstance.GetHashCode()).Should().BeTrue();
+        protected void ListValuesAreShuffled()
+        {
+            OtherInstance.Hosts = OtherInstance.Hosts.Reverse();
+            OtherInstance.Protocols = OtherInstance.Protocols.Reverse();
+            OtherInstance.Methods = OtherInstance.Methods.Reverse();
+            OtherInstance.Paths = OtherInstance.Paths.Reverse();
         }
 
-        [Fact]
-        public void Equals_WithSameValuesInDifferentOrder_IsTrue()
+        protected override void OnlyThePersistenceValuesAreDifferent()
         {
-            var hosts = new[]
-            {
-                this.Create<string>(),
-                this.Create<string>()
-            };
-            var protocols = new[]
-            {
-                this.Create<string>(),
-                this.Create<string>()
-            };
-            var methods = new[]
-            {
-                this.Create<string>(),
-                this.Create<string>()
-            };
-            var paths = new[]
-            {
-                this.Create<string>(),
-                this.Create<string>()
-            };
-            var instance = Build<KongRoute>()
-                .With(x => x.Hosts, hosts)
-                .With(x => x.Protocols, protocols)
-                .With(x => x.Methods, methods)
-                .With(x => x.Paths, paths)
-                .Create();
-            var otherInstance = instance.Clone();
-            otherInstance.Hosts = hosts.Reverse();
-            otherInstance.Protocols = protocols.Reverse();
-            otherInstance.Methods = methods.Reverse();
-            otherInstance.Paths = paths.Reverse();
-
-            instance.Equals(otherInstance).Should().BeTrue();
-            instance.GetHashCode().Equals(otherInstance.GetHashCode()).Should().BeTrue();
-        }
-
-        [Fact]
-        public void Equals_WithAllDifferentValues_IsFalse()
-        {
-            var instance = this.Create<KongRoute>();
-            var otherInstance = this.Create<KongRoute>();
-
-            instance.Equals(otherInstance).Should().BeFalse();
-            instance.GetHashCode().Equals(otherInstance.GetHashCode()).Should().BeFalse();
-        }
-
-        [Fact]
-        public void Equals_WithDifferentValuesForPersistence_IsTrue()
-        {
-            var instance = this.Create<KongRoute>();
-            var otherInstance = instance.Clone();
-
-            otherInstance.Id = this.Create<string>();
-            otherInstance.Service = this.Create<KongRoute.ServiceReference>();
-            otherInstance.CreatedAt = this.Create<long>();
-
-            instance.Equals(otherInstance).Should().BeTrue();
-            instance.GetHashCode().Equals(otherInstance.GetHashCode()).Should().BeTrue();
+            OtherInstance.Id = this.Create<string>();
+            OtherInstance.Service = this.Create<KongRoute.ServiceReference>();
+            OtherInstance.CreatedAt = this.Create<long>();
         }
     }
 }
