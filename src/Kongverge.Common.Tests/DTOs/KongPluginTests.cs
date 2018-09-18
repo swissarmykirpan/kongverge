@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using AutoFixture;
+using FluentAssertions;
 using Kongverge.Common.DTOs;
+using Kongverge.Common.Helpers;
 using TestStack.BDDfy;
 using TestStack.BDDfy.Xunit;
 
@@ -32,5 +35,27 @@ namespace Kongverge.Common.Tests.DTOs
             OtherInstance.ServiceId = this.Create<string>();
             OtherInstance.RouteId = this.Create<string>();
         }
+    }
+
+    public class KongPluginSerializationScenarios : SerializationScenarios<KongPlugin>
+    {
+        [BddfyFact(DisplayName = nameof(ARandomInstance) + And + nameof(SerializingToStringContent))]
+        public void Scenario2() =>
+            this.Given(x => x.ARandomInstance())
+                .When(x => x.SerializingToStringContent())
+                .Then(x => x.ItSerializesWithoutError())
+                .BDDfy();
+
+        protected override StringContent MakeStringContent() => Instance.ToJsonStringContent();
+
+        protected override string SerializingToConfigJson() => Serialized = new ExtendibleKongObject
+        {
+            Plugins = new []
+            {
+                Instance
+            }
+        }.ToConfigJson();
+
+        protected void ItSerializesWithoutError() => Serialized.Should().NotBeEmpty();
     }
 }
