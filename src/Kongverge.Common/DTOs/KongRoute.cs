@@ -93,8 +93,8 @@ namespace Kongverge.Common.DTOs
             return Task.CompletedTask;
         }
 
-        public object[] GetEqualityValues() =>
-            new object[]
+        public object GetEqualityValues() =>
+            new
             {
                 Hosts,
                 Protocols,

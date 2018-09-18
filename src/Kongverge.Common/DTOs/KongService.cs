@@ -139,8 +139,8 @@ namespace Kongverge.Common.DTOs
             // TODO: Check if routes Clash
         }
 
-        public object[] GetEqualityValues() =>
-            new object[]
+        public object GetEqualityValues() =>
+            new
             {
                 Name,
                 Host,

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net.Http;
 using AutoFixture;
@@ -21,12 +22,35 @@ namespace Kongverge.Common.Tests.DTOs
                 .Then(x => x.TheyAreEqual())
                 .BDDfy();
 
+        [BddfyFact(DisplayName = nameof(ARandomInstance) + And + nameof(AnotherInstanceClonedFromTheFirst) + And + nameof(ListPropertiesAreEmptyAndNull))]
+        public void Scenario5() =>
+            this.Given(x => x.ARandomInstance())
+                .And(x => x.AnotherInstanceClonedFromTheFirst())
+                .And(x => x.ListPropertiesAreEmptyAndNull())
+                .When(x => x.CheckingEquality())
+                .And(x => x.CheckingHashCodes())
+                .Then(x => x.TheyAreEqual())
+                .BDDfy();
+
         protected void ListValuesAreShuffled()
         {
             OtherInstance.Hosts = OtherInstance.Hosts.Reverse();
             OtherInstance.Protocols = OtherInstance.Protocols.Reverse();
             OtherInstance.Methods = OtherInstance.Methods.Reverse();
             OtherInstance.Paths = OtherInstance.Paths.Reverse();
+        }
+
+        protected void ListPropertiesAreEmptyAndNull()
+        {
+            Instance.Hosts = Array.Empty<string>();
+            Instance.Protocols = Array.Empty<string>();
+            Instance.Methods = Array.Empty<string>();
+            Instance.Paths = Array.Empty<string>();
+
+            OtherInstance.Hosts = null;
+            OtherInstance.Protocols = null;
+            OtherInstance.Methods = null;
+            OtherInstance.Paths = null;
         }
 
         protected override void OnlyThePersistenceValuesAreDifferent()
