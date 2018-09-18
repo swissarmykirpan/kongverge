@@ -5,7 +5,7 @@ namespace Kongverge.Common.DTOs
 {
     public interface IKongEquatable<T> : IEquatable<T>
     {
-        object[] GetEqualityValues();
+        object GetEqualityValues();
     }
 
     internal static class KongObjectExtensions
