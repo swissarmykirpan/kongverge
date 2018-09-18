@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -37,7 +38,8 @@ namespace Kongverge.Common.DTOs
         }
 
         [JsonProperty("strip_path")]
-        public bool StripPath { get; set; }
+        [DefaultValue(true)]
+        public bool StripPath { get; set; } = true;
 
         public override string ToString()
         {

@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Kongverge.Common.DTOs;
+using Kongverge.Common.Helpers;
 using TestStack.BDDfy;
 using TestStack.BDDfy.Xunit;
 
@@ -79,5 +81,36 @@ namespace Kongverge.Common.Tests.DTOs
         protected void ItIsValid() => ErrorMessages.Count.Should().Be(0);
 
         protected void ItIsInvalid() => ErrorMessages.Count.Should().BeGreaterThan(0);
+    }
+
+    public class KongServiceSerializationScenarios : SerializationScenarios<KongService>
+    {
+        [BddfyFact(DisplayName = nameof(ARandomInstance) + And + nameof(SerializingToStringContent))]
+        public void Scenario2() =>
+            this.Given(x => x.ARandomInstance())
+                .When(x => x.SerializingToStringContent())
+                .Then(x => x.ValidateHostIsNotSerialized())
+                .And(x => x.RoutesIsNotSerialized())
+                .And(x => x.PluginsIsNotSerialized())
+                .And(x => x.ValidateHostIsNotNull())
+                .And(x => x.PluginsIsNotNull())
+                .And(x => x.RoutesIsNotNull())
+                .BDDfy();
+
+        protected override StringContent MakeStringContent() => Instance.ToJsonStringContent();
+
+        protected override string SerializingToConfigJson() => Serialized = Instance.ToConfigJson();
+
+        protected void ValidateHostIsNotSerialized() => Serialized.Contains("\"validate-host\":").Should().BeFalse();
+
+        protected void PluginsIsNotSerialized() => Serialized.Contains("\"plugins\":").Should().BeFalse();
+
+        protected void RoutesIsNotSerialized() => Serialized.Contains("\"routes\":").Should().BeFalse();
+
+        protected void ValidateHostIsNotNull() => Instance.ValidateHost.Should().NotBeNull();
+
+        protected void PluginsIsNotNull() => Instance.Plugins.Should().NotBeNull();
+
+        protected void RoutesIsNotNull() => Instance.Routes.Should().NotBeNull();
     }
 }
