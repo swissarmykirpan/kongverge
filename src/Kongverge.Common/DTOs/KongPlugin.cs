@@ -48,8 +48,8 @@ namespace Kongverge.Common.DTOs
             return other is KongPlugin kongPlugin && kongPlugin.Name == Name;
         }
 
-        public object[] GetEqualityValues() =>
-             new object[]
+        public object GetEqualityValues() =>
+             new
              {
                 Name,
                 Config
