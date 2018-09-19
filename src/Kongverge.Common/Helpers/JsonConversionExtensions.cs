@@ -1,39 +1,18 @@
-using System;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
-using Kongverge.Common.DTOs;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Kongverge.Common.Helpers
 {
-    public static class KongJsonConvert
+    public static class JsonConversionExtensions
     {
-        public static readonly JsonSerializerSettings SerializerSettings =
-            new JsonSerializerSettings
+        public static string ToNormalizedJson(this object value)
+        {
+            var token = JToken.FromObject(value);
+            return JsonConvert.SerializeObject(token.Normalize(), new JsonSerializerSettings
             {
-                DefaultValueHandling = DefaultValueHandling.Ignore,
-                NullValueHandling = NullValueHandling.Ignore,
                 Formatting = Formatting.Indented
-            };
-
-        public static StringContent AsJsonStringContent(this string json) =>
-            new StringContent(json, Encoding.UTF8, "application/json");
-
-        public static T ToKongObject<T>(this string json) where T : ExtendibleKongObject =>
-            JsonConvert.DeserializeObject<T>(json, SerializerSettings);
-
-        public static string ToConfigJson(this ExtendibleKongObject kongObject)
-        {
-            kongObject.StripPersistedValues();
-            return SerializeObject(kongObject) + Environment.NewLine;
-        }
-
-        public static string SerializeObject(object value)
-        {
-            var token = JToken.FromObject(value, JsonSerializer.Create(SerializerSettings));
-            return JsonConvert.SerializeObject(token.Normalize(), SerializerSettings);
+            });
         }
 
         private static JToken Normalize(this JToken token)
@@ -45,7 +24,7 @@ namespace Kongverge.Common.Helpers
                     var normalized = new JObject();
                     foreach (var property in jObject.Properties().OrderBy(x => x.Name))
                     {
-                        if (property.Value is JArray jArray && jArray.Count == 0)
+                        if (property.Value.Type == JTokenType.Null || property.Value is JArray jArray && jArray.Count == 0)
                         {
                             continue;
                         }

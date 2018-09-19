@@ -60,8 +60,8 @@
   ],
   "routes": [
     {
-      "paths": [
-        "/resource1-1-changed"
+      "methods": [
+        "GET"
       ],
       "protocols": [
         "http"

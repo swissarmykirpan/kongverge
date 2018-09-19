@@ -7,13 +7,13 @@ namespace Kongverge.Common.DTOs
 {
     public sealed class KongPlugin : KongObject, IKongEquatable<KongPlugin>
     {
-        [JsonProperty("consumer_id")]
+        [JsonProperty("consumer_id", NullValueHandling = NullValueHandling.Ignore)]
         public string ConsumerId { get; set; }
 
-        [JsonProperty("service_id")]
+        [JsonProperty("service_id", NullValueHandling = NullValueHandling.Ignore)]
         public string ServiceId { get; set; }
 
-        [JsonProperty("route_id")]
+        [JsonProperty("route_id", NullValueHandling = NullValueHandling.Ignore)]
         public string RouteId { get; set; }
 
         [JsonProperty("name")]
@@ -32,8 +32,7 @@ namespace Kongverge.Common.DTOs
             return $"Id: {Id}, Name: {Name}";
         }
 
-        public StringContent ToJsonStringContent() =>
-            JsonConvert.SerializeObject(this, KongJsonConvert.SerializerSettings).AsJsonStringContent();
+        public StringContent ToJsonStringContent() => JsonConvert.SerializeObject(this).AsJsonStringContent();
 
         public override void StripPersistedValues()
         {

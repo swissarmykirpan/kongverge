@@ -4,7 +4,6 @@ using System.Net.Http;
 using AutoFixture;
 using FluentAssertions;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Helpers;
 using TestStack.BDDfy;
 using TestStack.BDDfy.Xunit;
 
@@ -63,24 +62,10 @@ namespace Kongverge.Common.Tests.DTOs
 
     public class KongRouteSerializationScenarios : SerializationScenarios<KongRoute>
     {
-        [BddfyFact(DisplayName = nameof(ARandomInstance) + And + nameof(SerializingToStringContent) + And + nameof(StripPathIs) + "False")]
+        [BddfyFact(DisplayName = nameof(ARandomInstance) + And + nameof(SerializingToStringContent))]
         public void Scenario2() =>
             this.Given(x => x.ARandomInstance())
-                .And(x => x.StripPathIs(false))
                 .When(x => x.SerializingToStringContent())
-                .Then(x => x.StripPathIsSerializedAsFalse())
-                .And(x => x.ServiceIsNotSerialized())
-                .And(x => x.PluginsIsNotSerialized())
-                .And(x => x.ServiceIsNotNull())
-                .And(x => x.PluginsIsNotNull())
-                .BDDfy();
-
-        [BddfyFact(DisplayName = nameof(ARandomInstance) + And + nameof(SerializingToStringContent) + And + nameof(StripPathIs) + "True")]
-        public void Scenario3() =>
-            this.Given(x => x.ARandomInstance())
-                .And(x => x.StripPathIs(true))
-                .When(x => x.SerializingToStringContent())
-                .Then(x => x.StripPathIsNotSerialized())
                 .And(x => x.ServiceIsNotSerialized())
                 .And(x => x.PluginsIsNotSerialized())
                 .And(x => x.ServiceIsNotNull())
@@ -90,12 +75,6 @@ namespace Kongverge.Common.Tests.DTOs
         protected override StringContent MakeStringContent() => Instance.ToJsonStringContent();
 
         protected override string SerializingToConfigJson() => Serialized = Instance.ToConfigJson();
-        
-        protected void StripPathIs(bool value) => Instance.StripPath = value;
-
-        protected void StripPathIsSerializedAsFalse() => Serialized.Contains("\"strip_path\": false").Should().BeTrue();
-
-        protected void StripPathIsNotSerialized() => Serialized.Contains("\"strip_path\":").Should().BeFalse();
 
         protected void PluginsIsNotSerialized() => Serialized.Contains("\"plugins\":").Should().BeFalse();
 

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -10,36 +9,29 @@ namespace Kongverge.Common.DTOs
 {
     public sealed class KongRoute : ExtendibleKongObject, IKongEquatable<KongRoute>
     {
-        private int _regexPriority;
-        private const int DefaultRegexMultiplier = 10;
-
-        [JsonProperty("service")]
+        [JsonProperty("service", NullValueHandling = NullValueHandling.Ignore)]
         public ServiceReference Service { get; set; }
         
-        [JsonProperty("hosts")]
+        [JsonProperty("hosts", NullValueHandling = NullValueHandling.Ignore)]
         public IEnumerable<string> Hosts { get; set; } = new List<string>();
 
-        [JsonProperty("protocols")]
-        public IEnumerable<string> Protocols { get; set; } = new List<string>();
+        [JsonProperty("protocols", NullValueHandling = NullValueHandling.Ignore)]
+        public IEnumerable<string> Protocols { get; set; } = new[] { "http", "https" };
 
-        [JsonProperty("methods")]
+        [JsonProperty("methods", NullValueHandling = NullValueHandling.Ignore)]
         public IEnumerable<string> Methods { get; set; } = new List<string>();
 
-        [JsonProperty("paths")]
+        [JsonProperty("paths", NullValueHandling = NullValueHandling.Ignore)]
         public IEnumerable<string> Paths { get; set; } = new List<string>();
 
-        // TODO: This property has a default value. Therefore if it isn't specified in config files, it won't round-trip properly.
-        // Consider making this nullable and then checking if the returned value from Kong is the same as the default, and if so, setting it to null when StripPersistedValues() is invoked.
         [JsonProperty("regex_priority")]
-        public int RegexPriority
-        {
-            get { return _regexPriority > 0 ? _regexPriority : Paths.Select(path => path.Count(f => f == '/')).Concat(new[] { 0 }).Max() * DefaultRegexMultiplier; }
-            set => _regexPriority = value;
-        }
+        public int RegexPriority { get; set; }
 
         [JsonProperty("strip_path")]
-        [DefaultValue(true)]
         public bool StripPath { get; set; } = true;
+
+        [JsonProperty("preserve_host")]
+        public bool PreserveHost { get; set; }
 
         public override string ToString()
         {
@@ -53,7 +45,7 @@ namespace Kongverge.Common.DTOs
 
             Service = null;
             Plugins = null;
-            var json = JsonConvert.SerializeObject(this, KongJsonConvert.SerializerSettings);
+            var json = JsonConvert.SerializeObject(this);
             Service = serviceReference;
             Plugins = plugins;
 
@@ -79,18 +71,38 @@ namespace Kongverge.Common.DTOs
 
         public override Task Validate(ICollection<string> errorMessages)
         {
-            if (Paths == null || !Paths.Any())
+            if (IsNullOrEmpty(Protocols) || Protocols.Any(string.IsNullOrWhiteSpace))
             {
-                errorMessages.Add("Route Paths cannot be null or empty");
+                errorMessages.Add("Route Protocols cannot be null or contain null or empty values");
+            }
+
+            if (IsNullOrEmpty(Hosts) && IsNullOrEmpty(Methods) && IsNullOrEmpty(Paths))
+            {
+                errorMessages.Add("At least one of 'hosts', 'methods', or 'paths' must be set");
                 return Task.CompletedTask;
             }
 
-            if (Paths.Any(string.IsNullOrWhiteSpace))
+            if (Hosts?.Any(string.IsNullOrWhiteSpace) == true)
+            {
+                errorMessages.Add("Route Hosts cannot contain null or empty values");
+            }
+
+            if (Methods?.Any(string.IsNullOrWhiteSpace) == true)
+            {
+                errorMessages.Add("Route Methods cannot contain null or empty values");
+            }
+
+            if (Paths?.Any(string.IsNullOrWhiteSpace) == true)
             {
                 errorMessages.Add("Route Paths cannot contain null or empty values");
             }
 
             return Task.CompletedTask;
+        }
+
+        private static bool IsNullOrEmpty(IEnumerable<string> values)
+        {
+            return values == null || !values.Any();
         }
 
         public object GetEqualityValues() =>

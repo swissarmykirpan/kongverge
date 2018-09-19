@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Helpers;
 using TestStack.BDDfy;
 using TestStack.BDDfy.Xunit;
 
@@ -16,7 +15,6 @@ namespace Kongverge.Common.Tests.DTOs
         {
             OtherInstance.Id = this.Create<string>();
             OtherInstance.CreatedAt = this.Create<long>();
-            OtherInstance.ValidateHost = !OtherInstance.ValidateHost;
         }
     }
 
@@ -27,54 +25,24 @@ namespace Kongverge.Common.Tests.DTOs
         protected KongService Instance;
         protected ICollection<string> ErrorMessages = new List<string>();
 
-        [BddfyFact(DisplayName = nameof(ARandomInstance) + And + nameof(ValidateHostIs) + "True" + And + nameof(HostIsReachable))]
+        [BddfyFact(DisplayName = nameof(ARandomInstance))]
         public void Scenario1() =>
             this.Given(x => x.ARandomInstance())
-                .And(x => ValidateHostIs(true))
-                .And(x => HostIsReachable())
                 .When(x => x.Validating())
                 .Then(x => x.ItIsValid())
                 .BDDfy();
 
-        [BddfyFact(DisplayName = nameof(ARandomInstance) + And + nameof(ValidateHostIs) + "True" + And + nameof(HostIsNotReachable))]
+        [BddfyFact(DisplayName = nameof(ARandomInstance) + And + nameof(RouteProtocolsAreEmpty))]
         public void Scenario2() =>
             this.Given(x => x.ARandomInstance())
-                .And(x => ValidateHostIs(true))
-                .And(x => HostIsNotReachable())
-                .When(x => x.Validating())
-                .Then(x => x.ItIsInvalid())
-                .BDDfy();
-
-        [BddfyFact(DisplayName = nameof(ARandomInstance) + And + nameof(ValidateHostIs) + "False")]
-        public void Scenario3() =>
-            this.Given(x => x.ARandomInstance())
-                .And(x => ValidateHostIs(false))
-                .When(x => x.Validating())
-                .Then(x => x.ItIsValid())
-                .BDDfy();
-
-        [BddfyFact(DisplayName = nameof(ARandomInstance) + And + nameof(ValidateHostIs) + "False" + And + nameof(RoutePathsAreEmpty))]
-        public void Scenario4() =>
-            this.Given(x => x.ARandomInstance())
-                .And(x => ValidateHostIs(false))
-                .And(x => x.RoutePathsAreEmpty())
+                .And(x => x.RouteProtocolsAreEmpty())
                 .When(x => x.Validating())
                 .Then(x => x.ItIsInvalid())
                 .BDDfy();
 
         protected void ARandomInstance() => Instance = this.Create<KongService>();
 
-        protected void ValidateHostIs(bool value) => Instance.ValidateHost = value;
-
-        protected void HostIsReachable()
-        {
-            Instance.Host = "www.google.com";
-            Instance.Port = 80;
-        }
-
-        protected void HostIsNotReachable() => Instance.Host = this.Create<string>();
-
-        protected void RoutePathsAreEmpty() => Instance.Routes[0].Paths = null;
+        protected void RouteProtocolsAreEmpty() => Instance.Routes[0].Protocols = null;
 
         protected Task Validating() => Instance.Validate(ErrorMessages);
 
@@ -89,10 +57,8 @@ namespace Kongverge.Common.Tests.DTOs
         public void Scenario2() =>
             this.Given(x => x.ARandomInstance())
                 .When(x => x.SerializingToStringContent())
-                .Then(x => x.ValidateHostIsNotSerialized())
                 .And(x => x.RoutesIsNotSerialized())
                 .And(x => x.PluginsIsNotSerialized())
-                .And(x => x.ValidateHostIsNotNull())
                 .And(x => x.PluginsIsNotNull())
                 .And(x => x.RoutesIsNotNull())
                 .BDDfy();
@@ -101,13 +67,9 @@ namespace Kongverge.Common.Tests.DTOs
 
         protected override string SerializingToConfigJson() => Serialized = Instance.ToConfigJson();
 
-        protected void ValidateHostIsNotSerialized() => Serialized.Contains("\"validate-host\":").Should().BeFalse();
-
         protected void PluginsIsNotSerialized() => Serialized.Contains("\"plugins\":").Should().BeFalse();
 
         protected void RoutesIsNotSerialized() => Serialized.Contains("\"routes\":").Should().BeFalse();
-
-        protected void ValidateHostIsNotNull() => Instance.ValidateHost.Should().NotBeNull();
 
         protected void PluginsIsNotNull() => Instance.Plugins.Should().NotBeNull();
 
