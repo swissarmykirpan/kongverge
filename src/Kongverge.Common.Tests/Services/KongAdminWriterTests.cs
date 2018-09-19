@@ -151,7 +151,7 @@ namespace Kongverge.Common.Tests.Services
 
             //Assert
             route.Plugins = null;
-            var routeJson = JsonConvert.SerializeObject(route, KongJsonConvert.SerializerSettings);
+            var routeJson = JsonConvert.SerializeObject(route);
             var json = await content.ReadAsStringAsync();
             routeJson.Should().Be(json);
         }
