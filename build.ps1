@@ -11,7 +11,6 @@ Write-Host "Building solution..." -ForegroundColor Green
 & $dotnet build $solutionPath
 
 Write-Host "Testing solution..." -ForegroundColor Green
-DotNetTest "src\KongVerge.Tests\KongVerge.Tests.csproj"
 DotNetTest "src\Kongverge.Common.Tests\Kongverge.Common.Tests.csproj"
 
 Write-Host "Publishing solution..." -ForegroundColor Green
