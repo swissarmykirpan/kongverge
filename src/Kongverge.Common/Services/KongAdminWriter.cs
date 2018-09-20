@@ -37,7 +37,7 @@ namespace Kongverge.Common.Services
 
         public async Task UpdateService(KongService service)
         {
-            Log.Information($"Updating service {service.Name}");
+            Log.Information("Updating service {name}", service.Name);
             var content = service.ToJsonStringContent();
 
             try
@@ -56,6 +56,7 @@ namespace Kongverge.Common.Services
 
         public async Task DeleteService(string serviceId)
         {
+            Log.Information("Deleting service {id}", serviceId);
             await DeleteRoutes(serviceId).ConfigureAwait(false);
 
             try
@@ -71,6 +72,7 @@ namespace Kongverge.Common.Services
 
         public async Task AddRoute(string serviceId, KongRoute route)
         {
+            Log.Information(@"Adding route {route}", route);
             var content = route.ToJsonStringContent();
 
             try
@@ -90,6 +92,8 @@ namespace Kongverge.Common.Services
 
         public async Task DeleteRoute(string routeId)
         {
+            Log.Information("Deleting route {id}", routeId);
+
             try
             {
                 await HttpClient.DeleteAsync($"/routes/{routeId}").ConfigureAwait(false);
@@ -122,6 +126,8 @@ namespace Kongverge.Common.Services
 
         public async Task DeletePlugin(string pluginId)
         {
+            Log.Information("Deleting plugin {id}", pluginId);
+
             try
             {
                 await HttpClient.DeleteAsync($"/plugins/{pluginId}").ConfigureAwait(false);

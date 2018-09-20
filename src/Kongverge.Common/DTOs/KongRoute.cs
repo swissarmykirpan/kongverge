@@ -35,7 +35,9 @@ namespace Kongverge.Common.DTOs
 
         public override string ToString()
         {
-            return $"Id: {Id}, Paths: {string.Join(", ", Paths)}";
+            return $@"Paths      : {string.Join(", ", Paths)}
+Methods    : {string.Join(", ", Methods)}
+Protocols  : {string.Join(", ", Protocols)}";
         }
 
         public StringContent ToJsonStringContent()
@@ -56,11 +58,6 @@ namespace Kongverge.Common.DTOs
         {
             base.StripPersistedValues();
             Service = null;
-        }
-
-        public override bool IsMatch<T>(T other)
-        {
-            return other is KongRoute kongRoute && Equals(kongRoute);
         }
 
         public override void AssignParentId(KongPlugin plugin)
@@ -104,6 +101,8 @@ namespace Kongverge.Common.DTOs
         {
             return values == null || !values.Any();
         }
+
+        public override object GetMatchValue() => this;
 
         public object GetEqualityValues() =>
             new

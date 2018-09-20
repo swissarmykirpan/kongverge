@@ -20,7 +20,7 @@ namespace Kongverge.Common.DTOs
 
         public T MatchWithExisting<T>(IEnumerable<T> existingObjects) where T : KongObject
         {
-            var existing = existingObjects.SingleOrDefault(x => x.IsMatch(this));
+            var existing = existingObjects.SingleOrDefault(x => GetMatchValue().Equals(x.GetMatchValue()));
             if (existing != null)
             {
                 Id = existing.Id;
@@ -29,6 +29,6 @@ namespace Kongverge.Common.DTOs
             return existing;
         }
 
-        public abstract bool IsMatch<T>(T other) where T : KongObject;
+        public abstract object GetMatchValue();
     }
 }
