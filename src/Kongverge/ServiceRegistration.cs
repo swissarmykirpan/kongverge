@@ -1,7 +1,6 @@
-using Kongverge.Common.DTOs;
-using Kongverge.Common.Services;
-using Kongverge.Common.Workflow;
+using Kongverge.DTOs;
 using Kongverge.Services;
+using Kongverge.Workflow;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -48,7 +47,7 @@ namespace Kongverge
                 return s.GetService<KongAdminWriter>();
             });
 
-            services.AddSingleton<Workflow>(s =>
+            services.AddSingleton<Workflow.Workflow>(s =>
             {
                 var config = s.GetService<IOptions<Settings>>();
 
