@@ -1,6 +1,6 @@
 using Moq.AutoMock;
 
-namespace Kongverge.TestHelpers
+namespace Kongverge.Tests
 {
     public abstract class ScenarioFor<T> : AutoMocker where T : class
     {

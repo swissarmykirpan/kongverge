@@ -1,7 +1,6 @@
 using AutoFixture;
 using FluentAssertions;
 using Kongverge.DTOs;
-using Kongverge.TestHelpers;
 using TestStack.BDDfy;
 using TestStack.BDDfy.Xunit;
 
