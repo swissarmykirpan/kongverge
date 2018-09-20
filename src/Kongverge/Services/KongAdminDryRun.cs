@@ -16,17 +16,14 @@ namespace Kongverge.Services
 
         public Task UpsertPlugin(KongPlugin plugin)
         {
-            Log.Information("Adding plugin {plugin}\n\tWith config {config}", plugin.Name, plugin.Config);
-            plugin.Id = Guid.NewGuid().ToString();
+            Log.Information(string.IsNullOrWhiteSpace(plugin.Id) ? $"Adding plugin {plugin.Name}" : $"Updating plugin {plugin.Name}");
+            plugin.Id = plugin.Id ?? Guid.NewGuid().ToString();
             return Task.CompletedTask;
         }
 
         public Task AddRoute(string serviceId, KongRoute route)
         {
-            Log.Information(@"Adding Route
-    Route Paths: {path}
-    Methods    : {methods}
-    Protocols  : {Protocols}", route.Paths, route.Methods, route.Protocols);
+            Log.Information(@"Adding route {route}", route);
             route.Id = Guid.NewGuid().ToString();
             return Task.CompletedTask;
         }
@@ -58,7 +55,7 @@ namespace Kongverge.Services
 
         public Task UpdateService(KongService service)
         {
-            Log.Information("Updating service {name} with host {host}", service.Name, service.Host);
+            Log.Information($"Updating service {service.Name}");
             return Task.CompletedTask;
         }
     }

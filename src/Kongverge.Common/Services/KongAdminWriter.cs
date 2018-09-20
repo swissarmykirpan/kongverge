@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
+using Kongverge.Common.Helpers;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Serilog;
@@ -18,11 +18,11 @@ namespace Kongverge.Common.Services
 
         public async Task AddService(KongService service)
         {
+            Log.Information($"Adding service {service.Name}");
             var content = service.ToJsonStringContent();
 
             try
             {
-                Log.Information($"Adding service {service.Name}");
                 var response = await HttpClient.PostAsync("/services/", content).ConfigureAwait(false);
                 var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var added = JsonConvert.DeserializeObject<KongService>(responseBody);
@@ -37,17 +37,12 @@ namespace Kongverge.Common.Services
 
         public async Task UpdateService(KongService service)
         {
-            Log.Information($"Updating service {service.Name}");
-            var requestUri = new Uri($"/services/{service.Name}", UriKind.Relative);
+            Log.Information("Updating service {name}", service.Name);
             var content = service.ToJsonStringContent();
-            var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri)
-            {
-                Content = content
-            };
 
             try
             {
-                var response = await HttpClient.SendAsync(request).ConfigureAwait(false);
+                var response = await HttpClient.PatchAsync($"/services/{service.Id}", content).ConfigureAwait(false);
                 var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var updated = JsonConvert.DeserializeObject<KongService>(responseBody);
                 service.Id = updated.Id;
@@ -61,14 +56,12 @@ namespace Kongverge.Common.Services
 
         public async Task DeleteService(string serviceId)
         {
+            Log.Information("Deleting service {id}", serviceId);
             await DeleteRoutes(serviceId).ConfigureAwait(false);
-
-            var requestUri = $"/services/{serviceId}";
-            var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
 
             try
             {
-                await HttpClient.SendAsync(request).ConfigureAwait(false);
+                await HttpClient.DeleteAsync($"/services/{serviceId}").ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -79,6 +72,7 @@ namespace Kongverge.Common.Services
 
         public async Task AddRoute(string serviceId, KongRoute route)
         {
+            Log.Information(@"Adding route {route}", route);
             var content = route.ToJsonStringContent();
 
             try
@@ -98,12 +92,11 @@ namespace Kongverge.Common.Services
 
         public async Task DeleteRoute(string routeId)
         {
-            var requestUri = $"/routes/{routeId}";
-            var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
+            Log.Information("Deleting route {id}", routeId);
 
             try
             {
-                await HttpClient.SendAsync(request).ConfigureAwait(false);
+                await HttpClient.DeleteAsync($"/routes/{routeId}").ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -133,12 +126,11 @@ namespace Kongverge.Common.Services
 
         public async Task DeletePlugin(string pluginId)
         {
-            var requestUri = $"/plugins/{pluginId}";
-            var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
+            Log.Information("Deleting plugin {id}", pluginId);
 
             try
             {
-                await HttpClient.SendAsync(request).ConfigureAwait(false);
+                await HttpClient.DeleteAsync($"/plugins/{pluginId}").ConfigureAwait(false);
             }
             catch (Exception e)
             {

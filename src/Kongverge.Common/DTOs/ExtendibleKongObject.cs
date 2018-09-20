@@ -26,10 +26,7 @@ namespace Kongverge.Common.DTOs
             return this.ToNormalizedJson() + Environment.NewLine;
         }
 
-        public override bool IsMatch<T>(T other)
-        {
-            throw new NotImplementedException();
-        }
+        public override object GetMatchValue() => null;
 
         public virtual void AssignParentId(KongPlugin plugin)
         {
