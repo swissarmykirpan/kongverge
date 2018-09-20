@@ -42,10 +42,7 @@ namespace Kongverge.Common.DTOs
             RouteId = null;
         }
 
-        public override bool IsMatch<T>(T other)
-        {
-            return other is KongPlugin kongPlugin && kongPlugin.Name == Name;
-        }
+        public override object GetMatchValue() => Name;
 
         public object GetEqualityValues() =>
              new
