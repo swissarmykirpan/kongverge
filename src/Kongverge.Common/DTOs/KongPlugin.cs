@@ -32,8 +32,7 @@ namespace Kongverge.Common.DTOs
             return $"Id: {Id}, Name: {Name}";
         }
 
-        public StringContent ToJsonStringContent() =>
-            JsonConvert.SerializeObject(this, KongJsonConvert.SerializerSettings).AsJsonStringContent();
+        public StringContent ToJsonStringContent() => JsonConvert.SerializeObject(this).AsJsonStringContent();
 
         public override void StripPersistedValues()
         {
