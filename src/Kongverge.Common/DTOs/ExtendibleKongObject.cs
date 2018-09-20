@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Kongverge.Common.Helpers;
 using Newtonsoft.Json;
 
 namespace Kongverge.Common.DTOs
 {
     public class ExtendibleKongObject : KongObject
     {
-        [JsonProperty("plugins")]
+        [JsonProperty("plugins", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<KongPlugin> Plugins { get; set; } = Array.Empty<KongPlugin>();
 
         public override void StripPersistedValues()
@@ -17,6 +18,12 @@ namespace Kongverge.Common.DTOs
             {
                 plugin.StripPersistedValues();
             }
+        }
+
+        public string ToConfigJson()
+        {
+            StripPersistedValues();
+            return this.ToNormalizedJson() + Environment.NewLine;
         }
 
         public override bool IsMatch<T>(T other)

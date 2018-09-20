@@ -2,6 +2,7 @@
   "name": "service1",
   "host": "www.service1.com",
   "port": 80,
+  "path": "/resource",
   "protocol": "http",
   "retries": 1,
   "connect_timeout": 10000,

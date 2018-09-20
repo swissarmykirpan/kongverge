@@ -21,8 +21,8 @@ namespace Kongverge.Common.DTOs
             if (other.GetType() != instance.GetType())
                 return false;
 
-            var instanceSerialized = KongJsonConvert.SerializeObject(instance.GetEqualityValues());
-            var otherSerialized = KongJsonConvert.SerializeObject(other.GetEqualityValues());
+            var instanceSerialized = instance.GetEqualityValues().ToNormalizedJson();
+            var otherSerialized = other.GetEqualityValues().ToNormalizedJson();
 
             return otherSerialized == instanceSerialized;
         }
@@ -39,6 +39,6 @@ namespace Kongverge.Common.DTOs
         }
 
         internal static int GetKongHashCode<T>(this IKongEquatable<T> instance) where T : KongObject =>
-            KongJsonConvert.SerializeObject(instance.GetEqualityValues()).GetHashCode();
+            instance.GetEqualityValues().ToNormalizedJson().GetHashCode();
     }
 }

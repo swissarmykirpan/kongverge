@@ -6,10 +6,10 @@ namespace Kongverge.Common.DTOs
 {
     public abstract class KongObject
     {
-        [JsonProperty("id")]
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public string Id { get; set; }
 
-        [JsonProperty("created_at")]
+        [JsonProperty("created_at", NullValueHandling = NullValueHandling.Ignore)]
         public long? CreatedAt { get; set; }
 
         public virtual void StripPersistedValues()
