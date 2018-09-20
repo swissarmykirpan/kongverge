@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Kongverge.TestHelpers
+namespace Kongverge.Tests
 {
     public static class GenericExtensions
     {

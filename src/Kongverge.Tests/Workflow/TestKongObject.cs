@@ -1,6 +1,5 @@
 using System;
 using Kongverge.DTOs;
-using Kongverge.TestHelpers;
 
 namespace Kongverge.Tests.Workflow
 {

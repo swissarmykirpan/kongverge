@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AutoFixture;
 using Kongverge.DTOs;
 using Kongverge.Services;
-using Kongverge.TestHelpers;
 using Kongverge.Workflow;
 using Moq;
 using TestStack.BDDfy;

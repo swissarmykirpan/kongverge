@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Kongverge.DTOs;
 using Kongverge.Services;
-using Kongverge.TestHelpers;
 using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;

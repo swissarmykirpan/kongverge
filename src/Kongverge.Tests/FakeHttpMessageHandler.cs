@@ -2,7 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Kongverge.TestHelpers
+namespace Kongverge.Tests
 {
     public class FakeHttpMessageHandler : HttpMessageHandler
     {

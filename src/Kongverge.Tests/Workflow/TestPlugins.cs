@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
 using Kongverge.DTOs;
-using Kongverge.TestHelpers;
 
 namespace Kongverge.Tests.Workflow
 {
