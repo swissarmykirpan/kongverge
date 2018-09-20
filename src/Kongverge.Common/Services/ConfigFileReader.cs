@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Helpers;
+using Newtonsoft.Json;
 using Serilog;
 
 namespace Kongverge.Common.Services
@@ -55,7 +55,7 @@ namespace Kongverge.Common.Services
             var errorMessages = new List<string>();
             try
             {
-                data = text.ToKongObject<T>();
+                data = JsonConvert.DeserializeObject<T>(text);
                 await data.Validate(errorMessages).ConfigureAwait(false);
             }
             catch (Exception ex)

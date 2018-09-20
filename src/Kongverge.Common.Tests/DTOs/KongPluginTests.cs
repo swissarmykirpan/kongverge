@@ -4,7 +4,6 @@ using System.Net.Http;
 using AutoFixture;
 using FluentAssertions;
 using Kongverge.Common.DTOs;
-using Kongverge.Common.Helpers;
 using TestStack.BDDfy;
 using TestStack.BDDfy.Xunit;
 
