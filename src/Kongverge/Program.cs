@@ -1,7 +1,6 @@
 using System;
-using Kongverge.Common.DTOs;
-using Kongverge.Common.Helpers;
-using Kongverge.Common.Workflow;
+using Kongverge.DTOs;
+using Kongverge.Helpers;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -38,7 +37,7 @@ namespace Kongverge
 
                 options.Apply(serviceProvider);
 
-                var workflow = serviceProvider.GetService<Workflow>();
+                var workflow = serviceProvider.GetService<Workflow.Workflow>();
 
                 Log.Information($"************** {app.Name} **************");
 

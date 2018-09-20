@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Kongverge.Common.DTOs;
-using Kongverge.Common.Services;
+using Kongverge.DTOs;
 using Microsoft.Extensions.Options;
 using Serilog;
 
