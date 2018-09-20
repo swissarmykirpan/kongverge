@@ -78,7 +78,7 @@ namespace Kongverge.DTOs
 
         public override async Task Validate(ICollection<string> errorMessages)
         {
-            await ValidateRoutesAreValid(errorMessages).ConfigureAwait(false);
+            await ValidateRoutesAreValid(errorMessages);
         }
 
         private async Task ValidateRoutesAreValid(ICollection<string> errorMessages)
@@ -90,7 +90,7 @@ namespace Kongverge.DTOs
             }
             foreach (var route in Routes)
             {
-                await route.Validate(errorMessages).ConfigureAwait(false);
+                await route.Validate(errorMessages);
             }
 
             // TODO: Check if routes Clash

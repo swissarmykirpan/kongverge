@@ -20,9 +20,9 @@ namespace Kongverge.Workflow
 
         public override async Task<int> DoExecute()
         {
-            var existingConfiguration = await GetExistingConfiguration().ConfigureAwait(false);
+            var existingConfiguration = await GetExistingConfiguration();
 
-            await _configWriter.WriteConfiguration(existingConfiguration, Configuration.OutputFolder).ConfigureAwait(false);
+            await _configWriter.WriteConfiguration(existingConfiguration, Configuration.OutputFolder);
 
             return ExitWithCode.Return(ExitCode.Success);
         }

@@ -25,7 +25,7 @@ namespace Kongverge.Workflow
         {
             Log.Information("Getting existing services from {host}", Configuration.Admin.Host);
 
-            var reachable = await KongReader.KongIsReachable().ConfigureAwait(false);
+            var reachable = await KongReader.KongIsReachable();
             if (!reachable)
             {
                 return ExitWithCode.Return(ExitCode.HostUnreachable);
@@ -33,7 +33,7 @@ namespace Kongverge.Workflow
 
             try
             {
-                return await DoExecute().ConfigureAwait(false);
+                return await DoExecute();
             }
             catch (Exception ex)
             {
@@ -44,9 +44,9 @@ namespace Kongverge.Workflow
 
         protected async Task<KongvergeConfiguration> GetExistingConfiguration()
         {
-            var plugins = await KongReader.GetPlugins().ConfigureAwait(false);
-            var services = await KongReader.GetServices().ConfigureAwait(false);
-            var routes = await KongReader.GetRoutes().ConfigureAwait(false);
+            var plugins = await KongReader.GetPlugins();
+            var services = await KongReader.GetServices();
+            var routes = await KongReader.GetRoutes();
 
             foreach (var existingService in services)
             {

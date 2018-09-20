@@ -27,11 +27,11 @@ namespace Kongverge.Services
                     {
                         throw new InvalidConfigurationFileException(configFilePath, $"Cannot have more than one {Settings.GlobalConfigFileName} file.");
                     }
-                    globalConfig = await ParseFile<ExtendibleKongObject>(configFilePath).ConfigureAwait(false);
+                    globalConfig = await ParseFile<ExtendibleKongObject>(configFilePath);
                 }
                 else
                 {
-                    services.Add(await ParseFile<KongService>(configFilePath).ConfigureAwait(false));
+                    services.Add(await ParseFile<KongService>(configFilePath));
                 }
             }
             
@@ -48,7 +48,7 @@ namespace Kongverge.Services
             string text;
             using (var reader = File.OpenText(path))
             {
-                text = await reader.ReadToEndAsync().ConfigureAwait(false);
+                text = await reader.ReadToEndAsync();
             }
 
             T data;
@@ -56,7 +56,7 @@ namespace Kongverge.Services
             try
             {
                 data = JsonConvert.DeserializeObject<T>(text);
-                await data.Validate(errorMessages).ConfigureAwait(false);
+                await data.Validate(errorMessages);
             }
             catch (Exception ex)
             {
