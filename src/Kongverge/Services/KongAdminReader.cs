@@ -30,7 +30,7 @@ namespace Kongverge.Services
         {
             try
             {
-                await HttpClient.GetAsync("/").ConfigureAwait(false);
+                await HttpClient.GetAsync("/");
             }
             catch (Exception ex)
             {
@@ -43,26 +43,26 @@ namespace Kongverge.Services
 
         public async Task<KongConfiguration> GetConfiguration()
         {
-            var response = await HttpClient.GetAsync(ConfigurationRoute).ConfigureAwait(false);
-            var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var response = await HttpClient.GetAsync(ConfigurationRoute);
+            var value = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<KongConfiguration>(value);
         }
 
         public async Task<KongService> GetService(string serviceId)
         {
-            var response = await HttpClient.GetAsync($"{ServicesRoute}/{serviceId}").ConfigureAwait(false);
-            var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var response = await HttpClient.GetAsync($"{ServicesRoute}/{serviceId}");
+            var value = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<KongService>(value);
         }
 
         public async Task<IReadOnlyCollection<KongService>> GetServices() =>
-            await GetPagedResponse<KongService>(ServicesRoute).ConfigureAwait(false);
+            await GetPagedResponse<KongService>(ServicesRoute);
 
         public async Task<IReadOnlyCollection<KongRoute>> GetRoutes() =>
-            await GetPagedResponse<KongRoute>(RoutesRoute).ConfigureAwait(false);
+            await GetPagedResponse<KongRoute>(RoutesRoute);
 
         public async Task<IReadOnlyCollection<KongPlugin>> GetPlugins() =>
-            await GetPagedResponse<KongPlugin>(PluginsRoute).ConfigureAwait(false);
+            await GetPagedResponse<KongPlugin>(PluginsRoute);
 
         protected Task<IReadOnlyList<KongRoute>> GetServiceRoutes(string serviceId) =>
             GetPagedResponse<KongRoute>($"/services/{serviceId}/routes");
@@ -74,8 +74,8 @@ namespace Kongverge.Services
 
             do
             {
-                var response = await HttpClient.GetAsync(requestUri).ConfigureAwait(false);
-                var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var response = await HttpClient.GetAsync(requestUri);
+                var value = await response.Content.ReadAsStringAsync();
                 var pagedResponse = JsonConvert.DeserializeObject<PagedResponse<T>>(value);
 
                 data.AddRange(pagedResponse.Data);

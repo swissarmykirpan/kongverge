@@ -15,12 +15,12 @@ namespace Kongverge.Services
 
             foreach (var service in configuration.Services)
             {
-                await WriteConfigObject(service, folderPath, $"{service.Name}{Settings.FileExtension}").ConfigureAwait(false);
+                await WriteConfigObject(service, folderPath, $"{service.Name}{Settings.FileExtension}");
             }
 
             if (configuration.GlobalConfig.Plugins.Any())
             {
-                await WriteConfigObject(configuration.GlobalConfig, folderPath, $"{Settings.GlobalConfigFileName}").ConfigureAwait(false);
+                await WriteConfigObject(configuration.GlobalConfig, folderPath, $"{Settings.GlobalConfigFileName}");
             }
         }
 
@@ -32,7 +32,7 @@ namespace Kongverge.Services
             using (var stream = File.OpenWrite(path))
             using (var writer = new StreamWriter(stream))
             {
-                await writer.WriteAsync(json).ConfigureAwait(false);
+                await writer.WriteAsync(json);
             }
         }
 

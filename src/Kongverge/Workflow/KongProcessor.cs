@@ -24,9 +24,9 @@ namespace Kongverge.Workflow
                 x => _kongWriter.DeleteService(x.Id),
                 x => _kongWriter.AddService(x),
                 x => _kongWriter.UpdateService(x),
-                ConvergeServiceChildren).ConfigureAwait(false);
+                ConvergeServiceChildren);
 
-            await ConvergeChildrenPlugins(existingConfiguration.GlobalConfig, targetConfiguration.GlobalConfig).ConfigureAwait(false);
+            await ConvergeChildrenPlugins(existingConfiguration.GlobalConfig, targetConfiguration.GlobalConfig);
         }
 
         private static async Task ConvergeObjects<T>(
@@ -46,7 +46,7 @@ namespace Kongverge.Workflow
 
             foreach (var existing in toRemove)
             {
-                await deleteObject(existing).ConfigureAwait(false);
+                await deleteObject(existing);
             }
 
             foreach (var target in targetObjects)
@@ -54,13 +54,13 @@ namespace Kongverge.Workflow
                 var existing = target.MatchWithExisting(existingObjects);
                 if (existing == null)
                 {
-                    await createObject(target).ConfigureAwait(false);
+                    await createObject(target);
                 }
                 else if (!target.Equals(existing))
                 {
-                    await updateObject(target).ConfigureAwait(false);
+                    await updateObject(target);
                 }
-                await recurse(existing, target).ConfigureAwait(false);
+                await recurse(existing, target);
             }
         }
 
@@ -82,14 +82,14 @@ namespace Kongverge.Workflow
 
         private async Task ConvergeServiceChildren(KongService existing, KongService target)
         {
-            await ConvergeChildrenPlugins(existing, target).ConfigureAwait(false);
+            await ConvergeChildrenPlugins(existing, target);
             await ConvergeObjects(
                 existing?.Routes,
                 target.Routes,
                 x => _kongWriter.DeleteRoute(x.Id),
                 x => _kongWriter.AddRoute(target.Id, x),
                 null,
-                ConvergeChildrenPlugins).ConfigureAwait(false);
+                ConvergeChildrenPlugins);
         }
     }
 }

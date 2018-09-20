@@ -22,8 +22,8 @@ namespace Kongverge.Services
 
             try
             {
-                var response = await HttpClient.PostAsync("/services/", content).ConfigureAwait(false);
-                var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var response = await HttpClient.PostAsync("/services/", content);
+                var responseBody = await response.Content.ReadAsStringAsync();
                 var added = JsonConvert.DeserializeObject<KongService>(responseBody);
                 service.Id = added.Id;
             }
@@ -41,8 +41,8 @@ namespace Kongverge.Services
 
             try
             {
-                var response = await HttpClient.PatchAsync($"/services/{service.Id}", content).ConfigureAwait(false);
-                var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var response = await HttpClient.PatchAsync($"/services/{service.Id}", content);
+                var responseBody = await response.Content.ReadAsStringAsync();
                 var updated = JsonConvert.DeserializeObject<KongService>(responseBody);
                 service.Id = updated.Id;
             }
@@ -56,11 +56,11 @@ namespace Kongverge.Services
         public async Task DeleteService(string serviceId)
         {
             Log.Information("Deleting service {id}", serviceId);
-            await DeleteRoutes(serviceId).ConfigureAwait(false);
+            await DeleteRoutes(serviceId);
 
             try
             {
-                await HttpClient.DeleteAsync($"/services/{serviceId}").ConfigureAwait(false);
+                await HttpClient.DeleteAsync($"/services/{serviceId}");
             }
             catch (Exception e)
             {
@@ -76,8 +76,8 @@ namespace Kongverge.Services
 
             try
             {
-                var response = await HttpClient.PostAsync($"/services/{serviceId}/routes", content).ConfigureAwait(false);
-                var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var response = await HttpClient.PostAsync($"/services/{serviceId}/routes", content);
+                var responseBody = await response.Content.ReadAsStringAsync();
                 var added = JsonConvert.DeserializeObject<KongRoute>(responseBody);
                 route.Id = added.Id;
                 route.Service = added.Service;
@@ -95,7 +95,7 @@ namespace Kongverge.Services
 
             try
             {
-                await HttpClient.DeleteAsync($"/routes/{routeId}").ConfigureAwait(false);
+                await HttpClient.DeleteAsync($"/routes/{routeId}");
             }
             catch (Exception e)
             {
@@ -111,8 +111,8 @@ namespace Kongverge.Services
 
             try
             {
-                var response = await HttpClient.PutAsync("/plugins", content).ConfigureAwait(false);
-                var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var response = await HttpClient.PutAsync("/plugins", content);
+                var responseBody = await response.Content.ReadAsStringAsync();
                 var updated = JsonConvert.DeserializeObject<KongPlugin>(responseBody);
                 plugin.Id = updated.Id;
             }
@@ -129,7 +129,7 @@ namespace Kongverge.Services
 
             try
             {
-                await HttpClient.DeleteAsync($"/plugins/{pluginId}").ConfigureAwait(false);
+                await HttpClient.DeleteAsync($"/plugins/{pluginId}");
             }
             catch (Exception e)
             {
@@ -140,8 +140,8 @@ namespace Kongverge.Services
 
         private async Task DeleteRoutes(string serviceId)
         {
-            var routes = await GetServiceRoutes(serviceId).ConfigureAwait(false);
-            await Task.WhenAll(routes.Select(x => DeleteRoute(x.Id))).ConfigureAwait(false);
+            var routes = await GetServiceRoutes(serviceId);
+            await Task.WhenAll(routes.Select(x => DeleteRoute(x.Id)));
         }
     }
 }

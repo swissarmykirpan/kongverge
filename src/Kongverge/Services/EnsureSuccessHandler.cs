@@ -12,13 +12,13 @@ namespace Kongverge.Services
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            var response = await base.SendAsync(request, cancellationToken);
             if (response.IsSuccessStatusCode)
             {
                 return response;
             }
 
-            var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var responseBody = await response.Content.ReadAsStringAsync();
             throw new KongException(response.StatusCode, responseBody);
         }
     }

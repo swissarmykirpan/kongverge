@@ -28,7 +28,7 @@ namespace Kongverge.Workflow
             KongvergeConfiguration targetConfiguration;
             try
             {
-                targetConfiguration = await _configReader.ReadConfiguration(Configuration.InputFolder).ConfigureAwait(false);
+                targetConfiguration = await _configReader.ReadConfiguration(Configuration.InputFolder);
             }
             catch (DirectoryNotFoundException ex)
             {
@@ -39,10 +39,10 @@ namespace Kongverge.Workflow
                 return ExitWithCode.Return(ExitCode.InvalidConfigurationFile, $"Invalid configuration file {ex.Path}{Environment.NewLine}{ex.Message}");
             }
 
-            var existingConfiguration = await GetExistingConfiguration().ConfigureAwait(false);
+            var existingConfiguration = await GetExistingConfiguration();
             
             var processor = new KongProcessor(_kongWriter);
-            await processor.Process(existingConfiguration, targetConfiguration).ConfigureAwait(false);
+            await processor.Process(existingConfiguration, targetConfiguration);
 
             return ExitWithCode.Return(ExitCode.Success);
         }

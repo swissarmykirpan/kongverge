@@ -40,7 +40,7 @@ namespace Kongverge.Tests.Services
             var sut = new KongAdminWriter(_configuration, httpClient);
 
             //Act
-            var result = await sut.KongIsReachable().ConfigureAwait(false);
+            var result = await sut.KongIsReachable();
 
             //Assert
             Assert.True(result);
@@ -61,7 +61,7 @@ namespace Kongverge.Tests.Services
             var sut = new KongAdminWriter(_configuration, httpClient);
 
             //Act
-            var result = await sut.KongIsReachable().ConfigureAwait(false);
+            var result = await sut.KongIsReachable();
 
             //Assert
             Assert.False(result);
@@ -77,7 +77,7 @@ namespace Kongverge.Tests.Services
             var sut = new KongAdminWriter(_configuration, httpClient);
 
             //Act
-            var result = await sut.KongIsReachable().ConfigureAwait(false);
+            var result = await sut.KongIsReachable();
 
             //Assert
             Assert.False(result);
@@ -115,7 +115,7 @@ namespace Kongverge.Tests.Services
             var sut = new KongAdminWriter(_configuration, httpClient);
 
             //Act
-            var result = await sut.GetServices().ConfigureAwait(false);
+            var result = await sut.GetServices();
 
             //Assert
             Assert.Equal(expected, result);

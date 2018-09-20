@@ -41,7 +41,7 @@ namespace Kongverge
 
                 Log.Information($"************** {app.Name} **************");
 
-                return await workflow.Execute().ConfigureAwait(false);
+                return await workflow.Execute();
             });
 
             try
