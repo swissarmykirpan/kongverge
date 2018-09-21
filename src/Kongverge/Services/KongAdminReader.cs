@@ -48,13 +48,6 @@ namespace Kongverge.Services
             return JsonConvert.DeserializeObject<KongConfiguration>(value);
         }
 
-        public async Task<KongService> GetService(string serviceId)
-        {
-            var response = await HttpClient.GetAsync($"{ServicesRoute}/{serviceId}");
-            var value = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<KongService>(value);
-        }
-
         public async Task<IReadOnlyCollection<KongService>> GetServices() =>
             await GetPagedResponse<KongService>(ServicesRoute);
 
