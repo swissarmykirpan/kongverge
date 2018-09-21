@@ -1,9 +1,7 @@
 using Kongverge.Common.Helpers;
-using Kongverge.Integration.Tests.ProgramTests;
 using TestStack.BDDfy;
 using TestStack.BDDfy.Xunit;
 
-// ReSharper disable once CheckNamespace
 namespace Kongverge.Integration.Tests
 {
     public class ProgramWorkflowFailureScenarios : ProgramSteps

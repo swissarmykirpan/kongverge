@@ -8,10 +8,13 @@ using FluentAssertions;
 using Kongverge.Common.Helpers;
 using Kongverge.Common.Services;
 
-namespace Kongverge.Integration.Tests.ProgramTests
+namespace Kongverge.Integration.Tests
 {
     public abstract class ProgramSteps
     {
+        public const string Host = "kongtestbed-qa8-alb.jalfrezi.je-labs.com";
+        public const int Port = 8001;
+
         protected const string And = "_";
         protected const string NonExistent = nameof(NonExistent);
         protected const string InvalidData1 = nameof(InvalidData1);
@@ -27,7 +30,7 @@ namespace Kongverge.Integration.Tests.ProgramTests
         protected string OutputFolder;
         protected ExitCode ExitCode;
 
-        private static string MakeFolderName(string name) => $@"ProgramTests\Folder{name}";
+        private static string MakeFolderName(string name) => $"Folder{name}";
 
         protected void InvokingMain() => ExitCode = (ExitCode)Program.Main(Arguments.ToArray());
 
@@ -45,9 +48,9 @@ namespace Kongverge.Integration.Tests.ProgramTests
 
         protected void AnInvalidPort() => Arguments.AddPair("--port", 1);
 
-        protected void AValidHost() => Arguments.AddPair("--host", KongvergeTestFixture.Host);
+        protected void AValidHost() => Arguments.AddPair("--host", Host);
 
-        protected void AValidPort() => Arguments.AddPair("--port", KongvergeTestFixture.Port);
+        protected void AValidPort() => Arguments.AddPair("--port", Port);
 
         protected void NoPort() { }
 
