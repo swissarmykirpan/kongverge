@@ -8,7 +8,6 @@ namespace Kongverge.Services
     {
         Task<bool> KongIsReachable();
         Task<KongConfiguration> GetConfiguration();
-        Task<KongService> GetService(string serviceId);
         Task<IReadOnlyCollection<KongService>> GetServices();
         Task<IReadOnlyCollection<KongRoute>> GetRoutes();
         Task<IReadOnlyCollection<KongPlugin>> GetPlugins();
