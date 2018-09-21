@@ -12,15 +12,18 @@ namespace Kongverge.Workflow
     {
         private readonly IKongAdminWriter _kongWriter;
         private readonly ConfigFileReader _configReader;
+        private readonly ConfigBuilder _configBuilder;
 
         public KongvergeWorkflow(
             IKongAdminReader kongReader,
             IOptions<Settings> configuration,
             IKongAdminWriter kongWriter,
-            ConfigFileReader configReader) : base(kongReader, configuration)
+            ConfigFileReader configReader,
+            ConfigBuilder configBuilder) : base(kongReader, configuration)
         {
             _kongWriter = kongWriter;
             _configReader = configReader;
+            _configBuilder = configBuilder;
         }
 
         public override async Task<int> DoExecute()
@@ -39,7 +42,7 @@ namespace Kongverge.Workflow
                 return ExitWithCode.Return(ExitCode.InvalidConfigurationFile, $"Invalid configuration file {ex.Path}{Environment.NewLine}{ex.Message}");
             }
 
-            var existingConfiguration = await GetExistingConfiguration();
+            var existingConfiguration = await _configBuilder.FromKong(KongReader);
             
             var processor = new KongProcessor(_kongWriter);
             await processor.Process(existingConfiguration, targetConfiguration);
