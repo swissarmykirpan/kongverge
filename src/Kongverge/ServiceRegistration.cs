@@ -25,6 +25,7 @@ namespace Kongverge
 
             services.AddSingleton<ConfigFileReader>();
             services.AddSingleton<ConfigFileWriter>();
+            services.AddSingleton<ConfigBuilder>();
             services.AddSingleton<KongAdminHttpClient>();
             services.AddSingleton<KongAdminDryRun>();
             services.AddSingleton<KongAdminWriter>();
