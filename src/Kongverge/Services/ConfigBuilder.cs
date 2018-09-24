@@ -20,7 +20,7 @@ namespace Kongverge.Services
 
             return new KongvergeConfiguration
             {
-                Services = services,
+                Services = services.ToArray(),
                 GlobalConfig = new ExtendibleKongObject
                 {
                     Plugins = plugins.Where(x => x.IsGlobal()).ToArray()
