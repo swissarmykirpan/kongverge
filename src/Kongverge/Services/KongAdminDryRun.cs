@@ -1,15 +1,13 @@
 using System;
 using System.Threading.Tasks;
 using Kongverge.DTOs;
-using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace Kongverge.Services
 {
     public class KongAdminDryRun : KongAdminReader, IKongAdminWriter
     {
-        public KongAdminDryRun(IOptions<Settings> configuration, KongAdminHttpClient httpClient)
-            : base(configuration, httpClient)
+        public KongAdminDryRun(KongAdminHttpClient httpClient) : base(httpClient)
         {
         }
 

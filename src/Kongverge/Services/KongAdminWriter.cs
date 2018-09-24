@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Kongverge.DTOs;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -10,8 +9,7 @@ namespace Kongverge.Services
 {
     public class KongAdminWriter : KongAdminReader, IKongAdminWriter
     {
-        public KongAdminWriter(IOptions<Settings> configuration, KongAdminHttpClient httpClient)
-            : base(configuration, httpClient)
+        public KongAdminWriter(KongAdminHttpClient httpClient) : base(httpClient)
         {
         }
 
