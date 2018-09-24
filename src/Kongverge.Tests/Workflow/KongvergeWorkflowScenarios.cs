@@ -40,7 +40,7 @@ namespace Kongverge.Tests.Workflow
                     {
                         throw new InvalidOperationException();
                     }
-                    route.WithIdAndCreatedAt();
+                    route.WithIdAndCreatedAtAndServiceReference(serviceId);
                     return Task.CompletedTask;
                 });
 

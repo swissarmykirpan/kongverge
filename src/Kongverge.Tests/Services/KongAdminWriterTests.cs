@@ -1,149 +1,197 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
+using AutoFixture;
 using FluentAssertions;
 using Kongverge.DTOs;
 using Kongverge.Services;
+using Kongverge.Tests.Workflow;
 using Moq;
+using Moq.Language.Flow;
 using Newtonsoft.Json;
-using Xunit;
+using TestStack.BDDfy;
+using TestStack.BDDfy.Xunit;
 
 namespace Kongverge.Tests.Services
 {
-    public class KongAdminWriterTests
+    public class KongAdminWriterTests : ScenarioFor<KongAdminWriter>
     {
-        private readonly Mock<FakeHttpMessageHandler> _fakeHttpMessageHandler = new Mock<FakeHttpMessageHandler> { CallBase = true };
-
-        private KongAdminHttpClient MakeKongAdminHttpClient() => new KongAdminHttpClient(_fakeHttpMessageHandler.Object) { BaseAddress = new Uri("http://localhost") };
-
-        [Fact]
-        public async Task KongIsReachableReturnsTrue()
+        public KongAdminWriterTests()
         {
-            //Arrange
-            _fakeHttpMessageHandler.Setup(x => x.Send(It.IsAny<HttpRequestMessage>()))
-                .Returns(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent("")
-                });
-
-            var httpClient = MakeKongAdminHttpClient();
-            var sut = new KongAdminWriter(httpClient);
-
-            //Act
-            var result = await sut.KongIsReachable();
-
-            //Assert
-            Assert.True(result);
+            GetMock<FakeHttpMessageHandler>().CallBase = true;
+            Use(new KongAdminHttpClient(Get<FakeHttpMessageHandler>()) { BaseAddress = new Uri("http://localhost") });
         }
 
-        [Fact]
-        public async Task PoorlyKongReturnsFalse()
+        [BddfyFact(DisplayName = nameof(KongAdminWriter.AddService))]
+        public void Scenario1()
         {
-            //Arrange
-            _fakeHttpMessageHandler.Setup(x => x.Send(It.IsAny<HttpRequestMessage>()))
-                .Returns(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.BadGateway,
-                    Content = new StringContent("")
-                });
+            KongService service = null;
 
-            var httpClient = MakeKongAdminHttpClient();
-            var sut = new KongAdminWriter(httpClient);
-
-            //Act
-            var result = await sut.KongIsReachable();
-
-            //Assert
-            Assert.False(result);
+            this.Given(() => service = Fixture.Build<KongService>().Without(x => x.Id).Create(), "A new kong service")
+                .And(s => s.KongRespondsCorrectly<KongService>(HttpMethod.Post, "/services/", service.ToJsonStringContent(), x => x.WithIdAndCreatedAt()),
+                    "And kong responds correctly to {0} at {1}")
+                .When(async () => await Subject.AddService(service), Invoking(nameof(KongAdminWriter.AddService)))
+                .Then(() => service.Id.Should().NotBeNullOrWhiteSpace(), "the Id is set")
+                .BDDfy();
         }
 
-        [Fact]
-        public async Task UnavailableKongReturnsFalse()
+        [BddfyFact(DisplayName = nameof(KongAdminWriter.UpdateService))]
+        public void Scenario2()
         {
-            //Arrange
-            _fakeHttpMessageHandler.Setup(x => x.Send(It.IsAny<HttpRequestMessage>())).Throws<HttpRequestException>();
+            KongService service = null;
 
-            var httpClient = MakeKongAdminHttpClient();
-            var sut = new KongAdminWriter(httpClient);
-
-            //Act
-            var result = await sut.KongIsReachable();
-
-            //Assert
-            Assert.False(result);
+            this.Given(() => service = Fixture.Create<KongService>(), "An existing kong service")
+                .And(s => s.KongRespondsCorrectly<KongService>(new HttpMethod("PATCH"), $"/services/{service.Id}", service.ToJsonStringContent(), x => x.WithIdAndCreatedAt()),
+                    "And kong responds correctly to {0} at {1}")
+                .When(async () => await Subject.UpdateService(service), Invoking(nameof(KongAdminWriter.UpdateService)))
+                .Then("it succeeds")
+                .BDDfy();
         }
 
-        [Fact]
-        public async Task GetServicesReturnsServices()
+        [BddfyFact(DisplayName = nameof(KongAdminWriter.DeleteService))]
+        public void Scenario3()
         {
-            //Arrange
-            _fakeHttpMessageHandler.Setup(x => x.Send(It.IsAny<HttpRequestMessage>()))
-                .Returns(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent(
-                        "{\"next\": null,\"data\": [{\"host\": \"www.example.com\",\"created_at\": 1529492319,\"connect_timeout\": 300,\"id\": \"a64ef803-b719-432a-a5ef-8e9d76e1a788\",\"protocol\": \"http\",\"name\": \"healthcheck\",\"read_timeout\": 1500,\"port\": 80,\"path\": null,\"updated_at\": 1529494361,\"retries\": 5,\"write_timeout\": 100}]}")
-                });
+            KongService service = null;
 
-            var expected = new[]
+            this.Given(() =>
+                {
+                    service = Fixture.Create<KongService>();
+                    GetMock<FakeHttpMessageHandler>()
+                        .Setup(x => x.Send(It.Is<HttpRequestMessage>(m => m.Method == HttpMethod.Get && m.RequestUri.PathAndQuery == $"/services/{service.Id}/routes")))
+                        .Returns(OkResponse(new PagedResponse<KongRoute>
+                        {
+                            Data = service.Routes.ToArray()
+                        }));
+                }, "An existing kong service with routes")
+                .And(s => s.KongRespondsCorrectly(HttpMethod.Delete, $"/services/{service.Id}"), "And kong responds correctly to {0} at {1}")
+                .And(() =>
+                {
+                    foreach (var serviceRoute in service.Routes)
+                    {
+                        KongRespondsCorrectly(HttpMethod.Delete, $"/routes/{serviceRoute.Id}");
+                    }
+                }, "kong responds correctly to deleting service routes")
+                .When(async () => await Subject.DeleteService(service.Id), Invoking(nameof(KongAdminWriter.DeleteService)))
+                .Then(() =>
+                {
+                    foreach (var serviceRoute in service.Routes)
+                    {
+                        GetMock<FakeHttpMessageHandler>()
+                            .Verify(x => x.Send(It.Is<HttpRequestMessage>(m => m.Method == HttpMethod.Delete && m.RequestUri.PathAndQuery == $"/routes/{serviceRoute.Id}")));
+                    }
+                    
+                }, "The service routes are deleted first")
+                .BDDfy();
+        }
+
+        [BddfyFact(DisplayName = nameof(KongAdminWriter.AddRoute))]
+        public void Scenario4()
+        {
+            string serviceId = null;
+            KongRoute route = null;
+
+            this.Given(() =>
+                {
+                    serviceId = Guid.NewGuid().ToString();
+                    route = Fixture.Build<KongRoute>().Without(x => x.Id).Create();
+                }, "A new kong route")
+                .And(s => s.KongRespondsCorrectly<KongRoute>(HttpMethod.Post, $"/services/{serviceId}/routes", route.ToJsonStringContent(), x => x.WithIdAndCreatedAtAndServiceReference(serviceId)),
+                    "And kong responds correctly to {0} at {1}")
+                .When(async () => await Subject.AddRoute(serviceId, route), Invoking(nameof(KongAdminWriter.AddRoute)))
+                .Then(() => route.Id.Should().NotBeNullOrWhiteSpace(), "the Id is set")
+                .And(() => route.Service.Id.Should().Be(serviceId), "the ServiceReference is set")
+                .BDDfy();
+        }
+
+        [BddfyFact(DisplayName = nameof(KongAdminWriter.DeleteRoute))]
+        public void Scenario5()
+        {
+            KongRoute route = null;
+
+            this.Given(() =>
+                {
+                    route = Fixture.Create<KongRoute>();
+                }, "An existing kong route")
+                .And(s => s.KongRespondsCorrectly(HttpMethod.Delete, $"/routes/{route.Id}"), "And kong responds correctly to {0} at {1}")
+                .When(async () => await Subject.DeleteRoute(route.Id), Invoking(nameof(KongAdminWriter.DeleteRoute)))
+                .Then("it succeeds")
+                .BDDfy();
+        }
+
+        [BddfyFact(DisplayName = nameof(KongAdminWriter.UpsertPlugin))]
+        public void Scenario6()
+        {
+            KongPlugin plugin = null;
+
+            this.Given(() => plugin = Fixture.Build<KongPlugin>().Without(x => x.Id).Create(), "A new plugin")
+                .And(s => s.KongRespondsCorrectly<KongService>(HttpMethod.Put, "/plugins", plugin.ToJsonStringContent(), x => x.WithIdAndCreatedAt()),
+                    "And kong responds correctly to {0} at {1}")
+                .When(async () => await Subject.UpsertPlugin(plugin), Invoking(nameof(KongAdminWriter.UpsertPlugin)))
+                .Then(() => plugin.Id.Should().NotBeNullOrWhiteSpace(), "the Id is set")
+                .BDDfy();
+        }
+
+        [BddfyFact(DisplayName = nameof(KongAdminWriter.DeletePlugin))]
+        public void Scenario7()
+        {
+            KongPlugin plugin = null;
+
+            this.Given(() =>
+                {
+                    plugin = Fixture.Create<KongPlugin>();
+                }, "An existing kong plugin")
+                .And(s => s.KongRespondsCorrectly(HttpMethod.Delete, $"/plugins/{plugin.Id}"), "And kong responds correctly to {0} at {1}")
+                .When(async () => await Subject.DeletePlugin(plugin.Id), Invoking(nameof(KongAdminWriter.DeletePlugin)))
+                .Then("it succeeds")
+                .BDDfy();
+        }
+
+        protected string Invoking(string name) => $"invoking {name}";
+
+        protected void KongRespondsCorrectly<T>(HttpMethod httpMethod, string route, StringContent content, Action<T> kongAction)
+        {
+            SetupKongResponse(httpMethod, route, content).Returns(() =>
             {
-                new KongService
-                {
-                    Host = "www.example.com",
-                    ConnectTimeout = 300,
-                    Protocol = "http",
-                    Name = "healthcheck",
-                    ReadTimeout = 1500,
-                    Port = 80,
-                    Path = null,
-                    Retries = 5,
-                    WriteTimeout = 100
-                }
-            };
-
-            var httpClient = MakeKongAdminHttpClient();
-            var sut = new KongAdminWriter(httpClient);
-
-            //Act
-            var result = await sut.GetServices();
-
-            //Assert
-            Assert.Equal(expected, result);
+                var data = content.ReadAsStringAsync().Result;
+                var responseObject = JsonConvert.DeserializeObject<T>(data);
+                kongAction(responseObject);
+                return OkResponse(responseObject);
+            });
         }
 
-        [Fact]
-        public async Task AddRouteWithStripPathSetToFalse_ShouldDeserializeCorrectly()
+        protected void KongRespondsCorrectly(HttpMethod httpMethod, string route)
         {
-            var route = new KongRoute
+            SetupKongResponse(httpMethod, route, null).Returns(OkResponse());
+        }
+
+        protected ISetup<FakeHttpMessageHandler, HttpResponseMessage> SetupKongResponse(HttpMethod httpMethod, string pathAndQuery, StringContent content) =>
+            GetMock<FakeHttpMessageHandler>()
+                .Setup(x => x.Send(It.Is<HttpRequestMessage>(m => m.Method == httpMethod && m.RequestUri.PathAndQuery == pathAndQuery && StringContentMatches(m.Content, content))));
+
+        private static bool StringContentMatches(HttpContent actual, StringContent expected)
+        {
+            if (expected == null)
             {
-                Paths = new[] { "/test" },
-                StripPath = false
-            };
-
-            StringContent content = null;
-            var successResponse = new HttpResponseMessage
+                return actual == null;
+            }
+            if (actual is StringContent stringContent)
             {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonConvert.SerializeObject(route))
-            };
+                var actualData = stringContent.ReadAsStringAsync().Result;
+                var expectedData = expected.ReadAsStringAsync().Result;
+                return actualData == expectedData;
+            }
+            return false;
+        }
 
-            _fakeHttpMessageHandler.Setup(x => x.Send(It.IsAny<HttpRequestMessage>()))
-                .Callback<HttpRequestMessage>(x => content = (StringContent)x.Content)
-                .Returns(successResponse);
-
-            var httpClient = MakeKongAdminHttpClient();
-            var sut = new KongAdminWriter(httpClient);
-
-            //Act
-            await sut.AddRoute(Guid.NewGuid().ToString(), route);
-
-            //Assert
-            route.Plugins = null;
-            var routeJson = JsonConvert.SerializeObject(route);
-            var json = await content.ReadAsStringAsync();
-            routeJson.Should().Be(json);
+        protected HttpResponseMessage OkResponse(object content = null)
+        {
+            var message = new HttpResponseMessage(HttpStatusCode.OK);
+            if (content != null)
+            {
+                message.Content = new StringContent(JsonConvert.SerializeObject(content));
+            }
+            return message;
         }
     }
 }
