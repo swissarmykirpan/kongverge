@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Kongverge.DTOs;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -17,13 +16,9 @@ namespace Kongverge.Services
 
         protected readonly KongAdminHttpClient HttpClient;
 
-        public KongAdminReader(IOptions<Settings> configuration, KongAdminHttpClient httpClient)
+        public KongAdminReader(KongAdminHttpClient httpClient)
         {
             HttpClient = httpClient;
-            if (HttpClient.BaseAddress == null)
-            {
-                HttpClient.BaseAddress = new Uri($"http://{configuration.Value.Admin.Host}:{configuration.Value.Admin.Port}");
-            }
         }
 
         public async Task<bool> KongIsReachable()

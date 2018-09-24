@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Kongverge.DTOs;
 using Kongverge.Services;
-using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
@@ -16,14 +15,7 @@ namespace Kongverge.Tests.Services
     {
         private readonly Mock<FakeHttpMessageHandler> _fakeHttpMessageHandler = new Mock<FakeHttpMessageHandler> { CallBase = true };
 
-        private readonly IOptions<Settings> _configuration = Options.Create(new Settings
-        {
-            Admin = new Admin
-            {
-                Host = "localhost",
-                Port = 8001
-            }
-        });
+        private KongAdminHttpClient MakeKongAdminHttpClient() => new KongAdminHttpClient(_fakeHttpMessageHandler.Object) { BaseAddress = new Uri("http://localhost") };
 
         [Fact]
         public async Task KongIsReachableReturnsTrue()
@@ -36,8 +28,8 @@ namespace Kongverge.Tests.Services
                     Content = new StringContent("")
                 });
 
-            var httpClient = new KongAdminHttpClient(_fakeHttpMessageHandler.Object);
-            var sut = new KongAdminWriter(_configuration, httpClient);
+            var httpClient = MakeKongAdminHttpClient();
+            var sut = new KongAdminWriter(httpClient);
 
             //Act
             var result = await sut.KongIsReachable();
@@ -57,8 +49,8 @@ namespace Kongverge.Tests.Services
                     Content = new StringContent("")
                 });
 
-            var httpClient = new KongAdminHttpClient(_fakeHttpMessageHandler.Object);
-            var sut = new KongAdminWriter(_configuration, httpClient);
+            var httpClient = MakeKongAdminHttpClient();
+            var sut = new KongAdminWriter(httpClient);
 
             //Act
             var result = await sut.KongIsReachable();
@@ -73,8 +65,8 @@ namespace Kongverge.Tests.Services
             //Arrange
             _fakeHttpMessageHandler.Setup(x => x.Send(It.IsAny<HttpRequestMessage>())).Throws<HttpRequestException>();
 
-            var httpClient = new KongAdminHttpClient(_fakeHttpMessageHandler.Object);
-            var sut = new KongAdminWriter(_configuration, httpClient);
+            var httpClient = MakeKongAdminHttpClient();
+            var sut = new KongAdminWriter(httpClient);
 
             //Act
             var result = await sut.KongIsReachable();
@@ -111,8 +103,8 @@ namespace Kongverge.Tests.Services
                 }
             };
 
-            var httpClient = new KongAdminHttpClient(_fakeHttpMessageHandler.Object);
-            var sut = new KongAdminWriter(_configuration, httpClient);
+            var httpClient = MakeKongAdminHttpClient();
+            var sut = new KongAdminWriter(httpClient);
 
             //Act
             var result = await sut.GetServices();
@@ -141,8 +133,8 @@ namespace Kongverge.Tests.Services
                 .Callback<HttpRequestMessage>(x => content = (StringContent)x.Content)
                 .Returns(successResponse);
 
-            var httpClient = new KongAdminHttpClient(_fakeHttpMessageHandler.Object);
-            var sut = new KongAdminWriter(_configuration, httpClient);
+            var httpClient = MakeKongAdminHttpClient();
+            var sut = new KongAdminWriter(httpClient);
 
             //Act
             await sut.AddRoute(Guid.NewGuid().ToString(), route);
