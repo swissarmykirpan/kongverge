@@ -39,10 +39,7 @@ namespace Kongverge.Services
 
             try
             {
-                var response = await HttpClient.PatchAsync($"/services/{service.Id}", content);
-                var responseBody = await response.Content.ReadAsStringAsync();
-                var updated = JsonConvert.DeserializeObject<KongService>(responseBody);
-                service.Id = updated.Id;
+                await HttpClient.PatchAsync($"/services/{service.Id}", content);
             }
             catch (Exception e)
             {
