@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Kongverge.DTOs;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -10,8 +9,7 @@ namespace Kongverge.Services
 {
     public class KongAdminWriter : KongAdminReader, IKongAdminWriter
     {
-        public KongAdminWriter(IOptions<Settings> configuration, KongAdminHttpClient httpClient)
-            : base(configuration, httpClient)
+        public KongAdminWriter(KongAdminHttpClient httpClient) : base(httpClient)
         {
         }
 
@@ -41,10 +39,7 @@ namespace Kongverge.Services
 
             try
             {
-                var response = await HttpClient.PatchAsync($"/services/{service.Id}", content);
-                var responseBody = await response.Content.ReadAsStringAsync();
-                var updated = JsonConvert.DeserializeObject<KongService>(responseBody);
-                service.Id = updated.Id;
+                await HttpClient.PatchAsync($"/services/{service.Id}", content);
             }
             catch (Exception e)
             {

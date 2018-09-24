@@ -30,10 +30,7 @@ namespace Kongverge
                     return ExitWithCode.Return(exitCode.Value);
                 }
 
-                var services = new ServiceCollection();
-                ServiceRegistration.AddServices(services);
-
-                var serviceProvider = services.BuildServiceProvider();
+                var serviceProvider = new ServiceCollection().ConfigureServices().BuildServiceProvider();
 
                 options.Apply(serviceProvider);
 

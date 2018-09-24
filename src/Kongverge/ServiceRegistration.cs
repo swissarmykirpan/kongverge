@@ -18,13 +18,14 @@ namespace Kongverge
             Log.Information("Starting up");
         }
 
-        public static void AddServices(IServiceCollection services)
+        public static IServiceCollection ConfigureServices(this IServiceCollection services)
         {
             var configuration = new ConfigurationBuilder().AddEnvironmentVariables().Build();
             services.Configure<Settings>(x => configuration.Bind(x));
 
             services.AddSingleton<ConfigFileReader>();
             services.AddSingleton<ConfigFileWriter>();
+            services.AddSingleton<ConfigBuilder>();
             services.AddSingleton<KongAdminHttpClient>();
             services.AddSingleton<KongAdminDryRun>();
             services.AddSingleton<KongAdminWriter>();
@@ -60,6 +61,8 @@ namespace Kongverge
                 Log.Information("Exporting information from Kong.");
                 return s.GetService<ExportWorkflow>();
             });
+
+            return services;
         }
     }
 }

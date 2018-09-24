@@ -20,7 +20,7 @@ namespace Kongverge.Services
 
             if (configuration.GlobalConfig.Plugins.Any())
             {
-                await WriteConfigObject(configuration.GlobalConfig, folderPath, $"{Settings.GlobalConfigFileName}");
+                await WriteConfigObject(configuration.GlobalConfig, folderPath, Settings.GlobalConfigFileName);
             }
         }
 
@@ -36,7 +36,7 @@ namespace Kongverge.Services
             }
         }
 
-        private void PrepareOutputFolder(string folderPath)
+        private static void PrepareOutputFolder(string folderPath)
         {
             if (Directory.Exists(folderPath))
             {
