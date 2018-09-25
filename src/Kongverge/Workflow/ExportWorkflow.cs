@@ -9,18 +9,21 @@ namespace Kongverge.Workflow
     public class ExportWorkflow : Workflow
     {
         private readonly ConfigFileWriter _configWriter;
+        private readonly ConfigBuilder _configBuilder;
 
         public ExportWorkflow(
             IKongAdminReader kongReader,
             IOptions<Settings> configuration,
-            ConfigFileWriter configWriter) : base(kongReader, configuration)
+            ConfigFileWriter configWriter,
+            ConfigBuilder configBuilder) : base(kongReader, configuration)
         {
             _configWriter = configWriter;
+            _configBuilder = configBuilder;
         }
 
         public override async Task<int> DoExecute()
         {
-            var existingConfiguration = await GetExistingConfiguration();
+            var existingConfiguration = await _configBuilder.FromKong(KongReader);
 
             await _configWriter.WriteConfiguration(existingConfiguration, Configuration.OutputFolder);
 
