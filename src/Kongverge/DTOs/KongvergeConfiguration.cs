@@ -5,7 +5,7 @@ namespace Kongverge.DTOs
 {
     public class KongvergeConfiguration
     {
-        public IReadOnlyCollection<KongService> Services { get; set; } = Array.Empty<KongService>();
+        public IReadOnlyList<KongService> Services { get; set; } = Array.Empty<KongService>();
         public ExtendibleKongObject GlobalConfig { get; set; } = new ExtendibleKongObject();
     }
 }

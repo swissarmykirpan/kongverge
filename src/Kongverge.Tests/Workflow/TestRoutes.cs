@@ -28,5 +28,15 @@ namespace Kongverge.Tests.Workflow
             }
             return target;
         }
+
+        public static KongRoute WithIdAndCreatedAtAndServiceReference(this KongRoute kongRoute, string serviceId)
+        {
+            kongRoute.WithIdAndCreatedAt();
+            kongRoute.Service = new KongRoute.ServiceReference
+            {
+                Id = serviceId
+            };
+            return kongRoute;
+        }
     }
 }
