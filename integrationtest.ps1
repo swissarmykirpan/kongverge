@@ -11,5 +11,5 @@ Write-Host "Building solution..." -ForegroundColor Green
 & $dotnet build $solutionPath
 
 Write-Host "Integration testing solution..." -ForegroundColor Green
-DotNetTest "src\Kongverge.Integration.Tests\Kongverge.Integration.Tests.csproj"
+DotNetTest "src\Kongverge.IntegrationTests\Kongverge.IntegrationTests.csproj"
 
