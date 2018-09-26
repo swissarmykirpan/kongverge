@@ -10,23 +10,24 @@
   "write_timeout": 10000,
   "plugins": [
     {
-      "name": "rate-limiting-advanced",
+      "name": "response-ratelimiting",
       "config": {
-        "dictionary_name": "kong_rate_limiting_counters",
+        "block_on_first_violation": false,
+        "fault_tolerant": true,
+        "header_name": "x-kong-limit",
         "hide_client_headers": false,
-        "identifier": "ip",
-        "limit": [
-          200,
-          300
-        ],
-        "namespace": "QEOGDnOExCDnqt39t1xzV4D5KiWq7jFx",
-        "strategy": "cluster",
-        "sync_rate": 200,
-        "window_size": [
-          400,
-          500
-        ],
-        "window_type": "sliding"
+        "limit_by": "ip",
+        "policy": "cluster",
+        "redis_database": 0,
+        "redis_port": 6379,
+        "redis_timeout": 2000,
+        "limits": {
+          "all": {
+            "second": 8,
+            "minute": 300,
+            "hour": 15000
+          } 
+        }
       }
     },
     {
@@ -37,10 +38,9 @@
       }
     },
     {
-      "name": "je-justsaying-defaults",
+      "name": "request-size-limiting",
       "config": {
-        "raisingcomponent": "component-2",
-        "tenant": "tenant-2"
+        "allowed_payload_size": 256
       }
     }
   ],
@@ -57,7 +57,7 @@
       "strip_path": true,
       "plugins": [
         {
-          "name": "request-transformer-advanced",
+          "name": "request-transformer",
           "config": {
             "http_method": "get",
             "add": {
@@ -117,7 +117,6 @@
               ]
             },
             "replace": {
-              "uri": "/resource1-1-replaced",
               "body": [
                 "value-10:b",
                 "value-9:a"
@@ -168,23 +167,24 @@
       "strip_path": true,
       "plugins": [
         {
-          "name": "rate-limiting-advanced",
+          "name": "response-ratelimiting",
           "config": {
-            "dictionary_name": "kong_rate_limiting_counters",
+            "block_on_first_violation": false,
+            "fault_tolerant": true,
+            "header_name": "x-kong-limit",
             "hide_client_headers": false,
-            "identifier": "ip",
-            "limit": [
-              100,
-              200
-            ],
-            "namespace": "JI1TuoFwdrcRsk8xnbhCYUfcKY4BIOZP",
-            "strategy": "cluster",
-            "sync_rate": 100,
-            "window_size": [
-              300,
-              400
-            ],
-            "window_type": "sliding"
+            "limit_by": "consumer",
+            "policy": "cluster",
+            "redis_database": 0,
+            "redis_port": 6379,
+            "redis_timeout": 2000,
+            "limits": {
+              "all": {
+                "second": 10,
+                "minute": 400,
+                "hour": 20000
+              }
+            }
           }
         },
         {
@@ -195,10 +195,9 @@
           }
         },
         {
-          "name": "je-justsaying-defaults",
+          "name": "request-size-limiting",
           "config": {
-            "raisingcomponent": "component-1",
-            "tenant": "tenant-1"
+            "allowed_payload_size": 256
           }
         }
       ]

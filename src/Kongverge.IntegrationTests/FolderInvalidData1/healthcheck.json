@@ -9,11 +9,11 @@
   "write_timeout": 60000,
   "plugins": [
     {
+      "name": "request-termination",
       "config": {
         "message": "All good",
         "status_code": 200
-      },
-      "name": "request-termination"
+      }
     }
   ]
 }
