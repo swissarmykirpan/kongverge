@@ -19,6 +19,9 @@ namespace Kongverge.DTOs
         [JsonProperty("name")]
         public string Name { get; set; }
 
+        [JsonProperty("enabled")]
+        public bool Enabled { get; set; } = true;
+
         [JsonProperty("config")]
         public Dictionary<string, object> Config { get; set; }
 
