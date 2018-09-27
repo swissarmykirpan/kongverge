@@ -8,17 +8,17 @@ A command-line tool written in cross-platform [.NET Core 2.1](http://dot.net).
 
 ## Installation
 
-Kongverge is built [as a .NET core global tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools). Builds are stored as nuget packages on the internal package server: http://packages.je-labs.com/feeds/Global/Kongverge/
+Kongverge is built [as a .NET core global tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools).
 
 You can install `kongverge` as a global tool as follows:
 
 * First, have [.NET Core 2.1 or later installed](https://www.microsoft.com/net/download). At a commandline, `dotnet --list-runtimes` should succeed and show an item for `Microsoft.NETCore.App 2.1.0` or later.
-* Install with `dotnet tool install kongverge --global --add-source http://packages.je-labs.com/nuget/Global/`.
+* Install with `dotnet tool install kongverge --global`.
 * You should then be able to run `kongverge` from the commandline e.g. `kongverge --help`
 
 Other operations:
 
-* Update to latest: `dotnet tool update kongverge --global --add-source http://packages.je-labs.com/nuget/Global/`
+* Update to latest: `dotnet tool update kongverge --global`
 * Uninstall: `dotnet tool uninstall kongverge --global`
 
 This should all work on development and build machines, on windows, mac and linux, as long as .NET Core 2.1 is installed.
