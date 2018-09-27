@@ -1,97 +1,34 @@
 {
   "plugins": [
     {
-      "name": "je-request-delay",
+      "name": "cors",
       "config": {
-        "delay": 1000
+        "origins": [
+          "www.example1.com"
+        ],
+        "methods": [
+          "GET",
+          "HEAD"
+        ],
+        "credentials": true,
+        "preflight_continue": true
       }
     },
     {
-      "name": "je-request-transformer",
+      "name": "basic-auth",
       "config": {
-        "http_method": "get",
-        "add": {
-          "body": [
-            "value-1:x",
-            "value-2:y"
-          ],
-          "headers": [
-            "header-1:x",
-            "header-2:y"
-          ],
-          "querystring": [
-            "param-1:x",
-            "param-2:y"
-          ]
-        },
-        "append": {
-          "body": [
-            "value-1:x",
-            "value-2:y"
-          ],
-          "headers": [
-            "header-1:x",
-            "header-2:y"
-          ],
-          "querystring": [
-            "param-1:x",
-            "param-2:y"
-          ]
-        },
-        "remove": {
-          "body": [
-            "value-3",
-            "value-4"
-          ],
-          "headers": [
-            "header-3",
-            "header-4"
-          ],
-          "querystring": [
-            "param-3",
-            "param-4"
-          ]
-        },
-        "rename": {
-          "body": [
-            "value-5:value-7",
-            "value-6:value-8"
-          ],
-          "headers": [
-            "header-5:header-7",
-            "header-6:header-8"
-          ],
-          "querystring": [
-            "param-5:param-7",
-            "param-6:param-8"
-          ]
-        },
-        "replace": {
-          "uri": "/resource-global-replaced",
-          "body": [
-            "value-10:y",
-            "value-9:x"
-          ],
-          "headers": [
-            "header-10:y",
-            "header-9:x"
-          ],
-          "querystring": [
-            "param-10:y",
-            "param-9:x"
-          ]
-        }
+        "hide_credentials": true,
+        "anonymous": "65c5e2d4-8a05-4c99-bea8-665a41b33ace"
       }
     },
     {
-      "name": "je-tcp-log",
+      "name": "tcp-log",
       "config": {
         "host": "www.tcp-log.com",
         "keepalive": 200,
-        "log_body": true,
-        "max_body_size": 10000,
         "port": 8080,
-        "timeout": 100
+        "timeout": 100,
+        "tls": true 
       }
     }
   ]

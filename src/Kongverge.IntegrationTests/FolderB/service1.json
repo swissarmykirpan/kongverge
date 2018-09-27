@@ -9,23 +9,24 @@
   "write_timeout": 20000,
   "plugins": [
     {
-      "name": "rate-limiting-advanced",
+      "name": "response-ratelimiting",
       "config": {
-        "dictionary_name": "kong_rate_limiting_counters",
+        "block_on_first_violation": false,
+        "fault_tolerant": false,
+        "header_name": "x-kong-limit",
         "hide_client_headers": true,
-        "identifier": "credential",
-        "limit": [
-          600,
-          700
-        ],
-        "namespace": "QEOGDnOExCDnqt39t1xzV4D5KiWq7jFx",
-        "strategy": "cluster",
-        "sync_rate": 200,
-        "window_size": [
-          800,
-          900
-        ],
-        "window_type": "fixed"
+        "limit_by": "consumer",
+        "policy": "cluster",
+        "redis_database": 0,
+        "redis_port": 6379,
+        "redis_timeout": 2000,
+        "limits": {
+          "all": {
+            "second": 5,
+            "minute": 200,
+            "hour": 10000
+          } 
+        }
       }
     },
     {
@@ -70,7 +71,7 @@
       "strip_path": true,
       "plugins": [
         {
-          "name": "request-transformer-advanced",
+          "name": "request-transformer",
           "config": {
             "http_method": "get",
             "add": {
@@ -130,7 +131,6 @@
               ]
             },
             "replace": {
-              "uri": "/resource1-1-replaced-changed",
               "body": [
                 "value-10:b-changed",
                 "value-9:a-changed"
@@ -175,23 +175,24 @@
       "strip_path": true,
       "plugins": [
         {
-          "name": "rate-limiting-advanced",
+          "name": "response-ratelimiting",
           "config": {
-            "dictionary_name": "kong_rate_limiting_counters",
+            "block_on_first_violation": false,
+            "fault_tolerant": true,
+            "header_name": "x-kong-limit",
             "hide_client_headers": true,
-            "identifier": "consumer",
-            "limit": [
-              500,
-              600
-            ],
-            "namespace": "JI1TuoFwdrcRsk8xnbhCYUfcKY4BIOZP",
-            "strategy": "cluster",
-            "sync_rate": 200,
-            "window_size": [
-              700,
-              800
-            ],
-            "window_type": "sliding"
+            "limit_by": "credential",
+            "policy": "cluster",
+            "redis_database": 0,
+            "redis_port": 6379,
+            "redis_timeout": 2000,
+            "limits": {
+              "all": {
+                "second": 5,
+                "minute": 200,
+                "hour": 10000
+              }
+            }
           }
         },
         {

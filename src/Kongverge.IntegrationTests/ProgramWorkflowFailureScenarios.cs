@@ -1,9 +1,11 @@
 using Kongverge.Helpers;
 using TestStack.BDDfy;
 using TestStack.BDDfy.Xunit;
+using Xunit;
 
 namespace Kongverge.IntegrationTests
 {
+    [Collection(Host)]
     public class ProgramWorkflowFailureScenarios : ProgramSteps
     {
         [BddfyFact(DisplayName = nameof(AValidHost) + And + nameof(AValidPort) + And + nameof(InputFolderIs) + NonExistent)]

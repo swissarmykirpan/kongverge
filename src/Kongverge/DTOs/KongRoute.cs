@@ -35,9 +35,7 @@ namespace Kongverge.DTOs
 
         public override string ToString()
         {
-            return $@"Paths      : {string.Join(", ", Paths)}
-Methods    : {string.Join(", ", Methods)}
-Protocols  : {string.Join(", ", Protocols)}";
+            return $@"Paths: [{string.Join(", ", Paths)}], Methods: [{string.Join(", ", Methods)}], Protocols: [{string.Join(", ", Protocols)}]";
         }
 
         public StringContent ToJsonStringContent()

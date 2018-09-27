@@ -12,7 +12,7 @@ namespace Kongverge.IntegrationTests
 {
     public abstract class ProgramSteps
     {
-        public const string Host = "kongtestbed-qa8-alb.jalfrezi.je-labs.com";
+        public const string Host = "localhost";
         public const int Port = 8001;
 
         protected const string And = "_";
@@ -20,7 +20,6 @@ namespace Kongverge.IntegrationTests
         protected const string InvalidData1 = nameof(InvalidData1);
         protected const string InvalidData2 = nameof(InvalidData2);
         protected const string BadFormat = nameof(BadFormat);
-        protected const string BlankState = nameof(BlankState);
         protected const string A = nameof(A);
         protected const string B = nameof(B);
         protected const string Output = nameof(Output);
@@ -30,7 +29,7 @@ namespace Kongverge.IntegrationTests
         protected string OutputFolder;
         protected ExitCode ExitCode;
 
-        private static string MakeFolderName(string name) => $"Folder{name}";
+        private static string MakeFolderName(string name) => Path.IsPathRooted(name) ? name : $"Folder{name}";
 
         protected void InvokingMain() => ExitCode = (ExitCode)Program.Main(Arguments.ToArray());
 
@@ -74,12 +73,20 @@ namespace Kongverge.IntegrationTests
             Arguments.AddPair("--output", OutputFolder);
         }
 
-        protected void KongIsInABlankState()
+        protected void KongIsBlank()
         {
-            KongIsInAStateMatchingInputFolder(BlankState);
+            var tempPath = Path.GetTempPath();
+            var folderPath = Path.Join(tempPath, GetType().Namespace);
+            if (Directory.Exists(folderPath))
+            {
+                Directory.Delete(folderPath);
+            }
+
+            Directory.CreateDirectory(folderPath);
+            KongMatchesInputFolder(folderPath);
         }
 
-        protected void KongIsInAStateMatchingInputFolder(string folder)
+        protected void KongMatchesInputFolder(string folder)
         {
             Arguments = new CommandLineArguments();
             AValidHost();
@@ -101,7 +108,7 @@ namespace Kongverge.IntegrationTests
             var outputConfiguration = await configReader.ReadConfiguration(OutputFolder);
 
             inputConfiguration.GlobalConfig.Plugins.Should().NotBeEmpty();
-            inputConfiguration.Services.Count.Should().Be(4);
+            inputConfiguration.Services.Count.Should().Be(3);
 
             outputConfiguration.GlobalConfig.Plugins.Should().BeEquivalentTo(inputConfiguration.GlobalConfig.Plugins);
             outputConfiguration.Services.Should().BeEquivalentTo(inputConfiguration.Services);
