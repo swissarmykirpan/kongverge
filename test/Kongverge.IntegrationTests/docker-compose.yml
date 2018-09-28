@@ -49,7 +49,3 @@ services:
     command: kong migrations up
     healthcheck:
       test: "exit 0"
-  networks:
-    default:
-      external:
-        name: nat
