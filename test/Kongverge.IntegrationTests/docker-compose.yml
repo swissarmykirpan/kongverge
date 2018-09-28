@@ -3,7 +3,7 @@ version: '3.5'
 networks:
   default:
     name: kongverge
-    driver: bridge
+    driver: nat
 
 services:
   kong:
